@@ -4,6 +4,7 @@
 CGameMainScene::CGameMainScene(aqua::IGameObject* parent)
 	: IScene(parent, "GameMainScene")
 	, m_MapGen(nullptr)
+	, m_UnitMgr(nullptr)
 {
 }
 
@@ -15,6 +16,7 @@ void CGameMainScene::Initialize(void)
 {
 	m_State = STATE_GAME_PLAY;
 
+	m_UnitMgr = aqua::CreateGameObject<CUnitManager>(this);
 	m_MapGen = aqua::CreateGameObject<cMapGenerator>(this);
 
 	IGameObject::Initialize();
@@ -36,6 +38,11 @@ void CGameMainScene::Update(void)
 void CGameMainScene::Draw(void)
 {
 	IGameObject::Draw();
+}
+
+cMapGenerator* CGameMainScene::GetMapGenerator()
+{
+	return m_MapGen;
 }
 
 void CGameMainScene::GameStart(void)

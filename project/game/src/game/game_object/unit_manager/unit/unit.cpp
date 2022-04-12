@@ -23,6 +23,7 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_UnitManager(nullptr)
 	, m_TextManager(nullptr)
 	, m_UIManager(nullptr)
+	, m_MapObj(nullptr)
 	, m_Position(aqua::CVector2::ZERO)
 {
 }
@@ -63,4 +64,9 @@ void IUnit::SetPosition(aqua::CVector2 pos)
 	m_Position = pos;
 
 	m_Sprite.position = m_Position;
+}
+
+void IUnit::GetMap(cMap* map)
+{
+	m_MapObj = map;
 }

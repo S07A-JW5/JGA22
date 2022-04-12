@@ -1,111 +1,195 @@
 #include "map_generator.h"
 
-#define SEARCH_NEXT_BRANCH LoopCount = 0; ++m_CurrentBranchP %= m_BranchPoint.size(); if(m_CurrentBranchP < m_BranchPoint.size()) continue; return true;
+#define SEARCH_NEXT_BRANCH {LoopCount = 0; ++m_CurrentBranchP %= m_BranchPoint.size(); if(m_CurrentBranchP < m_BranchPoint.size()) continue; return true;}
 
-const int cMapGenerator::m_width = 40;
-const int cMapGenerator::m_height = 30;
-const int cMapGenerator::m_min_room_size = 3;
-const int cMapGenerator::m_max_room_size = 8;
-const int cMapGenerator::m_min_corridor_length = 4;
-const int cMapGenerator::m_max_corridor_length = 10;
+const int cMapGenerator::m_default_width = 400;
+const int cMapGenerator::m_default_height = 300;
 
 cMapGenerator::cMapGenerator(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "MapGenerator")
+	, m_Map(nullptr)
 {
 }
 
 void cMapGenerator::Initialize()
 {
-	m_Timer = 0;
+	m_TimeCounter = 0;
 	m_Room.clear();
 	m_BranchPoint.clear();
 	m_Generating = false;
+}
 
-	m_Width = min(m_width, m_max_width);
-	m_Height = min(m_height, m_max_height);
+void cMapGenerator::Update()
+{
+}
 
-	m_Map = new std::uint8_t*[m_Width];
+void cMapGenerator::Draw()
+{
+	if (m_Generating)
+		for (int i = 0; i < 80; i++)
+			for (int j = 0; j < 45; j++)
+				m_Tile[i][j].Draw();
+	else m_MapObj.Draw();
+}
+
+void cMapGenerator::Finalize()
+{
+	m_MapObj.Finalize();
+	m_Room.clear();
+	m_BranchPoint.clear();
+	AQUA_SAFE_DELETE_ARRAY(m_Map);
+}
+
+bool cMapGenerator::GenerateMap(int width, int height,
+	int min_room_siz, int max_room_siz, int max_room_cnt,
+	int min_corr_len, int max_corr_len, int max_corr_cnt)
+{
+	SetMapGenParam(width, height, min_room_siz, max_room_siz, max_room_cnt,
+		min_corr_len, max_corr_len, max_corr_cnt);
+	Generate();
+	return !m_Generating;
+}
+
+cMap* cMapGenerator::GetMap()
+{
+	return &m_MapObj;
+}
+
+bool cMapGenerator::MapGenerated()
+{
+	return m_MapObj.HasData() && !m_Generating;
+}
+
+void cMapGenerator::SetMapGenParam(int width, int height,
+	int min_room_siz, int max_room_siz, int max_room_cnt,
+	int min_corr_len, int max_corr_len, int max_corr_cnt)
+{
+	m_TimeCounter = 0;
+	m_Room.clear();
+	m_BranchPoint.clear();
+	AQUA_SAFE_DELETE_ARRAY(m_Map);
+	m_Generating = false;
+
+	m_Width = min(width, m_max_width);
+	m_Height = min(height, m_max_height);
+	m_MinRoomSize = min_room_siz;
+	m_MaxRoomSize = max_room_siz;
+	m_MaxRoomCount = max_room_cnt;
+	m_MinCorridorLen = min_corr_len;
+	m_MaxCorridorLen = max_corr_len;
+	m_MaxCorridorCount = max_corr_cnt;
+
+	m_Map = new std::uint8_t * [m_Width];
 	for (int i = 0; i < m_Width; i++)
 		m_Map[i] = new std::uint8_t[m_Height];
 
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
 			m_Map[i][j] = TILE_TYPE::EMPTY;
-
 }
 
-void cMapGenerator::Update()
+void cMapGenerator::Generate(bool step)
 {
-	//if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
-	if (m_Generating)
-	{
-		while (!CreateRoom())
-		{
-		}
-		{
-			m_Generating = false;
-			AQUA_DEBUG_LOG("Finished!");
+	if (step)
+		++m_FrameCounter;
 
-			for (int i = 0; i < m_Width; i++)
-				for (int j = 0; j < m_Height; j++)
-				{
-					m_Tile[i][j].Setup(aqua::CVector2(i * 8, j * 8), 8, 8);
-					switch (m_Map[i][j])
-					{
-					case cMapGenerator::WALL:
-						m_Tile[i][j].color = 0xff0000ff;
-						break;
-					case cMapGenerator::ROOM:
-						m_Tile[i][j].color = 0xff00ff00;
-						break;
-					case cMapGenerator::GATE:
-						m_Tile[i][j].color = 0xffff4000;
-						break;
-					case cMapGenerator::CORRIDOR:
-						m_Tile[i][j].color = 0xffffff00;
-						break;
-					default:
-						m_Tile[i][j].color = 0xff000000;
-						break;
-					}
-				}
-		}
-	}
-	if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
-	{
-		if (!m_Generating)
-		{
-			CreateRoom(true);
-			AQUA_DEBUG_LOG("Started!");
-		}
-	}
-	if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::RIGHT))
+	if (!m_Generating)
 	{
 		CreateRoom(true);
-		AQUA_DEBUG_LOG("Started!");
+		m_Generating = true;
+		m_FrameCounter = 0;
+		m_Timer = GetNowCount();
 	}
-}
-
-void cMapGenerator::Draw()
-{
-	//for (int i = 0; i < m_Width; i++)
-		//for (int j = 0; j < m_Height; j++)
-	for (int i = 0; i < 40; i++)
-		for (int j = 0; j < 30; j++)
+	do
+	{
+		if (CreateRoom())
 		{
-			m_Tile[i][j].Draw();
+			m_Generating = false;
+			break;
 		}
-}
+	} while (!step);
 
-void cMapGenerator::Finalize()
-{
-}
+	if (!m_Generating)
+	{
+		int PlayerRoom = 0;
+		int StairRoom = 0;
 
-void cMapGenerator::Generate()
-{
+		PlayerRoom = rand() % m_Room.size();
+		do
+		{
+			if (m_Room.size() == 1)
+			{
+				StairRoom = PlayerRoom;
+				break;
+			}
+			StairRoom = rand() % m_Room.size();
+		} while (StairRoom == PlayerRoom);
 
+		aqua::CPoint PlayerStartPoint = aqua::CPoint::ZERO;
+		aqua::CPoint StairPoint = aqua::CPoint::ZERO;
+		PlayerStartPoint.x = aqua::Rand(m_Room[PlayerRoom].left,
+			m_Room[PlayerRoom].right);
+		PlayerStartPoint.y = aqua::Rand(m_Room[PlayerRoom].top,
+			m_Room[PlayerRoom].bottom);
+		do
+		{
+			StairPoint.x = aqua::Rand(m_Room[StairRoom].left,
+				m_Room[StairRoom].right);
+			StairPoint.y = aqua::Rand(m_Room[StairRoom].top,
+				m_Room[StairRoom].bottom);
+		} while (PlayerStartPoint.x == StairPoint.x &&
+			PlayerStartPoint.y == StairPoint.y);
 
+		m_Map[PlayerStartPoint.x][PlayerStartPoint.y] = TILE_TYPE::START;
+		m_Map[StairPoint.x][StairPoint.y] = TILE_TYPE::STAIR;
 
+		m_StartPos.x = PlayerStartPoint.x;
+		m_StartPos.y = PlayerStartPoint.y;
+		m_StairPos.x = StairPoint.x;
+		m_StairPos.y = StairPoint.y;
+
+		m_MapObj.Initialize(m_Width, m_Height, m_Map, m_StartPos, m_StairPos);
+	}
+	for (int i = 0; i < m_Width; i++)
+		for (int j = 0; j < m_Height; j++)
+		{
+			m_Tile[i][j].Setup(aqua::CVector2(i * 8, j * 8), 8, 8);
+			switch (m_Map[i][j])
+			{
+			case cMapGenerator::WALL:
+				m_Tile[i][j].color = 0xff0000ff;
+				break;
+			case cMapGenerator::ROOM:
+				m_Tile[i][j].color = 0xff00ff00;
+				break;
+			case cMapGenerator::GATE:
+				m_Tile[i][j].color = 0xffff00ff;
+				break;
+			case cMapGenerator::CORRIDOR:
+				m_Tile[i][j].color = 0xffffff00;
+				break;
+			case cMapGenerator::START:
+				m_Tile[i][j].color = 0xffff0000;
+				break;
+			case cMapGenerator::STAIR:
+				m_Tile[i][j].color = 0xff007fff;
+				break;
+			default:
+				m_Tile[i][j].color = 0xff000000;
+				break;
+			}
+		}
+#ifdef _DEBUG
+	if (!m_Generating)
+	{
+		AQUA_DEBUG_LOG("Finished!");
+		AQUA_DEBUG_LOG("Time: " + std::to_string(GetNowCount() - m_Timer) + "ms");
+		if (step)
+			AQUA_DEBUG_LOG("Time: " + std::to_string(m_FrameCounter) + "F");
+		AQUA_DEBUG_LOG(std::to_string(m_Room.size()) + "rooms");
+		AQUA_DEBUG_LOG(std::to_string(m_CorridorCount) + "corridors");
+	}
+#endif // _DEBUG
 }
 
 bool cMapGenerator::CreateRoom(bool first)
@@ -114,7 +198,7 @@ bool cMapGenerator::CreateRoom(bool first)
 	BranchPoint BranchP;
 	int LoopCount = 0;
 
-	m_Timer = GetNowCount();
+	int Timer = GetNowCount();
 
 	if (first)
 	{
@@ -124,17 +208,20 @@ bool cMapGenerator::CreateRoom(bool first)
 		m_Room.clear();
 		m_BranchPoint.clear();
 		m_CurrentBranchP = 0;
+		m_CorridorCount = 0;
+		m_TimeCounter = 0;
 
 		RoomRect.left = m_Width / 2 - rand() % 4;
 		RoomRect.top = m_Height / 2 - rand() % 4;
-		RoomRect.right = RoomRect.left + aqua::Rand(m_min_room_size, m_max_room_size) - 1;
-		RoomRect.bottom = RoomRect.top + aqua::Rand(m_min_room_size, m_max_room_size) - 1;
+		RoomRect.right = RoomRect.left + aqua::Rand(m_MinRoomSize, m_MaxRoomSize) - 1;
+		RoomRect.bottom = RoomRect.top + aqua::Rand(m_MinRoomSize, m_MaxRoomSize) - 1;
 
 		for (int i = RoomRect.left - 1; i <= RoomRect.right + 1; i++)
 			for (int j = RoomRect.top - 1; j <= RoomRect.bottom + 1; j++)
 			{
 				m_Map[i][j] = TILE_TYPE::ROOM;
-				if ((i < RoomRect.left || i > RoomRect.right) || (j < RoomRect.top || j > RoomRect.bottom))
+				if ((i < RoomRect.left || i > RoomRect.right) ||
+					(j < RoomRect.top || j > RoomRect.bottom))
 					m_Map[i][j] = TILE_TYPE::WALL;
 			}
 		for (int i = 0; i < DIRECTION::COUNT; i++)
@@ -171,40 +258,42 @@ bool cMapGenerator::CreateRoom(bool first)
 
 	do
 	{
-		if ((GetNowCount() - m_Timer) > 500)
-			return true;
+		if ((GetNowCount() - Timer) > 10)
+		{
+			Timer = GetNowCount();
+			++m_TimeCounter;
+			AQUA_DEBUG_LOG(std::to_string(m_TimeCounter));
+			if (m_TimeCounter > 5)
+				return true;
+			return false;
+		}
 
 		BranchP = m_BranchPoint[m_CurrentBranchP];
 		if (BranchP.Used)
-		{
 			SEARCH_NEXT_BRANCH
-		}
-		++LoopCount;
+			++LoopCount;
 
 		aqua::CPoint Point = aqua::CPoint(BranchP.Rect.left, BranchP.Rect.top);
-		if (BranchP.Direction == DIRECTION::NORTH || BranchP.Direction == DIRECTION::SOUTH)
+		if (BranchP.Direction == DIRECTION::NORTH ||
+			BranchP.Direction == DIRECTION::SOUTH)
 		{
 			Point.x += LoopCount - 1;
 			if (Point.x > BranchP.Rect.right)
-			{
 				SEARCH_NEXT_BRANCH
-			}
 		}
-		if (BranchP.Direction == DIRECTION::WEST || BranchP.Direction == DIRECTION::EAST)
+		if (BranchP.Direction == DIRECTION::WEST || 
+			BranchP.Direction == DIRECTION::EAST)
 		{
 			Point.y += LoopCount - 1;
 			if (Point.y > BranchP.Rect.bottom)
-			{
 				SEARCH_NEXT_BRANCH
-			}
 		}
 
-		if ((Point.x < 1) || (Point.x >= m_Width - 1) || (Point.y < 1) || (Point.y >= m_Height - 1))
-		{
+		if ((Point.x < 1) || (Point.x >= m_Width - 1) ||
+			(Point.y < 1) || (Point.y >= m_Height - 1))
 			SEARCH_NEXT_BRANCH
-		}
 
-		aqua::CPoint GatePoint = Point;
+			aqua::CPoint GatePoint = Point;
 
 		switch (BranchP.Direction)
 		{
@@ -226,11 +315,15 @@ bool cMapGenerator::CreateRoom(bool first)
 		RoomRect.top = RoomRect.bottom = Point.y;
 
 		bool Corridor = rand() % 2;
-		//Corridor = true;
+		if (!BranchP.RootIsCorridor)
+			Corridor = true;
 		if (Corridor)
 		{
-			bool Crossed = rand() % 3;
-			int Length = aqua::Rand(m_min_corridor_length, m_max_corridor_length);
+			if (m_CorridorCount >= m_MaxCorridorCount)
+				SEARCH_NEXT_BRANCH
+
+				bool Crossed = rand() % 3;
+			int Length = aqua::Rand(m_MinCorridorLen, m_MaxCorridorLen);
 
 			if (Crossed)
 			{
@@ -303,11 +396,12 @@ bool cMapGenerator::CreateRoom(bool first)
 					for (int j = RoomRect.top - 1; j <= RoomRect.bottom + 1; j++)
 					{
 						m_Map[i][j] = TILE_TYPE::CORRIDOR;
-						if ((i < RoomRect.left || i > RoomRect.right) || (j < RoomRect.top || j > RoomRect.bottom))
+						if ((i < RoomRect.left || i > RoomRect.right) ||
+							(j < RoomRect.top || j > RoomRect.bottom))
 							m_Map[i][j] = TILE_TYPE::WALL;
 					}
 				m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::GATE;
-				if(BranchP.RootIsCorridor)
+				if (BranchP.RootIsCorridor)
 					m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::CORRIDOR;
 				m_BranchPoint[m_CurrentBranchP].Used = true;
 				DIRECTION BranchRootDir = BranchP.Direction; {
@@ -352,6 +446,7 @@ bool cMapGenerator::CreateRoom(bool first)
 					BranchP.RootIsCorridor = true;
 					m_BranchPoint.push_back(BranchP);
 				}
+				m_CorridorCount++;
 				LoopCount = 0;
 				++m_CurrentBranchP %= m_BranchPoint.size();
 				if (m_CurrentBranchP >= m_BranchPoint.size())
@@ -363,8 +458,11 @@ bool cMapGenerator::CreateRoom(bool first)
 
 		else
 		{
-			std::uint8_t RoomWidth = aqua::Rand(m_min_room_size, m_max_room_size);
-			std::uint8_t RoomHeight = aqua::Rand(m_min_room_size, m_max_room_size);
+			if (m_Room.size() >= m_MaxRoomCount)
+				SEARCH_NEXT_BRANCH
+
+				std::uint8_t RoomWidth = aqua::Rand(m_MinRoomSize, m_MaxRoomSize);
+			std::uint8_t RoomHeight = aqua::Rand(m_MinRoomSize, m_MaxRoomSize);
 			std::uint8_t RoomShiftX = 0;
 			std::uint8_t RoomShiftY = 0;
 			switch (BranchP.Direction)
@@ -409,7 +507,8 @@ bool cMapGenerator::CreateRoom(bool first)
 					for (int j = RoomRect.top - 1; j <= RoomRect.bottom + 1; j++)
 					{
 						m_Map[i][j] = TILE_TYPE::ROOM;
-						if ((i < RoomRect.left || i > RoomRect.right) || (j < RoomRect.top || j > RoomRect.bottom))
+						if ((i < RoomRect.left || i > RoomRect.right) ||
+							(j < RoomRect.top || j > RoomRect.bottom))
 							m_Map[i][j] = TILE_TYPE::WALL;
 					}
 				m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::GATE;
@@ -456,6 +555,7 @@ bool cMapGenerator::CreateRoom(bool first)
 					BranchP.RootIsCorridor = false;
 					m_BranchPoint.push_back(BranchP);
 				}
+				m_Room.push_back(RoomRect);
 				LoopCount = 0;
 				++m_CurrentBranchP %= m_BranchPoint.size();
 				if (m_CurrentBranchP >= m_BranchPoint.size())
@@ -475,4 +575,145 @@ bool cMapGenerator::TileEmptyCheck(aqua::CRect Range)
 			if (m_Map[i][j] != TILE_TYPE::EMPTY)
 				return false;
 	return true;
+}
+
+cMap::cMap()
+	: m_HasData(false)
+	, m_Width(0)
+	, m_Height(0)
+	, m_Tile(nullptr)
+	, m_Item(nullptr)
+	, m_StartPos(aqua::CVector2::ZERO)
+	, m_StairPos(aqua::CVector2::ZERO)
+{
+}
+
+void cMap::Initialize(int width, int height, std::uint8_t **mapdata,
+	aqua::CVector2 start, aqua::CVector2 stair)
+{
+	AQUA_SAFE_DELETE_ARRAY(m_Tile);
+	AQUA_SAFE_DELETE_ARRAY(m_Item);
+
+	m_HasData = true;
+
+	m_Width = width;
+	m_Height = height;
+
+	m_Tile = new TILE_ID * [m_Width];
+	for (int i = 0; i < width; i++)
+		m_Tile[i] = new TILE_ID[m_Height];
+
+	m_Item = new DroppedItem * [m_Width];
+	for (int i = 0; i < width; i++)
+		m_Item[i] = new DroppedItem[m_Height];
+
+	for (int i = 0; i < width; i++)
+		for (int j = 0; j < height; j++)
+		{
+			switch ((cMapGenerator::TILE_TYPE)mapdata[i][j])
+			{
+			case cMapGenerator::TILE_TYPE::ROOM:
+			case cMapGenerator::TILE_TYPE::START:
+			case cMapGenerator::TILE_TYPE::STAIR:
+				m_Tile[i][j] = TILE_ID::ROOM;
+				break;
+			case cMapGenerator::TILE_TYPE::GATE:
+				m_Tile[i][j] = TILE_ID::GATE;
+				break;
+			case cMapGenerator::TILE_TYPE::CORRIDOR:
+				m_Tile[i][j] = TILE_ID::CORRIDOR;
+				break;
+			default:
+				m_Tile[i][j] = TILE_ID::WALL;
+				break;
+			}
+			m_Item[i][j].ItemID = 0;
+			m_Item[i][j].Num = 0;
+		}
+	m_StartPos = start;
+	m_StairPos = stair;
+}
+
+cMap::DroppedItem cMap::GatherItem(int x_pos, int y_pos)
+{
+	DroppedItem Item = m_Item[x_pos][y_pos];
+
+	m_Item[x_pos][y_pos].ItemID = 0;
+	m_Item[x_pos][y_pos].Num = 0;
+
+	if (Item.ItemID == 0 || Item.Num == 0)
+	{
+		Item.ItemID = 0;
+		Item.Num = 0;
+	}
+	return Item;
+}
+
+void cMap::Draw()
+{
+	if (!m_HasData) return;
+}
+
+void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
+{
+	m_Item[x_pos][y_pos].ItemID = item_id;
+	m_Item[x_pos][y_pos].Num = num;
+}
+
+void cMap::Finalize()
+{
+	m_HasData = false;
+	AQUA_SAFE_DELETE_ARRAY(m_Tile);
+	AQUA_SAFE_DELETE_ARRAY(m_Item);
+}
+
+void cMap::PutUnit(int x_pos, int y_pos, unsigned int unit_id)
+{
+}
+
+aqua::CVector2 cMap::GetStartPoint()
+{
+	return m_StartPos;
+}
+
+aqua::CVector2 cMap::GetStairPos()
+{
+	return m_StairPos;
+}
+
+cMap::TILE_ID cMap::GetTile(int x_pos, int y_pos)
+{
+	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
+		return TILE_ID::WALL;
+	return m_Tile[x_pos][y_pos];
+}
+
+bool cMap::IsWalkableTile(int x_pos, int y_pos)
+{
+	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
+		return false;
+	return m_Tile[x_pos][y_pos] != TILE_ID::WALL;
+}
+
+bool cMap::IsBreakableTile(int x_pos, int y_pos)
+{
+	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
+		return false;
+	return m_Tile[x_pos][y_pos] == TILE_ID::WALL;
+}
+
+void cMap::FloorChange()
+{
+}
+
+bool cMap::HasData()
+{
+	return m_HasData;
+}
+
+void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
+{
+	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
+		return;
+	m_Tile[x_pos][y_pos] = tile;
 }

@@ -22,23 +22,11 @@ public:
 
 	void Finalize();
 
-	void LoadDir();
-
 	void Clear();
-
-	int DealDamage(int damage, int defence, std::uint8_t attribute, bool get_damaged, bool special, int offence_dex = 0, int damage_cap = 9999, bool pp_damage = false, bool from_rival = false);
-
-	bool Command();
-
-	bool Action();
-
-	bool RoundFinished();
-
-	bool BattleFinished();
-	
-	bool IsBattleFinish();
 
 private:
 	aqua::IGameObject* m_TextManager;
-
+	cPlayer* m_Player;
+	//std::vector<cBot*> m_NPCs;
+	aqua::IGameObject* m_MapGenerator;
 };

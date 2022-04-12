@@ -1,5 +1,7 @@
 #pragma once
 #include "aqua.h"
+#include "game/game_object/camera/camera.h"
+#include "game/game_object/scene_manager/scene/game_main/map_generator/map_generator.h"
 
 class IUnit : public aqua::IGameObject
 {
@@ -29,6 +31,8 @@ public:
 
 	void SetPosition(aqua::CVector2 pos);
 
+	void GetMap(cMap* map);
+
 protected:
 	struct status
 	{
@@ -56,9 +60,9 @@ protected:
 
 	status m_Status;
 
-	aqua::CVector2 m_Position;	//マップ上での位置
-
-	aqua::CSprite m_Sprite;		//キャラスプライト
+	aqua::CVector2 m_OnMapPos;	//マップ上での位置
+	aqua::CVector2 m_Position;	//ｽﾌﾟﾗｲﾄの位置
+	aqua::CSprite m_Sprite;	//キャラスプライト
 
 	std::uint16_t m_Life;		//現在耐久力
 	std::uint16_t m_MaxLife;	//最大耐久力
@@ -66,7 +70,7 @@ protected:
 	std::int16_t  m_Heat;		//熱
 	std::int16_t  m_BaseHeat;	//熱下限値
 	std::uint8_t  m_Inventory;	//ｲﾝﾍﾞﾝﾄﾘ容量
-	std::uint16_t m_Weight;		//装備重量
+	std::uint16_t m_Weight;	//装備重量
 	std::uint16_t m_Support;	//装備重量上限(そうでもないけど)
 	std::uint16_t m_Batt;		//ﾊﾞｯﾃﾘｰ残量
 	std::uint16_t m_MaxBatt;	//ﾊﾞｯﾃﾘｰ容量
@@ -82,4 +86,7 @@ protected:
 	std::vector<int16_t> m_Armor;	//装備している装甲
 	std::vector<int16_t> m_Transp;	//装備している移動
 	std::vector<int16_t> m_Util;	//装備している装備品
+
+	cMap* m_MapObj;
+	cCamera* m_CamObj;
 };

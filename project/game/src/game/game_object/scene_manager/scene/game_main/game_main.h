@@ -24,6 +24,7 @@ public:
 	// •`‰æ
 	void Draw(void);
 
+	cMapGenerator* GetMapGenerator();
 private:
 
 	//ƒQ[ƒ€ŠJn
@@ -45,5 +46,6 @@ private:
 
 	STATE  m_State;		//! ó‘ÔID
 
+	CUnitManager* m_UnitMgr;
 	cMapGenerator* m_MapGen;
 };
