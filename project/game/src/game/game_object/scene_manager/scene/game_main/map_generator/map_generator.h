@@ -1,65 +1,6 @@
 #pragma once
 #include "aqua.h"
-
-class cMap
-{
-public:
-	static const int m_tile_size = 32;
-
-	enum class TILE_ID
-	{
-		WALL = 0b00,
-		ROOM = 0b01,
-		GATE = 0b10,
-		CORRIDOR = 0b11,
-	};
-
-	struct DroppedItem
-	{
-		unsigned int ItemID;
-		unsigned int Num;
-	};
-
-	cMap();
-
-	~cMap() = default;
-
-	void Initialize(int width, int height, std::uint8_t **mapdata,
-		aqua::CVector2 start, aqua::CVector2 stair);
-
-	void Draw();
-
-	void Finalize();
-
-	cMap::DroppedItem GatherItem(int x_pos, int y_pos);
-
-	void PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num = 1);
-
-	void PutUnit(int x_pos, int y_pos, unsigned int unit_id);
-
-	aqua::CVector2 GetStartPoint();
-	aqua::CVector2 GetStairPos();
-
-	cMap::TILE_ID GetTile(int x_pos, int y_pos);
-	bool IsWalkableTile(int x_pos, int y_pos);
-	bool IsBreakableTile(int x_pos, int y_pos);
-
-	bool HasData();
-
-	void FloorChange();
-
-	void SetTile(int x_pos, int y_pos, TILE_ID tile);
-
-private:
-	bool m_HasData;
-	std::uint8_t	m_Width;		//マップの横サイズ
-	std::uint8_t	m_Height;		//マップの縦サイズ
-	TILE_ID**		m_Tile;		//マップタイル配列
-	DroppedItem**	m_Item;		//アイテム配列
-	aqua::CVector2 m_StartPos;	//開始地点
-	aqua::CVector2 m_StairPos;	//階段の位置
-};
-
+#include "map/map.h"
 
 class cMapGenerator : public aqua::IGameObject
 {
@@ -152,5 +93,5 @@ private:
 	std::uint16_t m_MaxRoomCount;	//部屋の最大数
 	std::uint16_t m_MaxCorridorCount;//廊下の最大数
 
-	cMap m_MapObj;
+	cMap* m_MapObj;
 };

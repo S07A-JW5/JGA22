@@ -24,9 +24,12 @@ public:
 
 	void Clear();
 
+	void MapGeneration();
+
 private:
 	aqua::IGameObject* m_TextManager;
 	cPlayer* m_Player;
 	//std::vector<cBot*> m_NPCs;
 	aqua::IGameObject* m_MapGenerator;
+	bool m_MapGenerated;
 };

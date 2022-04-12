@@ -9,6 +9,7 @@ CUnitManager::CUnitManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "UnitManager")
 	, m_Player(nullptr)
 	, m_MapGenerator(nullptr)
+	, m_MapGenerated(false)
 {
 }
 
@@ -17,11 +18,11 @@ void CUnitManager::Initialize(void)
 	CGameMainScene* Gamemain = (CGameMainScene*)GetParent();
 	m_MapGenerator = Gamemain->GetMapGenerator();
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
-	MapGen->GenerateMap();
 
 	m_TextManager = aqua::FindGameObject("TextManager");
 	m_Player = aqua::CreateGameObject<cPlayer>(this);
-	m_Player->GetMap(MapGen->GetMap());
+
+	MapGeneration();
 
 	IGameObject::Initialize();
 }
@@ -31,7 +32,9 @@ void CUnitManager::Update(void)
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
 
 	if (MapGen->MapGenerated())
+	{
 		IGameObject::Update();
+	}
 }
 
 void CUnitManager::Draw(void)
@@ -46,4 +49,15 @@ void CUnitManager::Finalize(void)
 
 void CUnitManager::Clear()
 {
+}
+
+void CUnitManager::MapGeneration()
+{
+	m_MapGenerated = false;
+	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
+	MapGen->GenerateMap();
+	cMap* Map = MapGen->GetMap();
+	m_Player->GetMap(Map);
+	m_Player->SetPosition(Map->GetStartPoint());
+	m_Player->SetStairPosition(Map->GetStairPos());
 }

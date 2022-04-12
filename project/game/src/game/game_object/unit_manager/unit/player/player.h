@@ -18,5 +18,9 @@ public:
 
 	void Finalize() override;
 
+	void SetStairPosition(aqua::CVector2 pos);
+
 private:
+	aqua::CSprite m_Sight;
+	aqua::CVector2 m_StairPos;
 };

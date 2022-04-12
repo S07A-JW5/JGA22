@@ -16,8 +16,8 @@ void CGameMainScene::Initialize(void)
 {
 	m_State = STATE_GAME_PLAY;
 
-	m_UnitMgr = aqua::CreateGameObject<CUnitManager>(this);
 	m_MapGen = aqua::CreateGameObject<cMapGenerator>(this);
+	m_UnitMgr = aqua::CreateGameObject<CUnitManager>(this);
 
 	IGameObject::Initialize();
 }

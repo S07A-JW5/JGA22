@@ -8,6 +8,7 @@ const int cMapGenerator::m_default_height = 300;
 cMapGenerator::cMapGenerator(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "MapGenerator")
 	, m_Map(nullptr)
+	, m_MapObj(nullptr)
 {
 }
 
@@ -21,20 +22,22 @@ void cMapGenerator::Initialize()
 
 void cMapGenerator::Update()
 {
+	IGameObject::Update();
 }
 
 void cMapGenerator::Draw()
 {
+	if (m_MapObj) m_MapObj->Draw();
 	if (m_Generating)
 		for (int i = 0; i < 80; i++)
 			for (int j = 0; j < 45; j++)
 				m_Tile[i][j].Draw();
-	else m_MapObj.Draw();
 }
 
 void cMapGenerator::Finalize()
 {
-	m_MapObj.Finalize();
+	if (m_MapObj)
+		m_MapObj->Finalize();
 	m_Room.clear();
 	m_BranchPoint.clear();
 	AQUA_SAFE_DELETE_ARRAY(m_Map);
@@ -52,12 +55,14 @@ bool cMapGenerator::GenerateMap(int width, int height,
 
 cMap* cMapGenerator::GetMap()
 {
-	return &m_MapObj;
+	return m_MapObj;
 }
 
 bool cMapGenerator::MapGenerated()
 {
-	return m_MapObj.HasData() && !m_Generating;
+	if (!m_MapObj)
+		return false;
+	return m_MapObj->HasData() && !m_Generating;
 }
 
 void cMapGenerator::SetMapGenParam(int width, int height,
@@ -148,7 +153,10 @@ void cMapGenerator::Generate(bool step)
 		m_StairPos.x = StairPoint.x;
 		m_StairPos.y = StairPoint.y;
 
-		m_MapObj.Initialize(m_Width, m_Height, m_Map, m_StartPos, m_StairPos);
+		if (m_MapObj)
+			m_MapObj->DeleteObject();
+		m_MapObj = aqua::CreateGameObject<cMap>(this);
+		m_MapObj->Initialize(m_Width, m_Height, m_Map, m_StartPos, m_StairPos);
 	}
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
@@ -577,143 +585,3 @@ bool cMapGenerator::TileEmptyCheck(aqua::CRect Range)
 	return true;
 }
 
-cMap::cMap()
-	: m_HasData(false)
-	, m_Width(0)
-	, m_Height(0)
-	, m_Tile(nullptr)
-	, m_Item(nullptr)
-	, m_StartPos(aqua::CVector2::ZERO)
-	, m_StairPos(aqua::CVector2::ZERO)
-{
-}
-
-void cMap::Initialize(int width, int height, std::uint8_t **mapdata,
-	aqua::CVector2 start, aqua::CVector2 stair)
-{
-	AQUA_SAFE_DELETE_ARRAY(m_Tile);
-	AQUA_SAFE_DELETE_ARRAY(m_Item);
-
-	m_HasData = true;
-
-	m_Width = width;
-	m_Height = height;
-
-	m_Tile = new TILE_ID * [m_Width];
-	for (int i = 0; i < width; i++)
-		m_Tile[i] = new TILE_ID[m_Height];
-
-	m_Item = new DroppedItem * [m_Width];
-	for (int i = 0; i < width; i++)
-		m_Item[i] = new DroppedItem[m_Height];
-
-	for (int i = 0; i < width; i++)
-		for (int j = 0; j < height; j++)
-		{
-			switch ((cMapGenerator::TILE_TYPE)mapdata[i][j])
-			{
-			case cMapGenerator::TILE_TYPE::ROOM:
-			case cMapGenerator::TILE_TYPE::START:
-			case cMapGenerator::TILE_TYPE::STAIR:
-				m_Tile[i][j] = TILE_ID::ROOM;
-				break;
-			case cMapGenerator::TILE_TYPE::GATE:
-				m_Tile[i][j] = TILE_ID::GATE;
-				break;
-			case cMapGenerator::TILE_TYPE::CORRIDOR:
-				m_Tile[i][j] = TILE_ID::CORRIDOR;
-				break;
-			default:
-				m_Tile[i][j] = TILE_ID::WALL;
-				break;
-			}
-			m_Item[i][j].ItemID = 0;
-			m_Item[i][j].Num = 0;
-		}
-	m_StartPos = start;
-	m_StairPos = stair;
-}
-
-cMap::DroppedItem cMap::GatherItem(int x_pos, int y_pos)
-{
-	DroppedItem Item = m_Item[x_pos][y_pos];
-
-	m_Item[x_pos][y_pos].ItemID = 0;
-	m_Item[x_pos][y_pos].Num = 0;
-
-	if (Item.ItemID == 0 || Item.Num == 0)
-	{
-		Item.ItemID = 0;
-		Item.Num = 0;
-	}
-	return Item;
-}
-
-void cMap::Draw()
-{
-	if (!m_HasData) return;
-}
-
-void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
-{
-	m_Item[x_pos][y_pos].ItemID = item_id;
-	m_Item[x_pos][y_pos].Num = num;
-}
-
-void cMap::Finalize()
-{
-	m_HasData = false;
-	AQUA_SAFE_DELETE_ARRAY(m_Tile);
-	AQUA_SAFE_DELETE_ARRAY(m_Item);
-}
-
-void cMap::PutUnit(int x_pos, int y_pos, unsigned int unit_id)
-{
-}
-
-aqua::CVector2 cMap::GetStartPoint()
-{
-	return m_StartPos;
-}
-
-aqua::CVector2 cMap::GetStairPos()
-{
-	return m_StairPos;
-}
-
-cMap::TILE_ID cMap::GetTile(int x_pos, int y_pos)
-{
-	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
-		return TILE_ID::WALL;
-	return m_Tile[x_pos][y_pos];
-}
-
-bool cMap::IsWalkableTile(int x_pos, int y_pos)
-{
-	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
-		return false;
-	return m_Tile[x_pos][y_pos] != TILE_ID::WALL;
-}
-
-bool cMap::IsBreakableTile(int x_pos, int y_pos)
-{
-	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
-		return false;
-	return m_Tile[x_pos][y_pos] == TILE_ID::WALL;
-}
-
-void cMap::FloorChange()
-{
-}
-
-bool cMap::HasData()
-{
-	return m_HasData;
-}
-
-void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
-{
-	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
-		return;
-	m_Tile[x_pos][y_pos] = tile;
-}

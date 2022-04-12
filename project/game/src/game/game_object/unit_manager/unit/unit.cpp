@@ -1,6 +1,7 @@
 #include "unit.h"
 #include "../unit_manager.h"
 #include "file_name.h"
+#include "game/game_object/camera/camera.h"
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -33,6 +34,7 @@ void IUnit::Initialize()
 	m_SoundManager = aqua::FindGameObject("SoundManager");
 	m_TextManager = aqua::FindGameObject("TextManager");
 	m_UIManager = aqua::FindGameObject("UIManager");
+	m_CamObj = aqua::FindGameObject("Camera");
 	m_UnitManager = GetParent();
 }
 
@@ -56,14 +58,12 @@ void IUnit::Create(std::string file_name)
 
 aqua::CVector2 IUnit::GetPosition()
 {
-	return m_Position;
+	return m_OnMapPos;
 }
 
 void IUnit::SetPosition(aqua::CVector2 pos)
 {
-	m_Position = pos;
-
-	m_Sprite.position = m_Position;
+	m_OnMapPos = pos;
 }
 
 void IUnit::GetMap(cMap* map)

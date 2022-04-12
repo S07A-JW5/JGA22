@@ -1,7 +1,6 @@
 #pragma once
 #include "aqua.h"
-#include "game/game_object/camera/camera.h"
-#include "game/game_object/scene_manager/scene/game_main/map_generator/map_generator.h"
+#include "game/game_object/scene_manager/scene/game_main/map_generator/map/map.h"
 
 class IUnit : public aqua::IGameObject
 {
@@ -88,5 +87,5 @@ protected:
 	std::vector<int16_t> m_Util;	//‘•”õ‚µ‚Ä‚¢‚é‘•”õ•i
 
 	cMap* m_MapObj;
-	cCamera* m_CamObj;
+	IGameObject* m_CamObj;
 };
