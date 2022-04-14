@@ -15,38 +15,40 @@ void cPlayer::Initialize()
 {
 	IUnit::Initialize();
 	m_Sprite.Create("data\\texture\\chr\\player.png");
+	m_Sprite.position.x = cCamera::m_draw_width / 2 - cMap::m_tile_size / 2;
+	m_Sprite.position.y = cCamera::m_draw_height / 2 - cMap::m_tile_size / 2;
 	//m_Sight.Create("data\\texture\\sight.png");
 }
 
 void cPlayer::Update()
 {
+	m_DesiredAction = ACTION::DUMMY;
+
 	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
 	{
-		if (m_MapObj->IsWalkableTile(m_OnMapPos.x, m_OnMapPos.y - 1))
-			m_OnMapPos.y -= 1;
+		m_DesiredAction = ACTION::MOVE;
+		m_MoveTo = DIRECTION::NORTH;
 	}
 	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A))
 	{
-		if (m_MapObj->IsWalkableTile(m_OnMapPos.x - 1, m_OnMapPos.y))
-			m_OnMapPos.x -= 1;
+		m_DesiredAction = ACTION::MOVE;
+		m_MoveTo = DIRECTION::WEST;
 	}
 	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S))
 	{
-		if (m_MapObj->IsWalkableTile(m_OnMapPos.x, m_OnMapPos.y + 1))
-			m_OnMapPos.y += 1;
+		m_DesiredAction = ACTION::MOVE;
+		m_MoveTo = DIRECTION::SOUTH;
 	}
 	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D))
 	{
-		if (m_MapObj->IsWalkableTile(m_OnMapPos.x + 1, m_OnMapPos.y))
-			m_OnMapPos.x += 1;
-	}
-	if (m_OnMapPos == m_StairPos)
-	{
-		CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
-		UnitMgr->MapGeneration();
+		m_DesiredAction = ACTION::MOVE;
+		m_MoveTo = DIRECTION::EAST;
 	}
 
-	cCamera* Camera = (cCamera*)m_CamObj;
+	if (m_DesiredAction != ACTION::DUMMY)
+		Action();
+
+	cCamera* Camera = (cCamera*)m_Camera;
 
 	m_Position.x = m_OnMapPos.x * cMap::m_tile_size;
 	m_Position.y = m_OnMapPos.y * cMap::m_tile_size;
@@ -70,4 +72,48 @@ void cPlayer::Finalize()
 void cPlayer::SetStairPosition(aqua::CVector2 pos)
 {
 	m_StairPos = pos;
+}
+
+bool cPlayer::Action()
+{
+	if (m_DidAction) return true;
+
+	switch (m_DesiredAction)
+	{
+	case IUnit::ACTION::WAIT:
+		return Wait();
+		break;
+	case IUnit::ACTION::MOVE:
+		return Move();
+		break;
+	case IUnit::ACTION::ATTACK:
+		return Attack();
+		break;
+	}
+	return false;
+}
+
+bool cPlayer::Wait()
+{
+	return false;
+}
+
+bool cPlayer::Move()
+{
+	bool Moved = IUnit::Move();
+	if (Moved)
+	{
+		if (m_OnMapPos == m_StairPos)
+		{
+			m_Life = m_MaxLife;
+			CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+			UnitMgr->MapGeneration();
+		}
+	}
+	return Moved;
+}
+
+bool cPlayer::Attack()
+{
+	return false;
 }

@@ -23,7 +23,7 @@ CTextManager::CTextManager(aqua::IGameObject* parent)
 
 void CTextManager::Initialize()
 {
-	m_Text = new aqua::CLabel[m_rows];
+	m_Text = AQUA_NEW aqua::CLabel[m_rows];
 
 	m_UIManager = aqua::FindGameObject("UIManager");
 
@@ -64,8 +64,8 @@ void CTextManager::Update()
 				m_Timer = 0;
 				bool NewLine = false;
 				std::string Char = m_String.substr(m_TextIndex, 1);
-				if ((Char[0] >= (signed char)0x80 && Char[0] <= (signed char)0x9F) ||
-					(Char[0] >= (signed char)0xE0 && Char[0] <= (signed char)0xFF))
+				if ((Char[0] >= (char)0x80 && Char[0] <= (char)0x9F) ||
+					(Char[0] >= (char)0xE0 && Char[0] <= (char)0xFF))
 				{
 					Char += m_String.substr(++m_TextIndex, 1);
 				}
@@ -117,6 +117,7 @@ void CTextManager::Finalize()
 {
 	for (int i = 0; i < m_rows; i++)
 		m_Text[i].Delete();
+	AQUA_SAFE_DELETE_ARRAY(m_Text);
 
 	m_Window = nullptr;
 	IGameObject::Finalize();

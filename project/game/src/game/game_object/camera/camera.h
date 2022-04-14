@@ -4,6 +4,9 @@
 class cCamera : public aqua::IGameObject
 {
 public:
+	static const int m_draw_width;
+	static const int m_draw_height;
+
 	cCamera(aqua::IGameObject* parent);
 
 	~cCamera() = default;

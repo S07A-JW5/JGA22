@@ -54,6 +54,7 @@ private:
 		DIRECTION   Direction;
 		bool Used;
 		bool RootIsCorridor;
+		bool CorridorIsHorizontal;
 	};
 
 	void SetMapGenParam(int width = 40, int height = 30,

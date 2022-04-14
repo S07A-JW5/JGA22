@@ -25,6 +25,8 @@ public:
 
 	void ClearUI();
 
+	void SetUIBGVisible(bool visible);
+
 	cSelection* CreateSelection(std::vector<int> number, std::vector<std::string> name, std::vector<std::string> desc, aqua::CVector2 pos);
 
 	cButton* CreateButton(cButton::ButtonFunc button_function, const aqua::CVector2& pos,
@@ -48,4 +50,7 @@ public:
 	cAmountPopUp* CreateAmountPopUp(const aqua::CVector2& pos, const int& amount, cAmountPopUp::POP_UP_TYPE type, bool miss = false);
 
 private:
+	static const aqua::CVector2 m_ui_bg_pos;//Å´ÇÃï\é¶à íu
+
+	aqua::CSprite m_UIBackground;	//UIÇÃîwåi
 };

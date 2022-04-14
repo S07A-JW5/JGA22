@@ -7,9 +7,11 @@
 // コンストラクタ
 CUnitManager::CUnitManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "UnitManager")
+	, m_TextManager(nullptr)
 	, m_Player(nullptr)
 	, m_MapGenerator(nullptr)
 	, m_MapGenerated(false)
+	, m_PlayerPos(aqua::CVector2::ZERO)
 {
 }
 
@@ -17,7 +19,6 @@ void CUnitManager::Initialize(void)
 {
 	CGameMainScene* Gamemain = (CGameMainScene*)GetParent();
 	m_MapGenerator = Gamemain->GetMapGenerator();
-	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
 
 	m_TextManager = aqua::FindGameObject("TextManager");
 	m_Player = aqua::CreateGameObject<cPlayer>(this);
@@ -55,9 +56,23 @@ void CUnitManager::MapGeneration()
 {
 	m_MapGenerated = false;
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
-	MapGen->GenerateMap();
+	MapGen->GenerateMap(60, 60, 5, 10, 9999, 8, 12, 60);
 	cMap* Map = MapGen->GetMap();
 	m_Player->GetMap(Map);
 	m_Player->SetPosition(Map->GetStartPoint());
 	m_Player->SetStairPosition(Map->GetStairPos());
+}
+
+bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
+{
+	if (!m_Player)
+		return false;
+
+	aqua::CVector2 Vector2 = m_PlayerPos - pos;
+	return Vector2.Normalize().Length() <= 1;
+}
+
+void CUnitManager::SetPlayerPos(aqua::CVector2 pos)
+{
+	m_PlayerPos = pos;
 }

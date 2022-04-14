@@ -4,7 +4,7 @@
 class cMap : public aqua::IGameObject
 {
 public:
-	static const int m_tile_size = 32;
+	static const int m_tile_size = 16;
 
 	enum class TILE_ID
 	{

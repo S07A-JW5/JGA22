@@ -106,7 +106,6 @@ void cSelection::Update()
 		}
 		if (m_ButtonList[i]->MouseOvered())
 		{
-			cText* Description = (cText*)m_DescObj;
 			Description->SetText(m_DescText[i]);
 		}
 	}

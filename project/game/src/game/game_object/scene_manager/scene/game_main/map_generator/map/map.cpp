@@ -38,16 +38,16 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata,
 	m_Width = width;
 	m_Height = height;
 
-	m_Tile = new TILE_ID * [m_Width];
-	for (int i = 0; i < width; i++)
-		m_Tile[i] = new TILE_ID[m_Height];
+	m_Tile = AQUA_NEW TILE_ID * [m_Width];
+	for (int i = 0; i < m_Width; i++)
+		m_Tile[i] = AQUA_NEW TILE_ID[m_Height];
 
-	m_Item = new DroppedItem * [m_Width];
-	for (int i = 0; i < width; i++)
-		m_Item[i] = new DroppedItem[m_Height];
+	m_Item = AQUA_NEW DroppedItem * [m_Width];
+	for (int i = 0; i < m_Width; i++)
+		m_Item[i] = AQUA_NEW DroppedItem[m_Height];
 
-	for (int i = 0; i < width; i++)
-		for (int j = 0; j < height; j++)
+	for (int i = 0; i < m_Width; i++)
+		for (int j = 0; j < m_Height; j++)
 		{
 			switch ((cMapGenerator::TILE_TYPE)mapdata[i][j])
 			{
@@ -81,10 +81,10 @@ void cMap::Update()
 
 	cCamera* Camera = (cCamera*)m_Camera;
 	aqua::CVector2 DrawBasePos = Camera->GetDrawBasePos();
-	m_DrawArea.left = DrawBasePos.x / m_tile_size-1;
-	m_DrawArea.top = DrawBasePos.y / m_tile_size-1;
-	m_DrawArea.right = m_DrawArea.left + aqua::GetWindowWidth() / m_tile_size + 1;
-	m_DrawArea.bottom = m_DrawArea.top + aqua::GetWindowHeight() / m_tile_size + 1;
+	m_DrawArea.left = DrawBasePos.x / m_tile_size - 1;
+	m_DrawArea.top = DrawBasePos.y / m_tile_size - 1;
+	m_DrawArea.right = m_DrawArea.left + cCamera::m_draw_width / m_tile_size + 1;
+	m_DrawArea.bottom = m_DrawArea.top + cCamera::m_draw_height / m_tile_size + 1;
 	m_TileDrawPos.x = m_DrawArea.left * m_tile_size - DrawBasePos.x;
 	m_TileDrawPos.y = m_DrawArea.top * m_tile_size - DrawBasePos.y;
 }
@@ -135,7 +135,11 @@ void cMap::Finalize()
 	m_WallSprite.Delete();
 	m_TileSprite.Delete();
 	m_StairSprite.Delete();
+	for (int i = 0; i < m_Width; i++)
+		AQUA_SAFE_DELETE_ARRAY(m_Tile[i]);
 	AQUA_SAFE_DELETE_ARRAY(m_Tile);
+	for (int i = 0; i < m_Width; i++)
+		AQUA_SAFE_DELETE_ARRAY(m_Item[i]);
 	AQUA_SAFE_DELETE_ARRAY(m_Item);
 }
 

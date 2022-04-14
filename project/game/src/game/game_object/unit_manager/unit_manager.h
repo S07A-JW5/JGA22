@@ -26,10 +26,15 @@ public:
 
 	void MapGeneration();
 
+	bool IsPlayerNearBy(aqua::CVector2 pos);
+
+	void SetPlayerPos(aqua::CVector2 pos);
+
 private:
 	aqua::IGameObject* m_TextManager;
 	cPlayer* m_Player;
-	//std::vector<cBot*> m_NPCs;
+	std::vector<cBot*> m_NPCs;
 	aqua::IGameObject* m_MapGenerator;
 	bool m_MapGenerated;
+	aqua::CVector2 m_PlayerPos;
 };

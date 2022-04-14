@@ -23,7 +23,7 @@ void cText::Initialize(const aqua::CVector2& pos, const std::string& text, const
 	m_Anchor = anchor;
 	m_FontSize = font_size;
 
-	m_Text = new aqua::CLabel[m_Rows];
+	m_Text = AQUA_NEW aqua::CLabel[m_Rows];
 
 	int Height = m_Rows * m_FontSize;
 	int Width = 0;
@@ -189,7 +189,7 @@ void cText::SetText(std::string text)
 	m_String = text;
 	std::vector<std::string> Text = SeparateText();
 
-	m_Text = new aqua::CLabel[m_Rows];
+	m_Text = AQUA_NEW aqua::CLabel[m_Rows];
 
 	int Height = m_Rows * m_FontSize;
 	int Width = 0;

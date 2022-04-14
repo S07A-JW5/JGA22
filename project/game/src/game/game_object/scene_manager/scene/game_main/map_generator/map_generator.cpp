@@ -28,9 +28,9 @@ void cMapGenerator::Update()
 void cMapGenerator::Draw()
 {
 	if (m_MapObj) m_MapObj->Draw();
-	if (m_Generating)
-		for (int i = 0; i < 80; i++)
-			for (int j = 0; j < 45; j++)
+	//if (m_Generating)
+		for (int i = 0; i < 60; i++)
+			for (int j = 0; j < 60; j++)
 				m_Tile[i][j].Draw();
 }
 
@@ -40,6 +40,8 @@ void cMapGenerator::Finalize()
 		m_MapObj->Finalize();
 	m_Room.clear();
 	m_BranchPoint.clear();
+	for (int i = 0; i < m_Width; i++)
+		AQUA_SAFE_DELETE_ARRAY(m_Map[i]);
 	AQUA_SAFE_DELETE_ARRAY(m_Map);
 }
 
@@ -84,9 +86,9 @@ void cMapGenerator::SetMapGenParam(int width, int height,
 	m_MaxCorridorLen = max_corr_len;
 	m_MaxCorridorCount = max_corr_cnt;
 
-	m_Map = new std::uint8_t * [m_Width];
+	m_Map = AQUA_NEW std::uint8_t * [m_Width];
 	for (int i = 0; i < m_Width; i++)
-		m_Map[i] = new std::uint8_t[m_Height];
+		m_Map[i] = AQUA_NEW std::uint8_t[m_Height];
 
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
@@ -183,7 +185,7 @@ void cMapGenerator::Generate(bool step)
 				m_Tile[i][j].color = 0xff007fff;
 				break;
 			default:
-				m_Tile[i][j].color = 0xff000000;
+				m_Tile[i][j].color = 0x00010101;
 				break;
 			}
 		}
@@ -279,7 +281,8 @@ bool cMapGenerator::CreateRoom(bool first)
 		BranchP = m_BranchPoint[m_CurrentBranchP];
 		if (BranchP.Used)
 			SEARCH_NEXT_BRANCH
-			++LoopCount;
+
+		++LoopCount;
 
 		aqua::CPoint Point = aqua::CPoint(BranchP.Rect.left, BranchP.Rect.top);
 		if (BranchP.Direction == DIRECTION::NORTH ||
@@ -333,7 +336,15 @@ bool cMapGenerator::CreateRoom(bool first)
 				bool Crossed = rand() % 3;
 			int Length = aqua::Rand(m_MinCorridorLen, m_MaxCorridorLen);
 
-			if (Crossed)
+			if (BranchP.RootIsCorridor)
+			{
+				bool IsHorizontal =
+					(BranchP.Direction == cMapGenerator::WEST) |
+					(BranchP.Direction == cMapGenerator::EAST);
+				Crossed = BranchP.CorridorIsHorizontal ^ IsHorizontal;
+			}
+
+			if (Crossed && !BranchP.RootIsCorridor)
 			{
 				bool LeftTurn = rand() % 2;
 				if (LeftTurn)
@@ -409,7 +420,7 @@ bool cMapGenerator::CreateRoom(bool first)
 							m_Map[i][j] = TILE_TYPE::WALL;
 					}
 				m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::GATE;
-				if (BranchP.RootIsCorridor)
+				if (BranchP.RootIsCorridor && !Crossed)
 					m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::CORRIDOR;
 				m_BranchPoint[m_CurrentBranchP].Used = true;
 				DIRECTION BranchRootDir = BranchP.Direction; {
@@ -428,6 +439,10 @@ bool cMapGenerator::CreateRoom(bool first)
 						BranchRootDir = WEST;
 						break;
 					}}
+				here //—vC³
+				BranchP.CorridorIsHorizontal =
+					(BranchP.Direction == cMapGenerator::WEST) |
+					(BranchP.Direction == cMapGenerator::EAST);
 				for (int i = 0; i < DIRECTION::COUNT; i++)
 				{
 					if (i == BranchRootDir)continue;
@@ -451,7 +466,7 @@ bool cMapGenerator::CreateRoom(bool first)
 					}
 					BranchP.Rect = Temp;
 					BranchP.Used = false;
-					BranchP.RootIsCorridor = true;
+					BranchP.RootIsCorridor = true; 
 					m_BranchPoint.push_back(BranchP);
 				}
 				m_CorridorCount++;

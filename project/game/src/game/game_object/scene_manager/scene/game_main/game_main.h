@@ -1,7 +1,6 @@
 #pragma once
-#include"aqua.h"
-#include"..\scene.h"
-#include"../../../unit_manager/unit_manager.h"
+#include "aqua.h"
+#include "..\scene.h"
 #include "map_generator/map_generator.h"
 
 class CGameMainScene
@@ -23,6 +22,8 @@ public:
 
 	// ï`âÊ
 	void Draw(void);
+
+	//void Finalize() override;
 
 	cMapGenerator* GetMapGenerator();
 private:
@@ -46,6 +47,8 @@ private:
 
 	STATE  m_State;		//! èÛë‘ID
 
-	CUnitManager* m_UnitMgr;
+	IGameObject* m_UIMgr;
+	IGameObject* m_UnitMgr;
 	cMapGenerator* m_MapGen;
+	aqua::CBoxPrimitive m_Black;
 };

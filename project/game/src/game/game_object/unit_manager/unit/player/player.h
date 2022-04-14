@@ -20,7 +20,15 @@ public:
 
 	void SetStairPosition(aqua::CVector2 pos);
 
+	bool Action() override;
+
 private:
+	bool Wait() override;
+
+	bool Move() override;
+
+	bool Attack() override;
+
 	aqua::CSprite m_Sight;
 	aqua::CVector2 m_StairPos;
 };

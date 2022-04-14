@@ -30,7 +30,7 @@ void cAmountPopUp::Initialize(const aqua::CVector2& pos, const int& amount, POP_
 		}
 
 	m_TimerPhase = m_Digit - 1;
-	m_AmountSprite = new aqua::CSprite[m_Digit];
+	m_AmountSprite = AQUA_NEW aqua::CSprite[m_Digit];
 
 	for (int i = 0, Amount = amount; i < m_Digit; i++, Amount /= 10)
 	{

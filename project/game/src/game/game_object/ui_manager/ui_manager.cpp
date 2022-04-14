@@ -1,5 +1,7 @@
 #include "ui_manager.h"
 
+const aqua::CVector2 cUIManager::m_ui_bg_pos = aqua::CVector2(720, 0);
+
 cUIManager::cUIManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent,"UIManager")
 {
@@ -7,6 +9,9 @@ cUIManager::cUIManager(aqua::IGameObject* parent)
 
 void cUIManager::Initialize()
 {
+	m_UIBackground.Create("data\\texture\\ui\\ui_base.png");
+	m_UIBackground.position = m_ui_bg_pos;
+	m_UIBackground.visible = true;
 	IGameObject::Initialize();
 }
 
@@ -17,11 +22,13 @@ void cUIManager::Update()
 
 void cUIManager::Draw()
 {
+	m_UIBackground.Draw();
 	IGameObject::Draw();
 }
 
 void cUIManager::Finalize()
 {
+	m_UIBackground.Delete();
 	IGameObject::Finalize();
 }
 
@@ -31,6 +38,11 @@ void cUIManager::ClearUI()
 
 	for (auto it : m_ChildObjectList)
 		it->DeleteObject();
+}
+
+void cUIManager::SetUIBGVisible(bool visible)
+{
+	m_UIBackground.visible = visible;
 }
 
 cSelection* cUIManager::CreateSelection(std::vector<int> number, std::vector<std::string> name, std::vector<std::string> desc, aqua::CVector2 pos)

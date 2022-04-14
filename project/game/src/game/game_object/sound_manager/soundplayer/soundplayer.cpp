@@ -28,7 +28,7 @@ void cSEPlayer::Finalize()
 
 void cSEPlayer::Load(const aqua::CSound& sound)
 {
-    m_SoundPlayer = new aqua::CSoundPlayer;
+    m_SoundPlayer = AQUA_NEW aqua::CSoundPlayer;
     if (m_SoundPlayer)
     {
         m_SoundPlayer->Create(sound);

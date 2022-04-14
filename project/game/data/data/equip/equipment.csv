@@ -1,0 +1,6 @@
+ID,Name,Description,Type,Durability,AttatchParts,Weight,Energy,Heat,Range,DmgType,MinDamage,MaxDamage,Ammo,KIResist%,THResist%,ELResist%,Protection,Support,BaseHeat,InvCapacity,BattCapacity,AmmoCapacity,PartsCapacity
+0,None,âΩÇ‡ëïîıÇµÇƒÇ¢Ç»Ç¢ÅB,Dummy,0,0,0,0,0,0,Dummy,0,0,0,0,0,0,0,0,0,0,0,0,0
+1,Arm,,Weapon,30,1,1,1,1,0,Kinetic,1,10,0,0,0,0,0,0,0,0,0,0,0
+2,ArmorPlating,,Armor,80,2,1,1,1,0,Dummy,0,0,0,0,0,0,20,0,0,0,0,0,0
+3,Leg,,Transp,30,1,0,1,1,0,Dummy,0,0,0,0,0,0,0,10,0,0,0,0,0
+4,DevUtil,,Util,30,0,1,1,1,0,Dummy,0,0,0,0,0,0,0,0,-100,15,1000,1000,1000

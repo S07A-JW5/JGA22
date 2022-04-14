@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\game_object\camera\camera.cpp" />
+    <ClCompile Include="src\game\game_object\database\equip_db\equip_db.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\effect.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect_manager.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\game_main.cpp" />
