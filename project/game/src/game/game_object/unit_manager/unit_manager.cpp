@@ -23,9 +23,9 @@ void CUnitManager::Initialize(void)
 	m_TextManager = aqua::FindGameObject("TextManager");
 	m_Player = aqua::CreateGameObject<cPlayer>(this);
 
-	MapGeneration();
-
 	IGameObject::Initialize();
+
+	MapGeneration();
 }
 
 void CUnitManager::Update(void)
@@ -56,11 +56,14 @@ void CUnitManager::MapGeneration()
 {
 	m_MapGenerated = false;
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
-	MapGen->GenerateMap(60, 60, 5, 10, 9999, 8, 12, 60);
+	MapGen->GenerateMap(40, 40, 5, 8, 10, 5, 8, 10);
 	cMap* Map = MapGen->GetMap();
 	m_Player->GetMap(Map);
 	m_Player->SetPosition(Map->GetStartPoint());
+	m_Player->CameraUpdate();
 	m_Player->SetStairPosition(Map->GetStairPos());
+	Map->Update();
+	Map->SetMapped(m_Player->GetPosition(), 16);
 }
 
 bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)

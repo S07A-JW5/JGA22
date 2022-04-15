@@ -14,6 +14,8 @@ public:
 
 	void Update() override;
 
+	void CameraUpdate();
+
 	void Draw() override;
 
 	void Finalize() override;

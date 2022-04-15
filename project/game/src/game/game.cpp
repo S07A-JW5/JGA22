@@ -13,7 +13,7 @@
 #include"game_object/game_object.h"
 
 
-const unsigned int CGame::m_clear_color = 0xff808080;
+const unsigned int CGame::m_clear_color = 0xff010101;
 
 /*
  *  コンストラクタ
@@ -31,11 +31,11 @@ void
 CGame::
 Initialize(void)
 {
+    aqua::CreateGameObject<cCamera>(this);
     aqua::CreateGameObject<cSoundManager>(this);
     aqua::CreateGameObject<CSceneManager>(this); 
     aqua::CreateGameObject<cUIManager>(this);
     aqua::CreateGameObject<CTextManager>(this);
-    aqua::CreateGameObject<cCamera>(this);
     IGameObject::Initialize();
 }
 

@@ -15,6 +15,12 @@ public:
 		STAIR,
 	};
 
+	struct TILE
+	{
+		TILE_ID TileID;
+		bool Visible;
+	};
+
 	struct DroppedItem
 	{
 		unsigned int ItemID;
@@ -48,9 +54,10 @@ public:
 	bool IsWalkableTile(int x_pos, int y_pos);
 	bool IsBreakableTile(int x_pos, int y_pos);
 
-	bool HasData();
+	void SetMapped(aqua::CVector2 pos, int radius);
+	void SetMappedFloatRadius(aqua::CVector2 pos, float radius);
 
-	void FloorChange();
+	bool HasData();
 
 	void SetTile(int x_pos, int y_pos, TILE_ID tile);
 
@@ -58,7 +65,7 @@ private:
 	bool m_HasData;
 	std::uint8_t	m_Width;		//マップの横サイズ
 	std::uint8_t	m_Height;		//マップの縦サイズ
-	TILE_ID** m_Tile;		//マップタイル配列
+	TILE** m_Tile;		//マップタイル配列
 	DroppedItem** m_Item;		//アイテム配列
 	aqua::CVector2 m_StartPos;	//開始地点
 	aqua::CVector2 m_StairPos;	//階段の位置

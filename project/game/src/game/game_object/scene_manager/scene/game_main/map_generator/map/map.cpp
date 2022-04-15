@@ -38,9 +38,9 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata,
 	m_Width = width;
 	m_Height = height;
 
-	m_Tile = AQUA_NEW TILE_ID * [m_Width];
+	m_Tile = AQUA_NEW TILE * [m_Width];
 	for (int i = 0; i < m_Width; i++)
-		m_Tile[i] = AQUA_NEW TILE_ID[m_Height];
+		m_Tile[i] = AQUA_NEW TILE[m_Height];
 
 	m_Item = AQUA_NEW DroppedItem * [m_Width];
 	for (int i = 0; i < m_Width; i++)
@@ -53,23 +53,24 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata,
 			{
 			case cMapGenerator::TILE_TYPE::ROOM:
 			case cMapGenerator::TILE_TYPE::START:
-				m_Tile[i][j] = TILE_ID::ROOM;
+				m_Tile[i][j].TileID = TILE_ID::ROOM;
 				break;
 			case cMapGenerator::TILE_TYPE::GATE:
-				m_Tile[i][j] = TILE_ID::GATE;
+				m_Tile[i][j].TileID = TILE_ID::GATE;
 				break;
 			case cMapGenerator::TILE_TYPE::CORRIDOR:
-				m_Tile[i][j] = TILE_ID::CORRIDOR;
+				m_Tile[i][j].TileID = TILE_ID::CORRIDOR;
 				break;
 			case cMapGenerator::TILE_TYPE::STAIR:
-				m_Tile[i][j] = TILE_ID::STAIR;
+				m_Tile[i][j].TileID = TILE_ID::STAIR;
 				break;
 			default:
-				m_Tile[i][j] = TILE_ID::WALL;
+				m_Tile[i][j].TileID = TILE_ID::WALL;
 				break;
 			}
 			m_Item[i][j].ItemID = 0;
 			m_Item[i][j].Num = 0;
+			m_Tile[i][j].Visible = false;
 		}
 	m_StartPos = start;
 	m_StairPos = stair;
@@ -98,18 +99,14 @@ void cMap::Draw()
 	for (int i = m_DrawArea.left; i <= m_DrawArea.right; i++)
 		for (int j = m_DrawArea.top; j <= m_DrawArea.bottom; j++)
 		{
+			if (i < 0 || i >= m_Width || j < 0 || j >= m_Height) continue;
+			if(!m_Tile[i][j].Visible) continue;
+
 			DrawPos = m_TileDrawPos;
 			DrawPos.x += m_tile_size * (i - m_DrawArea.left);
 			DrawPos.y += m_tile_size * (j - m_DrawArea.top);
 
-			if (i < 0 || i >= m_Width || j < 0 || j >= m_Height)
-			{
-				m_WallSprite.position = DrawPos;
-				m_WallSprite.Draw();
-				continue;
-			}
-
-			switch (m_Tile[i][j])
+			switch (m_Tile[i][j].TileID)
 			{
 			case cMap::TILE_ID::WALL:
 				m_WallSprite.position = DrawPos;
@@ -182,25 +179,68 @@ cMap::TILE_ID cMap::GetTile(int x_pos, int y_pos)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return TILE_ID::WALL;
-	return m_Tile[x_pos][y_pos];
+	return m_Tile[x_pos][y_pos].TileID;
 }
 
 bool cMap::IsWalkableTile(int x_pos, int y_pos)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return false;
-	return m_Tile[x_pos][y_pos] != TILE_ID::WALL;
+	return m_Tile[x_pos][y_pos].TileID != TILE_ID::WALL;
 }
 
 bool cMap::IsBreakableTile(int x_pos, int y_pos)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return false;
-	return m_Tile[x_pos][y_pos] == TILE_ID::WALL;
+	return m_Tile[x_pos][y_pos].TileID == TILE_ID::WALL;
 }
 
-void cMap::FloorChange()
+void cMap::SetMapped(aqua::CVector2 pos, int radius)
 {
+	SetMappedFloatRadius(pos, radius + 0.5f);
+}
+
+void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
+{
+	aqua::CRect Rect = aqua::CRect::ZERO;
+	aqua::CVector2 Diff = aqua::CVector2::ZERO;
+	Rect.left = pos.x - radius;
+	Rect.right = pos.x + radius;
+	Rect.top = pos.y - radius;
+	Rect.bottom = pos.y + radius;
+	bool NorthInvis = false;
+	bool SouthInvis = false;
+	bool WestInvis = false;
+	bool EastInvis = false;
+	for (int i = Rect.left; i < Rect.right; i++)
+		for (int j = Rect.top; j <= Rect.bottom; j++)
+		{
+			if (i < 0 || i >= m_Width || j < 0 || j >= m_Height) continue;
+			if (m_Tile[i][j].Visible) continue;
+
+			Diff = aqua::CVector2(i, j) - pos;
+			if (Diff.Length() > radius) continue;
+
+			m_Tile[i][j].Visible = true;
+			continue;
+
+			if (Diff.Length() > 1.42f)
+			{
+				here //ここから
+
+
+			}
+			bool Horizontal = false;
+			if (abs(Diff.x) > abs(Diff.y))
+			{
+
+			}
+			else
+			{
+
+			}
+		}
 }
 
 bool cMap::HasData()
@@ -212,5 +252,5 @@ void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return;
-	m_Tile[x_pos][y_pos] = tile;
+	m_Tile[x_pos][y_pos].TileID = tile;
 }

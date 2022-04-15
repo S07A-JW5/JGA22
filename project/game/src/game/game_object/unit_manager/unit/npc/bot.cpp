@@ -9,3 +9,18 @@ cBot::cBot(aqua::IGameObject* parent)
 	: IUnit(parent, "Player")
 {
 }
+
+bool cBot::Action()
+{
+	return false;
+}
+
+bool cBot::Wait()
+{
+	return false;
+}
+
+bool cBot::Attack()
+{
+	return false;
+}

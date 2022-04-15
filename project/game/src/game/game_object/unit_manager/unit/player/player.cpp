@@ -48,6 +48,11 @@ void cPlayer::Update()
 	if (m_DesiredAction != ACTION::DUMMY)
 		Action();
 
+	CameraUpdate();
+}
+
+void cPlayer::CameraUpdate()
+{
 	cCamera* Camera = (cCamera*)m_Camera;
 
 	m_Position.x = m_OnMapPos.x * cMap::m_tile_size;
@@ -90,6 +95,7 @@ bool cPlayer::Action()
 		return Attack();
 		break;
 	}
+
 	return false;
 }
 
@@ -103,6 +109,7 @@ bool cPlayer::Move()
 	bool Moved = IUnit::Move();
 	if (Moved)
 	{
+		m_MapObj->SetMapped(m_OnMapPos, 8);
 		if (m_OnMapPos == m_StairPos)
 		{
 			m_Life = m_MaxLife;

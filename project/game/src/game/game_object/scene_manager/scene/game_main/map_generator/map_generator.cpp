@@ -28,10 +28,12 @@ void cMapGenerator::Update()
 void cMapGenerator::Draw()
 {
 	if (m_MapObj) m_MapObj->Draw();
-	//if (m_Generating)
+	/*
+	if (m_Generating)
 		for (int i = 0; i < 60; i++)
 			for (int j = 0; j < 60; j++)
 				m_Tile[i][j].Draw();
+				*/
 }
 
 void cMapGenerator::Finalize()
@@ -333,20 +335,12 @@ bool cMapGenerator::CreateRoom(bool first)
 			if (m_CorridorCount >= m_MaxCorridorCount)
 				SEARCH_NEXT_BRANCH
 
-				bool Crossed = rand() % 3;
+			bool Crossed = rand() % 3;
 			int Length = aqua::Rand(m_MinCorridorLen, m_MaxCorridorLen);
-
-			if (BranchP.RootIsCorridor)
-			{
-				bool IsHorizontal =
-					(BranchP.Direction == cMapGenerator::WEST) |
-					(BranchP.Direction == cMapGenerator::EAST);
-				Crossed = BranchP.CorridorIsHorizontal ^ IsHorizontal;
-			}
-
 			if (Crossed && !BranchP.RootIsCorridor)
 			{
 				bool LeftTurn = rand() % 2;
+
 				if (LeftTurn)
 				{
 					switch (BranchP.Direction)
@@ -385,6 +379,7 @@ bool cMapGenerator::CreateRoom(bool first)
 				}
 			}
 			else
+			{
 				switch (BranchP.Direction)
 				{
 				case cMapGenerator::NORTH:
@@ -400,6 +395,7 @@ bool cMapGenerator::CreateRoom(bool first)
 					RoomRect.right += Length - 1;
 					break;
 				}
+			}
 
 			if ((RoomRect.left < 1) || (RoomRect.left >= m_Width - 1) ||
 				(RoomRect.right < 1) || (RoomRect.right >= m_Width - 1) ||
@@ -420,7 +416,7 @@ bool cMapGenerator::CreateRoom(bool first)
 							m_Map[i][j] = TILE_TYPE::WALL;
 					}
 				m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::GATE;
-				if (BranchP.RootIsCorridor && !Crossed)
+				if (BranchP.RootIsCorridor)
 					m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::CORRIDOR;
 				m_BranchPoint[m_CurrentBranchP].Used = true;
 				DIRECTION BranchRootDir = BranchP.Direction; {
@@ -439,10 +435,6 @@ bool cMapGenerator::CreateRoom(bool first)
 						BranchRootDir = WEST;
 						break;
 					}}
-				here //óvèCê≥
-				BranchP.CorridorIsHorizontal =
-					(BranchP.Direction == cMapGenerator::WEST) |
-					(BranchP.Direction == cMapGenerator::EAST);
 				for (int i = 0; i < DIRECTION::COUNT; i++)
 				{
 					if (i == BranchRootDir)continue;
