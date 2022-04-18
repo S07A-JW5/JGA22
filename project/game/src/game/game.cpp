@@ -31,10 +31,12 @@ void
 CGame::
 Initialize(void)
 {
+    aqua::CreateGameObject<cUnitDataBase>(this);
+    aqua::CreateGameObject<cEquipDataBase>(this);
     aqua::CreateGameObject<cCamera>(this);
     aqua::CreateGameObject<cSoundManager>(this);
-    aqua::CreateGameObject<CSceneManager>(this); 
     aqua::CreateGameObject<cUIManager>(this);
+    aqua::CreateGameObject<CSceneManager>(this); 
     aqua::CreateGameObject<CTextManager>(this);
     IGameObject::Initialize();
 }

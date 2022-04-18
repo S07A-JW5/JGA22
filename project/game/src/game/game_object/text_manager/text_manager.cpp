@@ -15,7 +15,7 @@ CTextManager::CTextManager(aqua::IGameObject* parent)
 	, m_TextIndex(0)
 	, m_Rows(0)
 	, m_Timer(0.0f)
-	, m_DisplayMode(DISPLAY_MODE::STANDARD)
+	, m_DisplayMode(DISPLAY_MODE::NO_WINDOW)
 	, m_Window(nullptr)
 	, m_UIManager(nullptr)
 {

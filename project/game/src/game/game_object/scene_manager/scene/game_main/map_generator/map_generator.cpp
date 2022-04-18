@@ -28,12 +28,12 @@ void cMapGenerator::Update()
 void cMapGenerator::Draw()
 {
 	if (m_MapObj) m_MapObj->Draw();
-	/*
-	if (m_Generating)
+	
+	if (aqua::mouse::Button(aqua::mouse::BUTTON_ID::RIGHT))
 		for (int i = 0; i < 60; i++)
 			for (int j = 0; j < 60; j++)
 				m_Tile[i][j].Draw();
-				*/
+				
 }
 
 void cMapGenerator::Finalize()

@@ -14,14 +14,31 @@ cPlayer::cPlayer(aqua::IGameObject* parent)
 void cPlayer::Initialize()
 {
 	IUnit::Initialize();
-	m_Sprite.Create("data\\texture\\chr\\player.png");
-	m_Sprite.position.x = cCamera::m_draw_width / 2 - cMap::m_tile_size / 2;
-	m_Sprite.position.y = cCamera::m_draw_height / 2 - cMap::m_tile_size / 2;
-	//m_Sight.Create("data\\texture\\sight.png");
+	m_Line.Setup(aqua::CVector2::ZERO, aqua::CVector2::ZERO, 0xc07fff00);
+	m_LifeText.Create(16);
+	m_LifeText.color = 0xffffffff;
+	m_BattText.Create(16);
+	m_BattText.color = 0xffffffff;
+	m_HeatText.Create(16);
+	m_HeatText.color = 0xffffffff;
+	m_LifeText.position.y = 10;
+	m_BattText.position.y = 30;
+	m_HeatText.position.y = 50;
+	m_LifeText.position.x = m_BattText.position.x = m_HeatText.position.x = 730;
 }
 
 void cPlayer::Update()
 {
+	m_LifeText.text = "Life: " + std::to_string(m_Life) + " / " + std::to_string(m_MaxLife);
+	m_HeatText.text = "Heat: " + std::to_string(m_Heat) + " (" + std::to_string(m_HeatFlow)+")";
+	m_BattText.text = "Batt: " + std::to_string(m_Batt) + " / " + std::to_string(m_MaxBatt) + " (" + std::to_string(m_EnergyFlow)+")";
+
+	m_Line.visible = aqua::mouse::Button(aqua::mouse::BUTTON_ID::LEFT);
+	m_Line.pointA = aqua::CVector2(cCamera::m_draw_width / 2, cCamera::m_draw_height / 2);
+	aqua::CPoint Point = aqua::mouse::GetCursorPos();
+	m_Line.pointB.x = Point.x;
+	m_Line.pointB.y = Point.y;
+
 	m_DesiredAction = ACTION::DUMMY;
 
 	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
@@ -46,9 +63,13 @@ void cPlayer::Update()
 	}
 
 	if (m_DesiredAction != ACTION::DUMMY)
-		Action();
+		if(Action())
+		{
+			m_Batt = max(min(m_Batt + m_EnergyFlow, m_MaxBatt), 0);
+			m_Heat = max(min(m_Heat + m_HeatFlow, 999), m_BaseHeat);
+		}
 
-	CameraUpdate();
+	CameraUpdate();	
 }
 
 void cPlayer::CameraUpdate()
@@ -66,12 +87,21 @@ void cPlayer::Draw()
 {
 	m_Sprite.Draw();
 	m_Sight.Draw();
+	m_Line.Draw();
+
+	m_LifeText.Draw();
+	m_BattText.Draw();
+	m_HeatText.Draw();
 }
 
 void cPlayer::Finalize()
 {
 	m_Sprite.Delete();
 	m_Sight.Delete();
+
+	m_LifeText.Delete();
+	m_BattText.Delete();
+	m_HeatText.Delete();
 }
 
 void cPlayer::SetStairPosition(aqua::CVector2 pos)
@@ -95,7 +125,6 @@ bool cPlayer::Action()
 		return Attack();
 		break;
 	}
-
 	return false;
 }
 

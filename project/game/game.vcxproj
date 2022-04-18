@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\game\game_object\camera\camera.cpp" />
+    <ClCompile Include="src\game\game_object\database\chr_db\chr_db.cpp" />
     <ClCompile Include="src\game\game_object\database\equip_db\equip_db.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\effect.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect_manager.cpp" />
@@ -135,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\game\game_object\camera\camera.h" />
+    <ClInclude Include="src\game\game_object\database\chr_db\chr_db.h" />
     <ClInclude Include="src\game\game_object\database\equip_db\equip_db.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\effect.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect_id.h" />

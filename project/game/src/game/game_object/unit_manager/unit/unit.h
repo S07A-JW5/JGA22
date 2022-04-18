@@ -33,7 +33,9 @@ public:
 
 	void Finalize() override;
 
-	void Create(std::string file_name);
+	void Create(int id);
+
+	void CalcStatus();
 
 	aqua::CVector2 GetPosition();
 
@@ -54,8 +56,6 @@ protected:
 
 	struct status
 	{
-		char		name[16];	//ƒLƒƒƒ‰–¼
-
 		std::uint16_t Life;		//Šî‘b‘Ï‹v—Í
 		std::uint16_t Cooling;		//Šî‘b—â‹p”\—Í
 		std::uint16_t Battery;		//Šî‘bÊŞ¯ÃØ°—e—Ê
@@ -76,10 +76,13 @@ protected:
 
 	virtual bool Attack();
 
+	void CalcBasicEquipmentStat(int id);
+
 	aqua::IGameObject* m_SoundManager;	//»³İÄŞÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_UnitManager;	//ÕÆ¯ÄÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_TextManager;	//Ã·½ÄÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_UIManager;		//UIÏÈ°¼Ş¬°‚ÌÎß²İÀ
+	aqua::IGameObject* m_EquipmentDB;	//‘•”õ•iDB‚ÌÎß²İÀ
 
 	status m_Status;
 
@@ -87,22 +90,25 @@ protected:
 	aqua::CVector2 m_Position;	//½Ìß×²Ä‚ÌˆÊ’u
 	aqua::CSprite m_Sprite;	//ƒLƒƒƒ‰ƒXƒvƒ‰ƒCƒg
 
-	std::uint16_t m_Life;		//Œ»İ‘Ï‹v—Í
-	std::uint16_t m_MaxLife;	//Å‘å‘Ï‹v—Í
-	std::uint16_t m_Cooling;	//—â‹p”\—Í
-	std::int16_t  m_Heat;		//”M
-	std::int16_t  m_BaseHeat;	//”M‰ºŒÀ’l
-	std::uint8_t  m_Inventory;	//²İÍŞİÄØ—e—Ê
-	std::uint16_t m_Weight;	//‘•”õd—Ê
-	std::uint16_t m_Support;	//‘•”õd—ÊãŒÀ(‚»‚¤‚Å‚à‚È‚¢‚¯‚Ç)
-	std::uint16_t m_Batt;		//ÊŞ¯ÃØ°c—Ê
-	std::uint16_t m_MaxBatt;	//ÊŞ¯ÃØ°—e—Ê
-	std::uint16_t m_Parts;		//Š•”•i
-	std::uint16_t m_MaxParts;	//•”•iŠãŒÀ
-	std::uint16_t m_Ammo;		//Š’e–ò
-	std::uint16_t m_MaxAmmo;	//’e–òŠãŒÀ
-	std::int16_t  m_Resist[3];	//‘Ï«’l(%)
-	std::int16_t  m_Protection;	//–hŒä—Í
+	std::string	m_Name;		//–¼‘O
+	std::uint16_t	m_Life;		//Œ»İ‘Ï‹v—Í
+	std::uint16_t	m_MaxLife;	//Å‘å‘Ï‹v—Í
+	std::int16_t	m_HeatFlow;	//”­”M|—â‹p‚Ì‘˜a
+	std::int16_t	m_Heat;		//”M
+	std::int16_t	m_BaseHeat;	//”M‰ºŒÀ’l
+	std::uint8_t	m_Inventory;	//²İÍŞİÄØ—e—Ê
+	std::uint16_t	m_Weight;		//‘•”õd—Ê
+	std::uint16_t	m_Support;	//‘•”õd—ÊãŒÀ(‚»‚¤‚Å‚à‚È‚¢‚¯‚Ç)
+	std::int16_t	m_EnergyFlow;	//“d—Í‚Ì—¬o“ü—Ê
+	std::uint16_t	m_Batt;		//ÊŞ¯ÃØ°c—Ê
+	std::uint16_t	m_MaxBatt;	//ÊŞ¯ÃØ°—e—Ê
+	std::uint16_t	m_Parts;		//Š•”•i
+	std::uint16_t	m_MaxParts;	//•”•iŠãŒÀ
+	std::uint16_t	m_Ammo;		//Š’e–ò
+	std::uint16_t	m_MaxAmmo;	//’e–òŠãŒÀ
+	std::int16_t	m_Resist[3];	//‘Ï«’l(%)
+	std::int16_t	m_Protection;	//–hŒä—Í
+	std::uint8_t	m_SightRange;	//‹ŠE”¼Œa
 
 	std::vector<uint16_t> m_Weapon;	//‘•”õ‚µ‚Ä‚¢‚é•Ší
 	std::vector<uint16_t> m_Armor;	//‘•”õ‚µ‚Ä‚¢‚é‘•b

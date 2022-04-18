@@ -33,4 +33,9 @@ private:
 
 	aqua::CSprite m_Sight;
 	aqua::CVector2 m_StairPos;
+	aqua::CLinePrimitive m_Line;
+
+	aqua::CLabel m_LifeText;
+	aqua::CLabel m_BattText;
+	aqua::CLabel m_HeatText;
 };

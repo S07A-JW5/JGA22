@@ -24,6 +24,8 @@ public:
 
 	void Clear();
 
+	void Create();
+
 	void MapGeneration();
 
 	bool IsPlayerNearBy(aqua::CVector2 pos);

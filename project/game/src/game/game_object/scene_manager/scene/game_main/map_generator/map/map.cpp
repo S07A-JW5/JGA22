@@ -222,23 +222,98 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 			Diff = aqua::CVector2(i, j) - pos;
 			if (Diff.Length() > radius) continue;
 
-			m_Tile[i][j].Visible = true;
-			continue;
-
-			if (Diff.Length() > 1.42f)
+			if (Diff.Length() < 1.42f)
 			{
-				here //ここから
-
-
+				m_Tile[i][j].Visible = true;
+				if (Diff.Length() >= 1.0f && !IsWalkableTile(i, j))
+				{
+					if (i == pos.x)
+					{
+						if (j > pos.y)
+							EastInvis = true;
+						if (j < pos.y)
+							WestInvis = true;
+					}
+					else if (j == pos.y)
+					{
+						if (i > pos.x)
+							NorthInvis = true;
+						if (i < pos.x)
+							SouthInvis = true;
+					}
+				}
+				continue;
 			}
+			//continue;
 			bool Horizontal = false;
+			int Count = 0;
+			int LvlOfDetail = 1;
+			aqua::CVector2 Pos = aqua::CVector2::ZERO;
 			if (abs(Diff.x) > abs(Diff.y))
 			{
-
+				Horizontal = true;
+				Count = abs(Diff.x);
 			}
 			else
 			{
-
+				Count = abs(Diff.y);
+			}
+			Count *= LvlOfDetail;
+			Diff = Diff / Count;
+			if (i == pos.x)
+			{
+				if (j > pos.y && EastInvis) continue;
+				if (j < pos.y && WestInvis) continue;
+			}
+			else if (j == pos.y)
+			{
+				if (i > pos.x && NorthInvis) continue;
+				if (i < pos.x && SouthInvis) continue;
+			}
+			for (int k = 1; k <= Count; k++)
+			{
+				Pos = Diff * k + pos;
+				if (Horizontal)
+				{
+					if (Pos.y > 0)
+						Pos.y += 0.5f;
+					else if (Pos.y < 0)
+					{
+						Pos.y -= 0.5f;
+						Pos.y = (int)(-Pos.y);
+						Pos.y = (-Pos.y);
+					}
+				}
+				else
+				{
+					if (Pos.x > 0)
+						Pos.x += 0.5f;
+					else if (Pos.x < 0)
+					{
+						Pos.x -= 0.5f;
+						Pos.x = (int)(-Pos.x);
+						Pos.x = (-Pos.x);
+					}
+				}
+				if (Pos.x < 0)
+				{
+					Pos.x = (int)(-Pos.x);
+					Pos.x = (-Pos.x);
+				}
+				if (Pos.y < 0)
+				{
+					Pos.y = (int)(-Pos.y);
+					Pos.y = (-Pos.y);
+				}
+				Pos.x = (int)Pos.x;
+				Pos.y = (int)Pos.y;
+				if (Pos == aqua::CVector2(i, j))
+				{
+					m_Tile[i][j].Visible = true;
+					break;
+				}
+				if (!IsWalkableTile(Pos.x, Pos.y))
+					break;
 			}
 		}
 }

@@ -6,3 +6,5 @@
 #include "text_manager/text_manager.h"
 #include "ui_manager/ui_manager.h"
 #include "camera/camera.h"
+#include "database/chr_db/chr_db.h"
+#include "database/equip_db/equip_db.h"
