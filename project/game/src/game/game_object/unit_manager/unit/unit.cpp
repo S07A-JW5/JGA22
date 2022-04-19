@@ -84,7 +84,7 @@ void IUnit::Create(int id)
 	for (int i = 0; i < 3; i++)
 		m_Status.Resist[i] = Data.Resist[i];
 	m_Status.Inventory = Data.Inventory;
-	m_Status.ArmSlotCount = Data.ArmSlotCount;
+	m_Status.WeaponCount = Data.WeaponCount;
 	m_Status.ArmorCount = Data.ArmorCount;
 	m_Status.TranspCount = Data.TranspCount;
 	m_Status.UtilCount = Data.UtilCount;
@@ -102,8 +102,20 @@ void IUnit::Create(int id)
 		switch (Equipment.Type)
 		{
 		case cEquipDataBase::EQUIPMENT_TYPE::WEAPON:
-			if (m_Weapon.size() >= m_Status.ArmSlotCount) break;
-			m_Weapon.push_back(Equipment.EquipmentID);
+			if (m_Weapon.size() >= m_Status.WeaponCount) break; 
+			{
+			WeaponStat Temp;
+			Temp.ID = Equipment.EquipmentID;
+			Temp.Name = Equipment.Name;
+			Temp.Heat = Equipment.Heat;
+			Temp.Ammo = Equipment.Ammo;
+			Temp.Energy = Equipment.Energy;
+			Temp.Range = Equipment.Range;
+			Temp.DamageType = Equipment.DamageType;
+			Temp.MinDamage = Equipment.MinDamage;
+			Temp.MaxDamage = Equipment.MaxDamage;
+			m_Weapon.push_back(Temp);
+			}
 			break;
 		case cEquipDataBase::EQUIPMENT_TYPE::ARMOR:
 			if (m_Armor.size() >= m_Status.ArmorCount) break;
@@ -143,17 +155,17 @@ void IUnit::CalcStatus()
 	m_Support = 0;
 	m_Protection = 0;
 
-	for (int i = 0; i < m_Weapon.size() && i < m_Status.ArmSlotCount; i++)
+	for (int i = 0; i < m_Weapon.size() && i < m_Status.WeaponCount; i++)
 	{
-		Equipment = EquipDB->GetData(m_Weapon[i]);
-		CalcBasicEquipmentStat(m_Weapon[i]);
+		//Equipment = EquipDB->GetData(m_Weapon[i].ID);
+		CalcBasicEquipmentStat(m_Weapon[i].ID);
 	}
 	for (int i = 0; i < m_Armor.size() && i < m_Status.ArmorCount; i++)
 	{
 		Equipment = EquipDB->GetData(m_Armor[i]);
 		CalcBasicEquipmentStat(m_Armor[i]);
-		for (int i = 0; i < 3; i++)
-			m_Resist[i] += Equipment.Resist[i];
+		for (int j = 0; j < 3; j++)
+			m_Resist[j] += Equipment.Resist[j];
 		m_Protection += Equipment.Protection;
 	}
 	for (int i = 0; i < m_Transp.size() && i < m_Status.TranspCount; i++)

@@ -37,7 +37,6 @@ public:
 	cMap* GetMap();
 
 private:
-
 	enum DIRECTION
 	{
 		NORTH,
@@ -63,6 +62,9 @@ private:
 	void Generate(bool step = false);
 	bool CreateRoom(bool first = false);	//•”‰®‚ğì‚é
 	bool TileEmptyCheck(aqua::CRect Range);	//”ÍˆÍ“à‚ª‹ó‚©’²‚×‚é
+	void PutEnemy(int start_room, int id = 1);
+	aqua::CPoint GetRandomPointInRoom(int room_no);
+	aqua::CVector2 GetRandomPositionInRoom(int room_no);
 
 	static const int m_max_width = 255;
 	static const int m_max_height = 255;

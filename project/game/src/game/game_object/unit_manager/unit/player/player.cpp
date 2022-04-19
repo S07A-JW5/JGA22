@@ -1,6 +1,6 @@
 #include "player.h"
-#include "game/game_object/camera/camera.h"
 #include "../../unit_manager.h"
+#include "game/game_object/camera/camera.h"
 #include "game/game_object/ui_manager/ui_manager.h"
 #include "game/game_object/text_manager/text_manager.h"
 #include "game/game_object/sound_manager/sound_manager.h"
@@ -135,6 +135,7 @@ bool cPlayer::Wait()
 
 bool cPlayer::Move()
 {
+
 	bool Moved = IUnit::Move();
 	if (Moved)
 	{

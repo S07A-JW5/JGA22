@@ -64,10 +64,23 @@ protected:
 		std::int16_t  Resist[3];	//基礎耐性値(%)
 		std::uint8_t  Inventory;	//基礎ｲﾝﾍﾞﾝﾄﾘ容量
 
-		std::uint8_t ArmSlotCount;	//「腕」ｽﾛｯﾄ数
+		std::uint8_t WeaponCount;	//「腕」ｽﾛｯﾄ数
 		std::uint8_t ArmorCount;	//「装甲」ｽﾛｯﾄ数
 		std::uint8_t TranspCount;	//「移動」ｽﾛｯﾄ数
 		std::uint8_t UtilCount;	//「その他」ｽﾛｯﾄ数
+	};
+
+	struct WeaponStat
+	{
+		std::uint16_t	ID;				//装備品ID(0は空欄)
+		std::string	Name;			//装備品の名前
+		IUnit::DAMAGE_TYPE DamageType;	//ﾀﾞﾒｰｼﾞ属性
+		std::uint8_t	MinDamage;		//最小ダメージ
+		std::uint8_t	MaxDamage;		//最大ダメージ
+		std::uint8_t	Range;			//射程
+		std::uint8_t	Heat;			//発熱量
+		std::uint8_t	Ammo;			//弾薬消費量
+		std::uint8_t	Energy;			//消費ﾊﾞｯﾃﾘｰ
 	};
 
 	virtual bool Wait();
@@ -110,10 +123,10 @@ protected:
 	std::int16_t	m_Protection;	//防御力
 	std::uint8_t	m_SightRange;	//視界半径
 
-	std::vector<uint16_t> m_Weapon;	//装備している武器
-	std::vector<uint16_t> m_Armor;	//装備している装甲
-	std::vector<uint16_t> m_Transp;	//装備している移動
-	std::vector<uint16_t> m_Util;	//装備している装備品
+	std::vector<WeaponStat> m_Weapon;	//装備している武器
+	std::vector<uint16_t>	 m_Armor;	//装備している装甲
+	std::vector<uint16_t>	 m_Transp;	//装備している移動
+	std::vector<uint16_t>	 m_Util;		//装備している装備品
 
 	cMap* m_MapObj;
 	IGameObject* m_Camera;

@@ -20,6 +20,8 @@ public:
 
 	~cBot() = default;
 
+	void Update() override;
+
 	bool Action() override;
 
 private:

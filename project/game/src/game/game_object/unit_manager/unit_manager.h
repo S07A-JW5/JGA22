@@ -24,7 +24,7 @@ public:
 
 	void Clear();
 
-	void Create();
+	void Create(std::uint16_t id, int x_pos, int y_pos);
 
 	void MapGeneration();
 
@@ -32,11 +32,18 @@ public:
 
 	void SetPlayerPos(aqua::CVector2 pos);
 
+	void SetMapSize(int width, int height);
+
 private:
 	aqua::IGameObject* m_TextManager;
 	cPlayer* m_Player;
+	std::uint8_t m_Floor;
 	std::vector<cBot*> m_NPCs;
+	int** m_UnitPos;
+	std::uint8_t m_Width;
+	std::uint8_t m_Height;
 	aqua::IGameObject* m_MapGenerator;
+	aqua::IGameObject* m_MapObj;
 	bool m_MapGenerated;
 	aqua::CVector2 m_PlayerPos;
 };

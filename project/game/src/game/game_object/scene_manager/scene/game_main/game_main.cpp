@@ -21,7 +21,6 @@ void CGameMainScene::Initialize(void)
 	m_MapGen = aqua::CreateGameObject<cMapGenerator>(this);
 	m_UnitMgr = aqua::CreateGameObject<CUnitManager>(this);
 	m_UIMgr = aqua::FindGameObject("UIManager");
-	//cUIManager* UIMgr = (cUIManager*)m_UIMgr;
 	//UIMgr->SetUIBGVisible(true);
 
 	m_Black.Setup(aqua::CVector2::ZERO, aqua::GetWindowWidth(), aqua::GetWindowHeight(), 0xff010101);

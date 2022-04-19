@@ -2,8 +2,8 @@
 
 #define SEARCH_NEXT_BRANCH {LoopCount = 0; ++m_CurrentBranchP %= m_BranchPoint.size(); if(m_CurrentBranchP < m_BranchPoint.size()) continue; return true;}
 
-const int cMapGenerator::m_default_width = 400;
-const int cMapGenerator::m_default_height = 300;
+const int cMapGenerator::m_default_width = 40;
+const int cMapGenerator::m_default_height = 40;
 
 cMapGenerator::cMapGenerator(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "MapGenerator")
@@ -136,16 +136,10 @@ void cMapGenerator::Generate(bool step)
 
 		aqua::CPoint PlayerStartPoint = aqua::CPoint::ZERO;
 		aqua::CPoint StairPoint = aqua::CPoint::ZERO;
-		PlayerStartPoint.x = aqua::Rand(m_Room[PlayerRoom].left,
-			m_Room[PlayerRoom].right);
-		PlayerStartPoint.y = aqua::Rand(m_Room[PlayerRoom].top,
-			m_Room[PlayerRoom].bottom);
+		PlayerStartPoint = GetRandomPointInRoom(PlayerRoom);
 		do
 		{
-			StairPoint.x = aqua::Rand(m_Room[StairRoom].left,
-				m_Room[StairRoom].right);
-			StairPoint.y = aqua::Rand(m_Room[StairRoom].top,
-				m_Room[StairRoom].bottom);
+			StairPoint = GetRandomPointInRoom(StairRoom);
 		} while (PlayerStartPoint.x == StairPoint.x &&
 			PlayerStartPoint.y == StairPoint.y);
 
@@ -161,6 +155,7 @@ void cMapGenerator::Generate(bool step)
 			m_MapObj->DeleteObject();
 		m_MapObj = aqua::CreateGameObject<cMap>(this);
 		m_MapObj->Initialize(m_Width, m_Height, m_Map, m_StartPos, m_StairPos);
+		PutEnemy(PlayerRoom);
 	}
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
@@ -592,3 +587,31 @@ bool cMapGenerator::TileEmptyCheck(aqua::CRect Range)
 	return true;
 }
 
+void cMapGenerator::PutEnemy(int start_room, int id)
+{
+	int Count = m_Room.size();
+
+	if (Count <= 1) return;
+
+	aqua::CPoint Point = aqua::CPoint::ZERO;
+
+	for (int i = 0; i < Count; i++)
+	{
+		if (i == start_room) continue;
+
+		Point = GetRandomPointInRoom(i);
+		m_MapObj->PutUnit(Point.x, Point.y, id);
+	}
+}
+
+aqua::CPoint cMapGenerator::GetRandomPointInRoom(int room_no)
+{
+	aqua::CVector2 Pos = GetRandomPositionInRoom(room_no);
+	return aqua::CPoint(Pos.x, Pos.y);
+}
+
+aqua::CVector2 cMapGenerator::GetRandomPositionInRoom(int room_no)
+{
+	return aqua::CVector2(
+		aqua::Rand(m_Room[room_no].left, m_Room[room_no].right), aqua::Rand(m_Room[room_no].top, m_Room[room_no].bottom));
+}

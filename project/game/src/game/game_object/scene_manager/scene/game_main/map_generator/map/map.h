@@ -18,6 +18,7 @@ public:
 	struct TILE
 	{
 		TILE_ID TileID;
+		bool Mapped;
 		bool Visible;
 	};
 
@@ -47,15 +48,19 @@ public:
 
 	void PutUnit(int x_pos, int y_pos, unsigned int unit_id);
 
+	int GetMapWidth();
+	int GetMapHeight();
+
 	aqua::CVector2 GetStartPoint();
 	aqua::CVector2 GetStairPos();
 
 	cMap::TILE_ID GetTile(int x_pos, int y_pos);
 	bool IsWalkableTile(int x_pos, int y_pos);
-	bool IsBreakableTile(int x_pos, int y_pos);
+	bool IsTileVisible(int x_pos, int y_pos);
 
 	void SetMapped(aqua::CVector2 pos, int radius);
 	void SetMappedFloatRadius(aqua::CVector2 pos, float radius);
+	bool HitWall(aqua::CVector2 posA, aqua::CVector2 posB);
 
 	bool HasData();
 
@@ -65,7 +70,7 @@ private:
 	bool m_HasData;
 	std::uint8_t	m_Width;		//マップの横サイズ
 	std::uint8_t	m_Height;		//マップの縦サイズ
-	TILE** m_Tile;		//マップタイル配列
+	TILE** m_Tile;			//マップタイル配列
 	DroppedItem** m_Item;		//アイテム配列
 	aqua::CVector2 m_StartPos;	//開始地点
 	aqua::CVector2 m_StairPos;	//階段の位置
@@ -75,4 +80,5 @@ private:
 	aqua::CVector2 m_TileDrawPos;
 	aqua::CRect m_DrawArea;
 	IGameObject* m_Camera;
+	IGameObject* m_UnitManager;
 };

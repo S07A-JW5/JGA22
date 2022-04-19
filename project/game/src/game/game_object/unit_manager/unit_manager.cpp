@@ -9,9 +9,12 @@ CUnitManager::CUnitManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "UnitManager")
 	, m_TextManager(nullptr)
 	, m_Player(nullptr)
+	, m_MapObj(nullptr)
 	, m_MapGenerator(nullptr)
 	, m_MapGenerated(false)
 	, m_PlayerPos(aqua::CVector2::ZERO)
+	, m_Floor(0)
+	, m_UnitPos(nullptr)
 {
 }
 
@@ -46,32 +49,57 @@ void CUnitManager::Draw(void)
 
 void CUnitManager::Finalize(void)
 {
+	m_NPCs.clear();
+	if (m_UnitPos)
+	{
+		for (int i = 0; i < m_Width; i++)
+			AQUA_SAFE_DELETE_ARRAY(m_UnitPos[i]);
+		AQUA_SAFE_DELETE_ARRAY(m_UnitPos);
+	}
 	IGameObject::Finalize();
 }
 
 void CUnitManager::Clear()
 {
+	for (int i = 0; i < m_NPCs.size(); i++)
+		m_NPCs[i]->DeleteObject();
+	m_NPCs.clear();
+	if (m_UnitPos)
+	{
+		for (int i = 0; i < m_Width; i++)
+			for (int j = 0; j < m_Height; j++)
+				m_UnitPos[i][j] = -1;
+	}
 }
 
-void CUnitManager::Create()
+void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 {
 	cBot* Bot = aqua::CreateGameObject<cBot>(this);
 	Bot->Initialize();
-	Bot->Create(1);
+	Bot->Create(id);
+	Bot->GetMap((cMap*)m_MapObj);
+	Bot->SetPosition(aqua::CVector2(x_pos, y_pos));
+
+	m_NPCs.push_back(Bot);
+	m_UnitPos[x_pos][y_pos] = m_NPCs.size();
 }
 
 void CUnitManager::MapGeneration()
 {
+	Clear();
 	m_MapGenerated = false;
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
-	MapGen->GenerateMap(40, 40, 5, 8, 10, 5, 8, 10);
+	MapGen->GenerateMap(30 + m_Floor, 30 + m_Floor,
+		5, 8, 4 + m_Floor * 2, 5, 8, 4 + m_Floor * 2);
 	cMap* Map = MapGen->GetMap();
+	m_MapObj = Map;
 	m_Player->GetMap(Map);
 	m_Player->SetPosition(Map->GetStartPoint());
 	m_Player->CameraUpdate();
 	m_Player->SetStairPosition(Map->GetStairPos());
 	Map->Update();
 	Map->SetMapped(m_Player->GetPosition(), 8);
+	++m_Floor;
 }
 
 bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
@@ -86,4 +114,24 @@ bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
 void CUnitManager::SetPlayerPos(aqua::CVector2 pos)
 {
 	m_PlayerPos = pos;
+}
+
+void CUnitManager::SetMapSize(int width, int height)
+{
+	if (m_UnitPos)
+	{
+		for (int i = 0; i < m_Width; i++)
+			AQUA_SAFE_DELETE_ARRAY(m_UnitPos[i]);
+		AQUA_SAFE_DELETE_ARRAY(m_UnitPos);
+	}
+	m_Width = width;
+	m_Height = height;
+
+	m_UnitPos = AQUA_NEW int * [m_Width];
+	for (int i = 0; i < m_Width; i++)
+		m_UnitPos[i] = AQUA_NEW int[m_Height];
+
+	for (int i = 0; i < m_Width; i++)
+		for (int j = 0; j < m_Height; j++)
+			m_UnitPos[i][j] = -1;
 }

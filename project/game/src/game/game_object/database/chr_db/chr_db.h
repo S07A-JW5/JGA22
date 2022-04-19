@@ -18,7 +18,7 @@ public:
 		std::int16_t  Resist[3];	//耐性値(%)
 		std::uint8_t  Inventory;	//ｲﾝﾍﾞﾝﾄﾘ容量
 
-		std::uint8_t ArmSlotCount;	//「腕」ｽﾛｯﾄ数
+		std::uint8_t WeaponCount;	//「腕」ｽﾛｯﾄ数
 		std::uint8_t ArmorCount;	//「装甲」ｽﾛｯﾄ数
 		std::uint8_t TranspCount;	//「移動」ｽﾛｯﾄ数
 		std::uint8_t UtilCount;	//「その他」ｽﾛｯﾄ数

@@ -40,7 +40,7 @@ void cUnitDataBase::Load()
 		Temp.Resist[1]	= UnitDataCSV.GetInteger(i, 9);
 		Temp.Resist[2]	= UnitDataCSV.GetInteger(i, 10);
 		Temp.Inventory	= UnitDataCSV.GetInteger(i, 11);
-		Temp.ArmSlotCount	= UnitDataCSV.GetInteger(i, 12);
+		Temp.WeaponCount	= UnitDataCSV.GetInteger(i, 12);
 		Temp.ArmorCount	= UnitDataCSV.GetInteger(i, 13);
 		Temp.TranspCount	= UnitDataCSV.GetInteger(i, 14);
 		Temp.UtilCount	= UnitDataCSV.GetInteger(i, 15);
