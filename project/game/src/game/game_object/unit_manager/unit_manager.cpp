@@ -36,9 +36,17 @@ void CUnitManager::Update(void)
 {
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
 
-	if (MapGen->MapGenerated())
+	if (!MapGen->MapGenerated()) return;
+
+	IGameObject::Update();
+	if (m_Player->DidAction())
 	{
-		IGameObject::Update();
+		for (int i = 0; i < m_NPCs.size(); i++)
+		{
+			if (m_NPCs[i])
+				m_NPCs[i]->Action();
+		}
+		m_Player->SetActFlag(false);
 	}
 }
 
@@ -62,7 +70,10 @@ void CUnitManager::Finalize(void)
 void CUnitManager::Clear()
 {
 	for (int i = 0; i < m_NPCs.size(); i++)
-		m_NPCs[i]->DeleteObject();
+	{
+		if (m_NPCs[i])
+			m_NPCs[i]->DeleteObject();
+	}
 	m_NPCs.clear();
 	if (m_UnitPos)
 	{
@@ -77,7 +88,6 @@ void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 	cBot* Bot = aqua::CreateGameObject<cBot>(this);
 	Bot->Initialize();
 	Bot->Create(id);
-	Bot->GetMap((cMap*)m_MapObj);
 	Bot->SetPosition(aqua::CVector2(x_pos, y_pos));
 
 	m_NPCs.push_back(Bot);
@@ -99,6 +109,11 @@ void CUnitManager::MapGeneration()
 	m_Player->SetStairPosition(Map->GetStairPos());
 	Map->Update();
 	Map->SetMapped(m_Player->GetPosition(), 8);
+	for (int i = 0; i < m_NPCs.size(); i++)
+	{
+		if (m_NPCs[i])
+			m_NPCs[i]->GetMap(Map);
+	}
 	++m_Floor;
 }
 
@@ -108,12 +123,50 @@ bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
 		return false;
 
 	aqua::CVector2 Vector2 = m_PlayerPos - pos;
-	return Vector2.Normalize().Length() <= 1;
+	return Vector2.Length() <= 1;
+}
+
+bool CUnitManager::HasSpace(aqua::CVector2 pos)
+{
+	if (m_UnitPos)
+	{
+		return m_UnitPos[(int)pos.x][(int)pos.y] < 0;
+	}
+	return true;
+}
+
+bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type)
+{
+	if (!m_UnitPos) return false;
+
+	int UnitNo = m_UnitPos[(int)target_pos.x][(int)target_pos.y];
+
+	if (UnitNo < 0) return false;
+
+	if (UnitNo == 0)
+	{
+		m_Player->TakeDamage(damage, type);
+		return true;
+	}
+	if (m_NPCs[UnitNo-1]->TakeDamage(damage, type))
+	{
+		m_NPCs[UnitNo-1]->DeleteObject();
+		m_NPCs[UnitNo-1] = nullptr;
+		m_UnitPos[(int)target_pos.x][(int)target_pos.y] = -1;
+	}
+	return true;
 }
 
 void CUnitManager::SetPlayerPos(aqua::CVector2 pos)
 {
+	m_UnitPos[(int)m_PlayerPos.x][(int)m_PlayerPos.y] = -1;
 	m_PlayerPos = pos;
+	m_UnitPos[(int)m_PlayerPos.x][(int)m_PlayerPos.y] = 0;
+}
+
+aqua::CVector2 CUnitManager::GetPlayerPos()
+{
+	return m_PlayerPos;
 }
 
 void CUnitManager::SetMapSize(int width, int height)

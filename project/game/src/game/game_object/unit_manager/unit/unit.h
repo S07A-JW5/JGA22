@@ -20,6 +20,14 @@ public:
 		EAST,
 		WEST,
 	};
+	enum class STATUS
+	{
+		LIFE,
+		HEAT,
+		BATT,
+		PARTS,
+		AMMO,
+	};
 
 	IUnit(aqua::IGameObject* parent, std::string name);
 
@@ -35,13 +43,21 @@ public:
 
 	void Create(int id);
 
-	void CalcStatus();
+	virtual void CalcStatus();
 
 	aqua::CVector2 GetPosition();
 
 	void SetPosition(aqua::CVector2 pos);
 
 	void GetMap(cMap* map);
+
+	bool TakeDamage(int damage, IUnit::DAMAGE_TYPE type);
+
+	bool DidAction();
+
+	void SetActFlag(bool flag);
+
+	int GetStatus(IUnit::STATUS stat);
 
 	virtual bool Action();
 
@@ -87,7 +103,7 @@ protected:
 
 	virtual bool Move();
 
-	virtual bool Attack();
+	virtual bool Attack(aqua::CVector2 pos);
 
 	void CalcBasicEquipmentStat(int id);
 
@@ -122,6 +138,8 @@ protected:
 	std::int16_t	m_Resist[3];	//‘Ï«’l(%)
 	std::int16_t	m_Protection;	//–hŒä—Í
 	std::uint8_t	m_SightRange;	//‹ŠE”¼Œa
+
+	std::uint8_t m_Coverage;
 
 	std::vector<WeaponStat> m_Weapon;	//‘•”õ‚µ‚Ä‚¢‚é•Ší
 	std::vector<uint16_t>	 m_Armor;	//‘•”õ‚µ‚Ä‚¢‚é‘•b

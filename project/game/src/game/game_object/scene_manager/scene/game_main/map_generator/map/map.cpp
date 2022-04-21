@@ -206,6 +206,16 @@ aqua::CVector2 cMap::GetStairPos()
 	return m_StairPos;
 }
 
+aqua::CVector2 cMap::GetPointedTile(aqua::CPoint mouse_pos)
+{
+	aqua::CVector2 MousePointedPos = ((cCamera*)m_Camera)->GetDrawBasePos();
+	MousePointedPos.x += mouse_pos.x;
+	MousePointedPos.y += mouse_pos.y;
+	MousePointedPos.x = (int)(MousePointedPos.x / m_tile_size);
+	MousePointedPos.y = (int)(MousePointedPos.y / m_tile_size);
+	return MousePointedPos;
+}
+
 cMap::TILE_ID cMap::GetTile(int x_pos, int y_pos)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
@@ -348,6 +358,11 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 
 bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 {
+	bool Hit = false;
+	int Count = 0;
+	int LOD = 4;
+	aqua::CVector2 Diff = aqua::CVector2::ZERO;
+	aqua::CVector2 Pos = aqua::CVector2::ZERO;
 	aqua::CRect Rect = aqua::CRect::ZERO;
 	std::vector<aqua::CRect> TileRect;
 	TileRect.clear();
@@ -384,43 +399,71 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 
 			TileRect.push_back(Temp);
 		}
-	aqua::CVector2 PointA = posA * m_tile_size;
-	aqua::CVector2 PointB = posB * m_tile_size;
-	PointA.x += (m_tile_size - 1) / 2;
-	PointA.y += (m_tile_size - 1) / 2;
-	PointB.x += (m_tile_size - 1) / 2;
-	PointB.y += (m_tile_size - 1) / 2;
 
-	aqua::CVector2 Diff = PointB - PointA;
-	aqua::CVector2 Pos = aqua::CVector2::ZERO;
-	bool Horizontal = false;
-	int Count = 0;
-	if (abs(Diff.x) > abs(Diff.y))
+
+	Diff = posB - posA;
+
+	if (abs(Diff.x) == abs(Diff.y) && abs(Diff.x) == 0 && abs(Diff.x) == 0)
 	{
-		Horizontal = true;
-		Count = abs(Diff.y);
+		Count = max(abs(Diff.x), abs(Diff.y));
+		Diff = Diff / Count;
+		for (int k = 1; k <= Count; k++)
+		{
+			Pos = Diff * k + posA;
+			if (k == Count)
+			{
+				return false;
+			}
+			if (!IsWalkableTile(Pos.x, Pos.y)) return true;
+		}
 	}
 	else
 	{
-		Count = abs(Diff.x);
-	}
-	Diff = Diff / Count;
-	for (int i = 1; i <= Count; i++)
-	{
-		Pos = Diff * i + PointA;
-		for (int j = 0; j < TileRect.size(); j++)
+		for (int k = 0; k < 4; k++)
 		{
-			if (Pos.x <= TileRect[j].left && Pos.x >= TileRect[j].right &&
-				Pos.y <= TileRect[j].top && Pos.y >= TileRect[j].bottom)
+			aqua::CVector2 PointA = posA * m_tile_size;
+			aqua::CVector2 PointB = posB * m_tile_size;
+			PointA.x += (m_tile_size) / 2 - (k / 2);
+			PointA.y += (m_tile_size) / 2 - (k % 2);
+			PointB.x += (m_tile_size) / 2 - (k / 2);
+			PointB.y += (m_tile_size) / 2 - (k % 2);
+
+			Diff = PointB - PointA;
+			Pos = aqua::CVector2::ZERO;
+			Count = 0;
+			Hit = false;
+			if (abs(Diff.x) > abs(Diff.y))
 			{
-				if (TileRect[j].left / m_tile_size == posB.x &&
-					TileRect[j].top / m_tile_size == posB.y)
-					continue;
-				return true;
+				Count = abs(Diff.x);
 			}
+			else
+			{
+				Count = abs(Diff.y);
+			}
+			Diff = Diff / Count;
+			for (int m = 1; m <= Count; m += max(m_tile_size / LOD, 1))
+			{
+				Pos = Diff * m + PointA;
+				for (int n = 0; n < TileRect.size(); n++)
+				{
+					if (Pos.x >= TileRect[n].left &&
+						Pos.x <= TileRect[n].right &&
+						Pos.y >= TileRect[n].top &&
+						Pos.y <= TileRect[n].bottom)
+					{
+						if (TileRect[n].left / m_tile_size == posB.x &&
+							TileRect[n].top / m_tile_size == posB.y)
+							continue;
+						Hit = true;
+					}
+					if (Hit) break;
+				}
+				if (Hit) break;
+			}
+			if (Hit) continue;
 		}
+		return Hit;
 	}
-	return false;
 }
 
 bool cMap::HasData()

@@ -123,6 +123,7 @@
     <ClCompile Include="src\game\game_object\ui_manager\component\damage_heal\dmg_heal.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\gauge\gauge.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\select\select.cpp" />
+    <ClCompile Include="src\game\game_object\ui_manager\component\status\status.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\value\value.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\window\window.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\ui_manager.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="src\game\game_object\ui_manager\component\damage_heal\dmg_heal.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\gauge\gauge.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\select\select.h" />
+    <ClInclude Include="src\game\game_object\ui_manager\component\status\status.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\value\value.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\window\window.h" />
     <ClInclude Include="src\game\game_object\ui_manager\ui_manager.h" />

@@ -76,7 +76,12 @@ void cMapGenerator::SetMapGenParam(int width, int height,
 	m_TimeCounter = 0;
 	m_Room.clear();
 	m_BranchPoint.clear();
-	AQUA_SAFE_DELETE_ARRAY(m_Map);
+	if (m_Map) 
+	{
+		for (int i = 0; i < m_Width; i++)
+			AQUA_SAFE_DELETE_ARRAY(m_Map[i]);
+		AQUA_SAFE_DELETE_ARRAY(m_Map);
+	}
 	m_Generating = false;
 
 	m_Width = min(width, m_max_width);
@@ -139,7 +144,7 @@ void cMapGenerator::Generate(bool step)
 		PlayerStartPoint = GetRandomPointInRoom(PlayerRoom);
 		do
 		{
-			StairPoint = GetRandomPointInRoom(StairRoom);
+			StairPoint = GetRandomPointInRoom(StairRoom, 1);
 		} while (PlayerStartPoint.x == StairPoint.x &&
 			PlayerStartPoint.y == StairPoint.y);
 
@@ -604,14 +609,14 @@ void cMapGenerator::PutEnemy(int start_room, int id)
 	}
 }
 
-aqua::CPoint cMapGenerator::GetRandomPointInRoom(int room_no)
+aqua::CPoint cMapGenerator::GetRandomPointInRoom(int room_no, int space)
 {
-	aqua::CVector2 Pos = GetRandomPositionInRoom(room_no);
+	aqua::CVector2 Pos = GetRandomPositionInRoom(room_no, space);
 	return aqua::CPoint(Pos.x, Pos.y);
 }
 
-aqua::CVector2 cMapGenerator::GetRandomPositionInRoom(int room_no)
+aqua::CVector2 cMapGenerator::GetRandomPositionInRoom(int room_no, int space)
 {
 	return aqua::CVector2(
-		aqua::Rand(m_Room[room_no].left, m_Room[room_no].right), aqua::Rand(m_Room[room_no].top, m_Room[room_no].bottom));
+		aqua::Rand(m_Room[room_no].left + space, m_Room[room_no].right - space), aqua::Rand(m_Room[room_no].top + space, m_Room[room_no].bottom - space));
 }

@@ -15,51 +15,54 @@ void cPlayer::Initialize()
 {
 	IUnit::Initialize();
 	m_Line.Setup(aqua::CVector2::ZERO, aqua::CVector2::ZERO, 0xc07fff00);
-	m_LifeText.Create(16);
-	m_LifeText.color = 0xffffffff;
-	m_BattText.Create(16);
-	m_BattText.color = 0xffffffff;
-	m_HeatText.Create(16);
-	m_HeatText.color = 0xffffffff;
-	m_LifeText.position.y = 10;
-	m_BattText.position.y = 30;
-	m_HeatText.position.y = 50;
-	m_LifeText.position.x = m_BattText.position.x = m_HeatText.position.x = 730;
+	m_Box.Setup(aqua::CVector2::ZERO, 12, 12, 0xffff0000, false, 2);
 }
 
 void cPlayer::Update()
 {
-	m_LifeText.text = "Life: " + std::to_string(m_Life) + " / " + std::to_string(m_MaxLife);
-	m_HeatText.text = "Heat: " + std::to_string(m_Heat) + " (" + std::to_string(m_HeatFlow)+")";
-	m_BattText.text = "Batt: " + std::to_string(m_Batt) + " / " + std::to_string(m_MaxBatt) + " (" + std::to_string(m_EnergyFlow)+")";
-
 	m_Line.visible = aqua::mouse::Button(aqua::mouse::BUTTON_ID::LEFT);
 	m_Line.pointA = aqua::CVector2(cCamera::m_draw_width / 2, cCamera::m_draw_height / 2);
+
 	aqua::CPoint Point = aqua::mouse::GetCursorPos();
+	aqua::CVector2 PointedTile = m_MapObj->GetPointedTile(Point);
+
 	m_Line.pointB.x = Point.x;
 	m_Line.pointB.y = Point.y;
 
+	m_Box.position = 
+		(PointedTile * cMap::m_tile_size) - ((cCamera*)m_Camera)->GetDrawBasePos();
+	m_Box.position.x += m_Box.thickness;
+	m_Box.position.y += m_Box.thickness;
+
 	m_DesiredAction = ACTION::DUMMY;
 
-	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
+	if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
 	{
-		m_DesiredAction = ACTION::MOVE;
-		m_MoveTo = DIRECTION::NORTH;
+		m_DesiredAction = ACTION::ATTACK;
+		m_TargetTile = PointedTile;
 	}
-	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A))
+	else
 	{
-		m_DesiredAction = ACTION::MOVE;
-		m_MoveTo = DIRECTION::WEST;
-	}
-	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S))
-	{
-		m_DesiredAction = ACTION::MOVE;
-		m_MoveTo = DIRECTION::SOUTH;
-	}
-	if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D))
-	{
-		m_DesiredAction = ACTION::MOVE;
-		m_MoveTo = DIRECTION::EAST;
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
+		{
+			m_DesiredAction = ACTION::MOVE;
+			m_MoveTo = DIRECTION::NORTH;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A))
+		{
+			m_DesiredAction = ACTION::MOVE;
+			m_MoveTo = DIRECTION::WEST;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S))
+		{
+			m_DesiredAction = ACTION::MOVE;
+			m_MoveTo = DIRECTION::SOUTH;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D))
+		{
+			m_DesiredAction = ACTION::MOVE;
+			m_MoveTo = DIRECTION::EAST;
+		}
 	}
 
 	if (m_DesiredAction != ACTION::DUMMY)
@@ -86,22 +89,13 @@ void cPlayer::CameraUpdate()
 void cPlayer::Draw()
 {
 	m_Sprite.Draw();
-	m_Sight.Draw();
 	m_Line.Draw();
-
-	m_LifeText.Draw();
-	m_BattText.Draw();
-	m_HeatText.Draw();
+	m_Box.Draw();
 }
 
 void cPlayer::Finalize()
 {
 	m_Sprite.Delete();
-	m_Sight.Delete();
-
-	m_LifeText.Delete();
-	m_BattText.Delete();
-	m_HeatText.Delete();
 }
 
 void cPlayer::SetStairPosition(aqua::CVector2 pos)
@@ -109,48 +103,87 @@ void cPlayer::SetStairPosition(aqua::CVector2 pos)
 	m_StairPos = pos;
 }
 
+void cPlayer::CalcStatus()
+{
+	IUnit::CalcStatus();
+	cUIManager* UIMgr = (cUIManager*)m_UIManager;
+	UIMgr->CreateStatusUI(this, m_Name, m_Life, m_MaxLife, m_HeatFlow, m_Heat, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_Batt, m_MaxBatt, m_Parts, m_MaxParts, m_Ammo, m_MaxAmmo, m_Resist, m_Protection);
+}
+
 bool cPlayer::Action()
 {
 	if (m_DidAction) return true;
+	bool Act = false;
 
 	switch (m_DesiredAction)
 	{
 	case IUnit::ACTION::WAIT:
-		return Wait();
+		Act = Wait();
 		break;
 	case IUnit::ACTION::MOVE:
-		return Move();
+		Act = Move();
 		break;
 	case IUnit::ACTION::ATTACK:
-		return Attack();
+		Act = Attack(m_TargetTile);
 		break;
 	}
-	return false;
+	m_DidAction = Act;
+	return m_DidAction;
 }
 
 bool cPlayer::Wait()
 {
-	return false;
+	return true;
 }
 
 bool cPlayer::Move()
 {
+	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	aqua::CVector2 Pos = m_OnMapPos;
+	bool Moved = false;
 
-	bool Moved = IUnit::Move();
-	if (Moved)
+	switch (m_MoveTo)
 	{
-		m_MapObj->SetMapped(m_OnMapPos, 8);
-		if (m_OnMapPos == m_StairPos)
+	case IUnit::DIRECTION::DUMMY:
+		return false;
+		break;
+	case IUnit::DIRECTION::NORTH:
+		Pos.y -= 1;
+		break;
+	case IUnit::DIRECTION::SOUTH:
+		Pos.y += 1;
+		break;
+	case IUnit::DIRECTION::EAST:
+		Pos.x += 1;
+		break;
+	case IUnit::DIRECTION::WEST:
+		Pos.x -= 1;
+		break;
+	}
+	if (m_MapObj->IsWalkableTile(Pos.x, Pos.y))
+	{
+		if (UnitMgr->HasSpace(Pos))
 		{
-			m_Life = m_MaxLife;
-			CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
-			UnitMgr->MapGeneration();
+			Moved = true;
+			m_OnMapPos = Pos;
+			UnitMgr->SetPlayerPos(m_OnMapPos);
+			m_MapObj->SetMapped(m_OnMapPos, 8);
+			if (m_OnMapPos == m_StairPos)
+			{
+				m_Life = m_MaxLife;
+				UnitMgr->MapGeneration();
+			}
+		}
+		else
+		{
+			return Attack(Pos);
 		}
 	}
 	return Moved;
 }
 
-bool cPlayer::Attack()
+bool cPlayer::Attack(aqua::CVector2 pos)
 {
-	return false;
+	if (!m_MapObj->IsTileVisible(pos.x, pos.y))return false;
+	return IUnit::Attack(pos);
 }

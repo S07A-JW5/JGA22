@@ -20,6 +20,8 @@ public:
 
 	~cBot() = default;
 
+	void Initialize() override;
+
 	void Update() override;
 
 	bool Action() override;
@@ -29,7 +31,7 @@ private:
 
 	//bool Move() override;
 
-	bool Attack() override;
+	bool Attack(aqua::CVector2 pos) override;
 
 	AI_TYPE m_AIType;		//«Ši
 	IUnit* m_Target;		//UŒ‚‘ÎÛ

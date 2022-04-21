@@ -1,8 +1,8 @@
 #include "gauge.h"
 #include "../value/value.h"
 
-const int cGauge::m_space = 8;
-const int cGauge::m_size = 24;
+const int cGauge::m_space = 4;
+const int cGauge::m_size = 12;
 
 cGauge::cGauge(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "Gauge")
@@ -38,7 +38,7 @@ void cGauge::Initialize(aqua::CVector2 position, int value, int limit, int width
 		{
 			for (int j = 0; j < 3; j++)
 			{
-				m_Background[i * 3 + j].Create("data\\gauge_back.png");
+				m_Background[i * 3 + j].Create("data\\texture\\ui\\gauge_back.png");
 				m_Background[i * 3 + j].position = Position;
 
 				switch (j)
@@ -97,7 +97,7 @@ void cGauge::Initialize(aqua::CVector2 position, int value, int limit, int width
 
 	for (int i = 0; i < 2; i++)
 	{
-		m_Gauge[i].Create("data\\white_dot.png");
+		m_Gauge[i].Create("data\\texture\\dot.png");
 		m_Gauge[i].position = Position;
 		m_Gauge[i].color = Color;
 		m_Gauge[i].scale.x = m_Width * m_Value / m_Max;
@@ -163,7 +163,7 @@ void cGauge::Update()
 		if (m_Mirror)
 			m_Gauge[i].scale.x *= -1;
 	}
-	//m_Gauge[0].color.alpha = 0x7f;
+	m_Gauge[0].color.alpha = 0x7f;
 }
 
 void cGauge::Draw()

@@ -6,6 +6,7 @@
 #include "component/gauge/gauge.h"
 #include "component/select/select.h"
 #include "component/value/value.h"
+#include "component/status/status.h"
 #include "component/window/window.h"
 
 class cUIManager : public aqua::IGameObject
@@ -26,6 +27,15 @@ public:
 	void ClearUI();
 
 	void SetUIBGVisible(bool visible);
+
+	cStatusUI* CreateStatusUI(aqua::IGameObject* chr_obj, std::string name,
+		std::uint16_t life, std::uint16_t maxLife,
+		std::int16_t heatFlow, std::int16_t heat, std::int16_t baseHeat,
+		std::uint16_t weight, std::uint16_t support,
+		std::int16_t energyFlow, std::uint16_t batt, std::uint16_t maxBatt,
+		std::uint16_t parts, std::uint16_t maxParts,
+		std::uint16_t ammo, std::uint16_t maxAmmo,
+		std::int16_t resist[3], std::int16_t protection);
 
 	cSelection* CreateSelection(std::vector<int> number, std::vector<std::string> name, std::vector<std::string> desc, aqua::CVector2 pos);
 
@@ -49,8 +59,7 @@ public:
 
 	cAmountPopUp* CreateAmountPopUp(const aqua::CVector2& pos, const int& amount, cAmountPopUp::POP_UP_TYPE type, bool miss = false);
 
-private:
 	static const aqua::CVector2 m_ui_bg_pos;//Å´ÇÃï\é¶à íu
-
-	aqua::CSprite m_UIBackground;	//UIÇÃîwåi
+private:
+	aqua::CSprite m_UIBackground;		//UIÇÃîwåi
 };

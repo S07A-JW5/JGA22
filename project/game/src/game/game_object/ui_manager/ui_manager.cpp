@@ -45,6 +45,13 @@ void cUIManager::SetUIBGVisible(bool visible)
 	m_UIBackground.visible = visible;
 }
 
+cStatusUI* cUIManager::CreateStatusUI(aqua::IGameObject* chr_obj, std::string name, std::uint16_t life, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t heat, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t batt, std::uint16_t maxBatt, std::uint16_t parts, std::uint16_t maxParts, std::uint16_t ammo, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
+{
+	cStatusUI* StatUI = aqua::CreateGameObject<cStatusUI>(this);
+	StatUI->Initialize(chr_obj, name, life, maxLife, heatFlow, heat, baseHeat, weight, support, energyFlow, batt, maxBatt, parts, maxParts, ammo, maxAmmo, resist, protection);
+	return StatUI;
+}
+
 cSelection* cUIManager::CreateSelection(std::vector<int> number, std::vector<std::string> name, std::vector<std::string> desc, aqua::CVector2 pos)
 {
 	cSelection* Select = aqua::CreateGameObject<cSelection>(this);

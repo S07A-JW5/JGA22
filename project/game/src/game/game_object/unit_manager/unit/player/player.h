@@ -22,6 +22,8 @@ public:
 
 	void SetStairPosition(aqua::CVector2 pos);
 
+	void CalcStatus() override;
+
 	bool Action() override;
 
 private:
@@ -29,13 +31,10 @@ private:
 
 	bool Move() override;
 
-	bool Attack() override;
+	bool Attack(aqua::CVector2 pos) override;
 
-	aqua::CSprite m_Sight;
+	aqua::CVector2 m_TargetTile;
 	aqua::CVector2 m_StairPos;
 	aqua::CLinePrimitive m_Line;
-
-	aqua::CLabel m_LifeText;
-	aqua::CLabel m_BattText;
-	aqua::CLabel m_HeatText;
+	aqua::CBoxPrimitive m_Box;
 };

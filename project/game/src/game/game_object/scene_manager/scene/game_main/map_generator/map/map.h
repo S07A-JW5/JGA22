@@ -54,6 +54,8 @@ public:
 	aqua::CVector2 GetStartPoint();
 	aqua::CVector2 GetStairPos();
 
+	aqua::CVector2 GetPointedTile(aqua::CPoint mouse_pos);
+
 	cMap::TILE_ID GetTile(int x_pos, int y_pos);
 	bool IsWalkableTile(int x_pos, int y_pos);
 	bool IsTileVisible(int x_pos, int y_pos);

@@ -30,7 +30,13 @@ public:
 
 	bool IsPlayerNearBy(aqua::CVector2 pos);
 
+	bool HasSpace(aqua::CVector2 pos);
+
+	bool Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type);
+
 	void SetPlayerPos(aqua::CVector2 pos);
+
+	aqua::CVector2 GetPlayerPos();
 
 	void SetMapSize(int width, int height);
 
