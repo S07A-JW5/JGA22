@@ -128,6 +128,8 @@ void cGauge::Update()
 		}
 
 		m_Timer += aqua::GetDeltaTime();
+		if (m_Timer > 1.0f)
+			m_Timer = 1.0f;
 
 		m_Value = aqua::easing::OutCubic(m_Timer, 1.0f, m_PrevValue, m_CalcValue);
 	}

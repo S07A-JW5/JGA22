@@ -8,6 +8,7 @@
 
 cBot::cBot(aqua::IGameObject* parent)
 	: IUnit(parent, "Player")
+	, m_TargetVision(false)
 {
 }
 
@@ -31,16 +32,62 @@ void cBot::Update()
 bool cBot::Action()
 {
 	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
-	if (UnitMgr->IsPlayerNearBy(m_OnMapPos))
-	{
-		Attack(UnitMgr->GetPlayerPos());
-	}
+	aqua::CVector2 PlayerPos = UnitMgr->GetPlayerPos();
+	bool Attacked = false;
+
+	if (m_TargetVision && !m_MapObj->HitWall(m_OnMapPos, PlayerPos))
+			Attacked = Attack(PlayerPos);
+	if (!Attacked)
+		Move();
+
+	m_TargetVision = false;
+	if (UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
+		!m_MapObj->HitWall(m_OnMapPos, PlayerPos))
+		m_TargetVision = true;
 	return true;
 }
 
-bool cBot::Wait()
+bool cBot::Move()
 {
-	return false;
+	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	aqua::CVector2 Pos = aqua::CVector2::ZERO;
+	bool Moved = false;
+	
+	for (int i = 0; i < 4; i++)
+	{
+		Pos = m_OnMapPos;
+		m_MoveTo = (IUnit::DIRECTION)(rand() % (int)IUnit::DIRECTION::COUNT);
+
+		switch (m_MoveTo)
+		{
+		case IUnit::DIRECTION::DUMMY:
+			return false;
+			break;
+		case IUnit::DIRECTION::NORTH:
+			Pos.y -= 1;
+			break;
+		case IUnit::DIRECTION::SOUTH:
+			Pos.y += 1;
+			break;
+		case IUnit::DIRECTION::EAST:
+			Pos.x -= 1;
+			break;
+		case IUnit::DIRECTION::WEST:
+			Pos.x += 1;
+			break;
+		}
+		if (m_MapObj->IsWalkableTile(Pos.x, Pos.y) && UnitMgr->HasSpace(Pos))
+		{
+			Moved = true;
+			break;
+		}
+	}
+	if (Moved)
+	{
+		UnitMgr->SetMovedPos(m_OnMapPos, Pos);
+		m_OnMapPos = Pos;
+	}
+	return true;
 }
 
 bool cBot::Attack(aqua::CVector2 pos)

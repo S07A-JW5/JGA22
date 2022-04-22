@@ -27,9 +27,9 @@ public:
 	bool Action() override;
 
 private:
-	bool Wait() override;
+	//bool Wait() override;
 
-	//bool Move() override;
+	bool Move() override;
 
 	bool Attack(aqua::CVector2 pos) override;
 

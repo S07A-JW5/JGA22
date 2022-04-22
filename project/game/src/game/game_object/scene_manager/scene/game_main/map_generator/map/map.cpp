@@ -252,7 +252,7 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 	Rect.bottom = pos.y + radius;
 	bool Hit = false;
 	int Count = 0;
-	int LOD = 4;
+	int LOD = 16;
 	aqua::CRect Temp = aqua::CRect::ZERO;
 	aqua::CVector2 Pos = aqua::CVector2::ZERO;
 
@@ -360,7 +360,7 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 {
 	bool Hit = false;
 	int Count = 0;
-	int LOD = 4;
+	int LOD = 8;
 	aqua::CVector2 Diff = aqua::CVector2::ZERO;
 	aqua::CVector2 Pos = aqua::CVector2::ZERO;
 	aqua::CRect Rect = aqua::CRect::ZERO;
@@ -399,8 +399,6 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 
 			TileRect.push_back(Temp);
 		}
-
-
 	Diff = posB - posA;
 
 	if (abs(Diff.x) == abs(Diff.y) && abs(Diff.x) == 0 && abs(Diff.x) == 0)
@@ -440,10 +438,10 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 			{
 				Count = abs(Diff.y);
 			}
-			Diff = Diff / Count;
+			//Diff = Diff / Count;
 			for (int m = 1; m <= Count; m += max(m_tile_size / LOD, 1))
 			{
-				Pos = Diff * m + PointA;
+				Pos = (Diff * m) / Count + PointA;
 				for (int n = 0; n < TileRect.size(); n++)
 				{
 					if (Pos.x >= TileRect[n].left &&
@@ -461,6 +459,7 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 				if (Hit) break;
 			}
 			if (Hit) continue;
+			break;
 		}
 		return Hit;
 	}

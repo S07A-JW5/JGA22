@@ -15,7 +15,7 @@ void cPlayer::Initialize()
 {
 	IUnit::Initialize();
 	m_Line.Setup(aqua::CVector2::ZERO, aqua::CVector2::ZERO, 0xc07fff00);
-	m_Box.Setup(aqua::CVector2::ZERO, 12, 12, 0xffff0000, false, 2);
+	m_Box.Setup(aqua::CVector2::ZERO, 14, 14, 0xffff0000, false, 1);
 }
 
 void cPlayer::Update()
@@ -43,6 +43,10 @@ void cPlayer::Update()
 	}
 	else
 	{
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::SPACE))
+		{
+			m_DesiredAction = ACTION::WAIT;
+		}
 		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
 		{
 			m_DesiredAction = ACTION::MOVE;
@@ -171,6 +175,7 @@ bool cPlayer::Move()
 			if (m_OnMapPos == m_StairPos)
 			{
 				m_Life = m_MaxLife;
+				m_Ammo = min(m_Ammo + max(m_MaxAmmo / 10, 1), m_MaxAmmo);
 				UnitMgr->MapGeneration();
 			}
 		}

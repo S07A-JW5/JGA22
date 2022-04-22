@@ -30,6 +30,7 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_Protection(0)
 	, m_SightRange(0)
 	, m_Coverage(0)
+	, m_UnitNo(0)
 	, m_Status({ 0 })
 	, m_SoundManager(nullptr)
 	, m_UnitManager(nullptr)
@@ -53,6 +54,7 @@ void IUnit::Initialize()
 	m_UIManager = aqua::FindGameObject("UIManager");
 	m_Camera = aqua::FindGameObject("Camera");
 	m_UnitManager = GetParent();
+	m_UnitNo = -1;
 }
 
 void IUnit::Update()
@@ -69,7 +71,7 @@ void IUnit::Finalize()
 	m_Sprite.Delete();
 }
 
-void IUnit::Create(int id)
+void IUnit::Create(int id, int unit_no)
 {
 	cUnitDataBase* UnitDB = (cUnitDataBase*)aqua::FindGameObject("UnitDataBase");
 	cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
@@ -77,6 +79,8 @@ void IUnit::Create(int id)
 	cUnitDataBase::UnitData Data = UnitDB->GetData(id);
 
 	m_Sprite.Create(Data.TexFilePath);
+
+	m_UnitNo = unit_no;
 
 	m_Name = Data.Name;
 	m_Status.Life = Data.Life;

@@ -14,11 +14,13 @@ public:
 	};
 	enum class DIRECTION
 	{
-		DUMMY,
 		NORTH,
 		SOUTH,
 		EAST,
 		WEST,
+
+		COUNT,
+		DUMMY = 0xff
 	};
 	enum class STATUS
 	{
@@ -41,7 +43,7 @@ public:
 
 	void Finalize() override;
 
-	void Create(int id);
+	void Create(int id, int unit_no);
 
 	virtual void CalcStatus();
 
@@ -148,6 +150,7 @@ protected:
 
 	cMap* m_MapObj;
 	IGameObject* m_Camera;
+	int m_UnitNo;
 
 	bool m_DidAction;
 	ACTION m_DesiredAction;

@@ -27,7 +27,7 @@ void CUnitManager::Initialize(void)
 	m_Player = aqua::CreateGameObject<cPlayer>(this);
 
 	IGameObject::Initialize();
-	m_Player->Create(0);
+	m_Player->Create(0, 0);
 
 	MapGeneration();
 }
@@ -86,12 +86,13 @@ void CUnitManager::Clear()
 void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 {
 	cBot* Bot = aqua::CreateGameObject<cBot>(this);
-	Bot->Initialize();
-	Bot->Create(id);
-	Bot->SetPosition(aqua::CVector2(x_pos, y_pos));
 
 	m_NPCs.push_back(Bot);
 	m_UnitPos[x_pos][y_pos] = m_NPCs.size();
+
+	Bot->Initialize();
+	Bot->Create(id, m_NPCs.size());
+	Bot->SetPosition(aqua::CVector2(x_pos, y_pos));
 }
 
 void CUnitManager::MapGeneration()
@@ -100,7 +101,7 @@ void CUnitManager::MapGeneration()
 	m_MapGenerated = false;
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
 	MapGen->GenerateMap(30 + m_Floor, 30 + m_Floor,
-		5, 8, 4 + m_Floor * 2, 5, 8, 4 + m_Floor * 2);
+		5, 8, 2 + m_Floor, 5, 8, 1 + m_Floor);
 	cMap* Map = MapGen->GetMap();
 	m_MapObj = Map;
 	m_Player->GetMap(Map);
@@ -157,6 +158,19 @@ bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_T
 	return true;
 }
 
+void CUnitManager::SetMovedPos(aqua::CVector2 prev, aqua::CVector2 moved)
+{
+	if (!m_UnitPos) return;
+
+	int UnitNo = m_UnitPos[(int)prev.x][(int)prev.y];
+
+	if (UnitNo < 0) return;
+
+	m_UnitPos[(int)prev.x][(int)prev.y] = -1;
+	m_UnitPos[(int)moved.x][(int)moved.y] = UnitNo;
+
+}
+
 void CUnitManager::SetPlayerPos(aqua::CVector2 pos)
 {
 	m_UnitPos[(int)m_PlayerPos.x][(int)m_PlayerPos.y] = -1;
@@ -167,6 +181,13 @@ void CUnitManager::SetPlayerPos(aqua::CVector2 pos)
 aqua::CVector2 CUnitManager::GetPlayerPos()
 {
 	return m_PlayerPos;
+}
+
+float CUnitManager::BetweenPlayer(aqua::CVector2 pos)
+{
+	aqua::CVector2 Dst = m_PlayerPos - pos;
+
+	return Dst.Length();
 }
 
 void CUnitManager::SetMapSize(int width, int height)

@@ -28,6 +28,8 @@ public:
 
 	void Finalize() override;
 
+	bool LoadMap(std::string file_name);
+
 	bool GenerateMap(int width = 40, int height = 30,
 		int min_room_siz = 4, int max_room_siz = 8, int max_room_cnt = 10,
 		int min_corr_len = 8, int max_corr_len = 12, int max_corr_cnt = 10);
