@@ -5,7 +5,7 @@
 
 
 cStatusUI::cStatusUI(aqua::IGameObject* parent)
-	:IGameObject(parent,"StatusUI")
+	: IGameObject(parent,"StatusUI")
 	, m_Life(0)
 	, m_MaxLife(0)
 	, m_HeatFlow(0)
@@ -37,6 +37,49 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 	m_AmmoText.Create(16);
 	m_BattText.Create(16);
 	m_HeatText.Create(16);
+	m_ResistText.Create(16);
+	m_ProtectionText.Create(16);
+
+	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
+	aqua::CVector2 Pos = cUIManager::m_ui_bg_pos;
+	int GaugeXPos = cUIManager::m_ui_bg_pos.x + 560 / 2;
+	Pos.x += 16;
+	Pos.y += 10;
+
+	m_LifeText.position = Pos;	
+	Pos.y += 20;
+
+	m_LifeGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Life, m_MaxLife, 540, 8, false, true);
+	Pos.y += 16;
+
+	m_BattText.position = Pos;
+	Pos.y += 20;
+
+	m_BattGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Parts, m_MaxParts, 540, 8, false, true);
+	Pos.y += 16;
+
+	m_AmmoText.position = Pos;
+	Pos.y += 20;
+
+	m_AmmoGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Ammo, m_MaxAmmo, 540, 8, false, true);
+	Pos.y += 16;
+
+	m_PartText.position = Pos;
+	Pos.y += 20;
+
+	m_PartGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Batt, m_MaxBatt, 540, 8, false, true);
+	Pos.y += 16;
+
+	m_HeatText.position = Pos;
+	Pos.y += 16;
+
+	m_ResistText.position = Pos;
+
+	m_ProtectionText.position = aqua::CVector2(GaugeXPos, Pos.y);
+	m_ProtectionText.text =
+		"Protection: " + std::to_string(m_Protection);
+	Pos.y += 20;
+
 
 	m_Character = chr_obj;
 	m_Life = life;
@@ -92,6 +135,8 @@ void cStatusUI::Draw()
 	m_AmmoText.Draw();
 	m_PartText.Draw();
 	m_HeatText.Draw();
+	m_ResistText.Draw();
+	m_ProtectionText.Draw();
 }
 
 void cStatusUI::Finalize()
@@ -101,6 +146,8 @@ void cStatusUI::Finalize()
 	m_AmmoText.Delete();
 	m_PartText.Delete();
 	m_HeatText.Delete();
+	m_ResistText.Delete();
+	m_ProtectionText.Delete();
 }
 
 void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t maxBatt, std::uint16_t maxParts, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
@@ -120,44 +167,35 @@ void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t he
 	m_Protection = protection;
 
 	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
-	aqua::CVector2 Pos = cUIManager::m_ui_bg_pos;
-	Pos.x += 10;
-	Pos.y += 10;
 
-	m_LifeText.position = Pos;
 	m_LifeText.text =
 		"Life: " + std::to_string(m_Life) + " / " + std::to_string(m_MaxLife);
-	Pos.y += 20;
 
-	m_LifeGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(Pos.x + 270, Pos.y + 4), m_Life, m_MaxLife, 540, 8, false, true);
-	Pos.y += 16;
+	((cGauge*)m_LifeGauge)->SetMax(m_MaxLife);
+	((cGauge*)m_LifeGauge)->SetNum(m_Life);
 
-	m_BattText.position = Pos;
 	m_BattText.text =
 		"Batt: " + std::to_string(m_Batt) + " / " + std::to_string(m_MaxBatt) + " (" + std::to_string(m_EnergyFlow) + ")";
-	Pos.y += 20;
 
-	m_BattGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(Pos.x + 270, Pos.y + 4), m_Parts, m_MaxParts, 540, 8, false, true);
-	Pos.y += 16;
+	((cGauge*)m_BattGauge)->SetMax(m_MaxBatt);
+	((cGauge*)m_BattGauge)->SetNum(m_Batt);
 
-	m_AmmoText.position = Pos;
 	m_AmmoText.text =
 		"Ammo: " + std::to_string(m_Ammo) + " / " + std::to_string(m_MaxAmmo);
-	Pos.y += 20;
 
-	m_AmmoGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(Pos.x + 270, Pos.y + 4), m_Ammo, m_MaxAmmo, 540, 8, false, true);
-	Pos.y += 16;
+	((cGauge*)m_AmmoGauge)->SetMax(m_MaxAmmo);
+	((cGauge*)m_AmmoGauge)->SetNum(m_Ammo);
 
-	m_PartText.position = Pos;
 	m_PartText.text =
 		"Part: " + std::to_string(m_Parts) + " / " + std::to_string(m_MaxParts);
-	Pos.y += 20;
 
-	m_PartGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(Pos.x + 270, Pos.y + 4), m_Batt, m_MaxBatt, 540, 8, false, true);
-	Pos.y += 16;
+	((cGauge*)m_PartGauge)->SetMax(m_MaxParts);
+	((cGauge*)m_PartGauge)->SetNum(m_Parts);
 
-	m_HeatText.position = Pos;
 	m_HeatText.text =
 		"Heat: " + std::to_string(m_Heat) + " (" + std::to_string(m_HeatFlow) + ")";
-	//Pos.y += 16;
+	m_ResistText.text =
+		  "KI: " + std::to_string(m_Resist[0]) + "%" +
+		"  TH: " + std::to_string(m_Resist[1]) + "%" +
+		"  EL: " + std::to_string(m_Resist[2]) + "%";
 }

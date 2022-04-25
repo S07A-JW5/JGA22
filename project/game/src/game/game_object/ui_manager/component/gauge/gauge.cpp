@@ -189,8 +189,14 @@ void cGauge::Finalize()
 void cGauge::SetNum(int value)
 {
 	if (m_SyncObject) return;
+	if (m_CalcValue == value) return;
 
 	m_PrevValue = m_Value;
 	m_Timer = 0;
 	m_CalcValue = max(min(value, m_Max), 0);
+}
+
+void cGauge::SetMax(int value)
+{
+	m_Max = value;
 }

@@ -18,12 +18,16 @@ public:
 		std::int16_t  Resist[3];	//耐性値(%)
 		std::uint8_t  Inventory;	//ｲﾝﾍﾞﾝﾄﾘ容量
 
-		std::uint8_t WeaponCount;	//「腕」ｽﾛｯﾄ数
-		std::uint8_t ArmorCount;	//「装甲」ｽﾛｯﾄ数
-		std::uint8_t TranspCount;	//「移動」ｽﾛｯﾄ数
-		std::uint8_t UtilCount;	//「その他」ｽﾛｯﾄ数
+		std::uint8_t HeadCount;	//「頭」ｽﾛｯﾄ数
+		std::uint8_t ArmCount;		//「腕」ｽﾛｯﾄ数
+		std::uint8_t HandCount;	//「手」ｽﾛｯﾄ数
+		std::uint8_t ChestCount;	//「胸部」ｽﾛｯﾄ数
+		std::uint8_t BackCount;	//「背中」ｽﾛｯﾄ数
+		std::uint8_t LegCount;		//「脚」ｽﾛｯﾄ数
+		std::uint8_t ShlderCount;	//「肩」ｽﾛｯﾄ数
+		std::uint8_t CardCount;	//「拡張ｶｰﾄﾞ」ｽﾛｯﾄ数
 
-		std::uint16_t Equipped[20];	//装備している装備品ID
+		std::uint16_t Equipped[16];	//装備している装備品ID
 		std::uint16_t DropItemId[5];	//ドロップアイテムID
 		std::uint8_t  DropRate[5];		//落とす確率(%)
 	};

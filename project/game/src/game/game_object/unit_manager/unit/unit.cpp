@@ -91,50 +91,64 @@ void IUnit::Create(int id, int unit_no)
 	for (int i = 0; i < 3; i++)
 		m_Status.Resist[i] = Data.Resist[i];
 	m_Status.Inventory = Data.Inventory;
-	m_Status.WeaponCount = Data.WeaponCount;
-	m_Status.ArmorCount = Data.ArmorCount;
-	m_Status.TranspCount = Data.TranspCount;
-	m_Status.UtilCount = Data.UtilCount;
+	m_Status.HeadCount = Data.HeadCount;
+	m_Status.ArmCount = Data.ArmCount;
+	m_Status.HandCount = Data.HandCount;
+	m_Status.ChestCount = Data.ChestCount;
+	m_Status.BackCount = Data.BackCount;
+	m_Status.LegCount = Data.LegCount;
+	m_Status.ShlderCount = Data.ShlderCount;
+	m_Status.CardCount = Data.CardCount;
 
 	m_Weapon.clear();
-	m_Armor.clear();
-	m_Transp.clear();
-	m_Util.clear();
+	m_Head.clear();
+	m_Arm.clear();
+	m_Hand.clear();
+	m_Chest.clear();
+	m_Back.clear();
+	m_Leg.clear();
+	m_Shlder.clear();
+	m_Card.clear();
 
 	cEquipDataBase::Equipment Equipment;
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		Equipment = EquipDB->GetData(Data.Equipped[i]);
-		switch (Equipment.Type)
+
+		switch (Equipment.Slot)
 		{
-		case cEquipDataBase::EQUIPMENT_TYPE::WEAPON:
-			if (m_Weapon.size() >= m_Status.WeaponCount) break; 
-			{
-			WeaponStat Temp;
-			Temp.ID = Equipment.EquipmentID;
-			Temp.Name = Equipment.Name;
-			Temp.Heat = Equipment.Heat;
-			Temp.Ammo = Equipment.Ammo;
-			Temp.Energy = Equipment.Energy;
-			Temp.Range = Equipment.Range;
-			Temp.DamageType = Equipment.DamageType;
-			Temp.MinDamage = Equipment.MinDamage;
-			Temp.MaxDamage = Equipment.MaxDamage;
-			m_Weapon.push_back(Temp);
-			}
+		case cEquipDataBase::EQUIPMENT_SLOT::HEAD:
+			if (m_Head.size() >= m_Status.HeadCount) break;
+			m_Head.push_back(Equipment.EquipmentID);
 			break;
-		case cEquipDataBase::EQUIPMENT_TYPE::ARMOR:
-			if (m_Armor.size() >= m_Status.ArmorCount) break;
-			m_Armor.push_back(Equipment.EquipmentID);
+		case cEquipDataBase::EQUIPMENT_SLOT::ARM:
+			if (m_Arm.size() >= m_Status.ArmCount) break;
+			m_Arm.push_back(Equipment.EquipmentID);
 			break;
-		case cEquipDataBase::EQUIPMENT_TYPE::TRANSP:
-			if (m_Transp.size() >= m_Status.TranspCount) break;
-			m_Transp.push_back(Equipment.EquipmentID);
+		case cEquipDataBase::EQUIPMENT_SLOT::HAND:
+			if (m_Hand.size() >= m_Status.HandCount) break;
+			m_Hand.push_back(Equipment.EquipmentID);
 			break;
-		case cEquipDataBase::EQUIPMENT_TYPE::UTIL:
-			if (m_Util.size() >= m_Status.UtilCount) break;
-			m_Util.push_back(Equipment.EquipmentID);
+		case cEquipDataBase::EQUIPMENT_SLOT::CHEST:
+			if (m_Chest.size() >= m_Status.ChestCount) break;
+			m_Chest.push_back(Equipment.EquipmentID);
+			break;
+		case cEquipDataBase::EQUIPMENT_SLOT::BACK:
+			if (m_Back.size() >= m_Status.BackCount) break;
+			m_Back.push_back(Equipment.EquipmentID);
+			break;
+		case cEquipDataBase::EQUIPMENT_SLOT::LEG:
+			if (m_Leg.size() >= m_Status.LegCount) break;
+			m_Leg.push_back(Equipment.EquipmentID);
+			break;
+		case cEquipDataBase::EQUIPMENT_SLOT::SHOULDER:
+			if (m_Shlder.size() >= m_Status.ShlderCount) break;
+			m_Shlder.push_back(Equipment.EquipmentID);
+			break;
+		case cEquipDataBase::EQUIPMENT_SLOT::CARD:
+			if (m_Card.size() >= m_Status.CardCount) break;
+			m_Card.push_back(Equipment.EquipmentID);
 			break;
 		default:
 			break;
@@ -164,48 +178,37 @@ void IUnit::CalcStatus()
 	m_SightRange = 8;
 	m_Coverage = 0;
 
-	for (int i = 0; i < m_Weapon.size() && i < m_Status.WeaponCount; i++)
+	for (int i = 0; i < m_Head.size() && i < m_Status.HeadCount; i++)
 	{
-		Equipment = EquipDB->GetData(m_Weapon[i].ID);
-		if (Equipment.EquipmentID == 0) continue;
-
-		//m_Coverage++;
-		CalcBasicEquipmentStat(m_Weapon[i].ID);
+		CalcEquipmentStat(m_Head[i]);
 	}
-	for (int i = 0; i < m_Armor.size() && i < m_Status.ArmorCount; i++)
+	for (int i = 0; i < m_Arm.size() && i < m_Status.ArmCount; i++)
 	{
-		Equipment = EquipDB->GetData(m_Armor[i]);
-		if (Equipment.EquipmentID == 0) continue;
-
-		//m_Coverage += 4;
-		CalcBasicEquipmentStat(m_Armor[i]);
-		for (int j = 0; j < 3; j++)
-			m_Resist[j] += Equipment.Resist[j];
-		m_Protection += Equipment.Protection;
+		CalcEquipmentStat(m_Arm[i]);
 	}
-	for (int i = 0; i < m_Transp.size() && i < m_Status.TranspCount; i++)
+	for (int i = 0; i < m_Hand.size() && i < m_Status.HandCount; i++)
 	{
-		Equipment = EquipDB->GetData(m_Transp[i]);
-		if (Equipment.EquipmentID == 0) continue; 
-
-		//m_Coverage++;
-		CalcBasicEquipmentStat(m_Transp[i]);
-		m_Support += Equipment.Support;
+		CalcEquipmentStat(m_Hand[i]);
 	}
-	for (int i = 0; i < m_Util.size() && i < m_Status.UtilCount; i++)
+	for (int i = 0; i < m_Chest.size() && i < m_Status.ChestCount; i++)
 	{
-		Equipment = EquipDB->GetData(m_Util[i]);
-		if (Equipment.EquipmentID == 0) continue;
-
-		CalcBasicEquipmentStat(m_Util[i]);
-		m_EnergyFlow += Equipment.Power;
-		m_HeatFlow -= Equipment.Cooling;
-		m_SightRange += Equipment.Range;
-		m_BaseHeat += Equipment.BaseHeat;
-		m_Inventory += Equipment.Inventory;
-		m_MaxBatt += Equipment.MaxBatt;
-		m_MaxParts += Equipment.MaxPart;
-		m_MaxAmmo += Equipment.MaxAmmo;
+		CalcEquipmentStat(m_Chest[i]);
+	}
+	for (int i = 0; i < m_Back.size() && i < m_Status.BackCount; i++)
+	{
+		CalcEquipmentStat(m_Back[i]);
+	}
+	for (int i = 0; i < m_Leg.size() && i < m_Status.LegCount; i++)
+	{
+		CalcEquipmentStat(m_Leg[i]);
+	}
+	for (int i = 0; i < m_Shlder.size() && i < m_Status.ShlderCount; i++)
+	{
+		CalcEquipmentStat(m_Shlder[i]);
+	}
+	for (int i = 0; i < m_Card.size() && i < m_Status.CardCount; i++)
+	{
+		CalcEquipmentStat(m_Card[i]);
 	}
 }
 
@@ -231,7 +234,7 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	if (type == DAMAGE_TYPE::KINETIC)
 	{
 		Damage *= 100.0f / (100 + m_Protection);
-		Damage -= rand() % max(m_Protection / 4, 1);
+		Damage -= Dice::DiceRoll(m_Protection / 4);
 	}
 	Damage = max(Damage, 0);
 	m_Life = max(m_Life - Damage, 0);
@@ -336,9 +339,8 @@ bool IUnit::Attack(aqua::CVector2 pos)
 
 		if (m_Batt - m_Weapon[i].Energy < 0) continue;
 		if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
-		if (m_Heat + m_Weapon[i].Heat < 0) continue;
 
-		if (!UnitMgr->Attack(pos, aqua::Rand(m_Weapon[i].MinDamage, m_Weapon[i].MaxDamage), m_Weapon[i].DamageType)) return false;
+		if (!UnitMgr->Attack(pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType)) return false;
 
 		m_Batt = max(m_Batt - m_Weapon[i].Energy, 0);
 		m_Ammo = max(m_Ammo - m_Weapon[i].Ammo, 0);
@@ -349,7 +351,7 @@ bool IUnit::Attack(aqua::CVector2 pos)
 	return Attacked;
 }
 
-void IUnit::CalcBasicEquipmentStat(int id)
+void IUnit::CalcEquipmentStat(int id)
 {
 	cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
 	cEquipDataBase::Equipment Equipment = EquipDB->GetData(id);
@@ -357,7 +359,44 @@ void IUnit::CalcBasicEquipmentStat(int id)
 	if (Equipment.EquipmentID == 0) return;
 
 	m_Weight += Equipment.Weight;
-	if (Equipment.Type == cEquipDataBase::EQUIPMENT_TYPE::WEAPON) return;
-	m_EnergyFlow -= Equipment.Energy;
-	m_HeatFlow += Equipment.Heat;
+	if (Equipment.Type != cEquipDataBase::EQUIPMENT_TYPE::WEAPON)
+	{
+		m_EnergyFlow -= Equipment.Energy;
+		m_HeatFlow += Equipment.Heat;
+	}
+	switch (Equipment.Type)
+	{
+	case cEquipDataBase::EQUIPMENT_TYPE::WEAPON: {
+		WeaponStat Temp;
+		Temp.ID = Equipment.EquipmentID;
+		Temp.Name = Equipment.Name;
+		Temp.DamageType = Equipment.DamageType;
+		Temp.DmgRollData = Equipment.DmgRollData;
+		Temp.Range = Equipment.Range;
+		Temp.Heat = Equipment.Heat;
+		Temp.Ammo = Equipment.Ammo;
+		Temp.Energy = Equipment.Energy;
+		m_Weapon.push_back(Temp);
+	}	break;
+	case cEquipDataBase::EQUIPMENT_TYPE::ARMOR:
+		for (int j = 0; j < 3; j++)
+			m_Resist[j] += Equipment.Resist[j];
+		m_Protection += Equipment.Protection;
+		break;
+	case cEquipDataBase::EQUIPMENT_TYPE::SUPPORT:
+		m_Support += Equipment.Support;
+		break;
+	case cEquipDataBase::EQUIPMENT_TYPE::UTIL:
+		m_EnergyFlow += Equipment.Power;
+		m_HeatFlow -= Equipment.Cooling;
+		m_SightRange += Equipment.Range;
+		m_BaseHeat += Equipment.BaseHeat;
+		m_Inventory += Equipment.Inventory;
+		m_MaxBatt += Equipment.MaxBatt;
+		m_MaxParts += Equipment.MaxPart;
+		m_MaxAmmo += Equipment.MaxAmmo;
+		break;
+	default:
+		break;
+	}
 }

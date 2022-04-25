@@ -54,6 +54,8 @@ private:
 	aqua::CLabel	m_AmmoText;
 	aqua::CLabel	m_PartText;
 	aqua::CLabel	m_HeatText;
+	aqua::CLabel	m_ResistText;
+	aqua::CLabel	m_ProtectionText;
 
 	aqua::IGameObject* m_LifeGauge;
 	aqua::IGameObject* m_BattGauge;

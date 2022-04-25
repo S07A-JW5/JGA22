@@ -1,6 +1,7 @@
 #pragma once
 #include "aqua.h"
 #include "../../unit_manager/unit/unit.h"
+#include "game/tools/tools.h"
 
 class cEquipDataBase : public aqua::IGameObject
 {
@@ -10,8 +11,21 @@ public:
 		DUMMY,	//ﾀﾞﾐｰ
 		WEAPON,	//武器
 		ARMOR,	//装甲
-		TRANSP,	//移動
+		SUPPORT,	//補助
 		UTIL,	//装備品
+	};
+
+	enum class EQUIPMENT_SLOT
+	{
+		DUMMY,	//ﾀﾞﾐｰ
+		HEAD,	//頭
+		ARM,		//腕
+		HAND,	//手
+		CHEST,	//胸部
+		BACK,	//背中
+		LEG,		//脚
+		SHOULDER,	//肩
+		CARD,	//拡張ｶｰﾄﾞｽﾛｯﾄ
 	};
 
 	struct Equipment
@@ -22,6 +36,7 @@ public:
 		std::string Description;	//説明文
 
 		EQUIPMENT_TYPE Type;		//装備品タイプ
+		EQUIPMENT_SLOT Slot;		//装備可能部位
 
 		std::uint16_t	Durability;	//装備品の耐久値
 		std::uint16_t	AttatchPart;	//取付に必要な部品数
@@ -31,10 +46,9 @@ public:
 
 		//======================武器用========================
 		IUnit::DAMAGE_TYPE DamageType;	//ﾀﾞﾒｰｼﾞ属性
-		std::uint8_t MinDamage;		//最小ダメージ
-		std::uint8_t MaxDamage;		//最大ダメージ
-		//   uint8_t Range;			//射程(0の場合、近接攻撃武器)
-		std::uint8_t Ammo;				//弾薬消費量
+		Dice::DiceRollData DmgRollData;	//ﾀﾞﾒｰｼﾞﾛｰﾙﾃﾞｰﾀ
+		//   uint8_t Range;		//射程(0の場合、近接攻撃武器)
+		std::uint8_t Ammo;			//弾薬消費量
 
 		//======================装甲用========================
 		std::int16_t  Resist[3];	//耐性値(%)

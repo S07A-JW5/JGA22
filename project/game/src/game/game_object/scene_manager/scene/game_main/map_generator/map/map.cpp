@@ -252,7 +252,7 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 	Rect.bottom = pos.y + radius;
 	bool Hit = false;
 	int Count = 0;
-	int LOD = 16;
+	int LOD = 8;
 	aqua::CRect Temp = aqua::CRect::ZERO;
 	aqua::CVector2 Pos = aqua::CVector2::ZERO;
 

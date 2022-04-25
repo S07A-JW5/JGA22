@@ -103,6 +103,7 @@
     <ClCompile Include="src\game\game_object\camera\camera.cpp" />
     <ClCompile Include="src\game\game_object\database\chr_db\chr_db.cpp" />
     <ClCompile Include="src\game\game_object\database\equip_db\equip_db.cpp" />
+    <ClCompile Include="src\game\game_object\database\item_db\item_db.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\effect.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect_manager.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\game_main.cpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="src\game\game_object\unit_manager\unit\npc\bot.cpp" />
     <ClCompile Include="src\game\game_object\unit_manager\unit\unit.cpp" />
     <ClCompile Include="src\game\game_object\unit_manager\unit_manager.cpp" />
+    <ClCompile Include="src\game\tools\tools.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +141,7 @@
     <ClInclude Include="src\game\game_object\camera\camera.h" />
     <ClInclude Include="src\game\game_object\database\chr_db\chr_db.h" />
     <ClInclude Include="src\game\game_object\database\equip_db\equip_db.h" />
+    <ClInclude Include="src\game\game_object\database\item_db\item_db.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\effect.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect_id.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect_manager.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="src\game\game_object\unit_manager\unit\unit.h" />
     <ClInclude Include="src\game\game_object\unit_manager\unit\unit_id.h" />
     <ClInclude Include="src\game\game_object\unit_manager\unit_manager.h" />
+    <ClInclude Include="src\game\tools\tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,16 +18,18 @@ public:
 
 	void SetNum(int value);
 
+	void SetMax(int value);
+
 private:
 	static const int m_space;
 	static const int m_size;
 
 	int m_Max;				//最大値
 	float m_Value;			//現在の数値
-	int m_CalcValue;		//計算済み数値
+	float m_CalcValue;			//計算済み数値
 	float m_Timer;			//タイマー
 
-	int m_PrevValue;
+	float m_PrevValue;
 
 	int m_Width;
 
