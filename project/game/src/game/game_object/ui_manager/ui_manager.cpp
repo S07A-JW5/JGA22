@@ -66,15 +66,15 @@ cButton* cUIManager::CreateButton(cButton::ButtonFunc button_function, const aqu
 	return button;
 }
 
-cWindow* cUIManager::CreateUIWindow(const aqua::CVector2& pos, const int& width, const int& height)
+cWindow* cUIManager::CreateUIWindow(const aqua::CVector2& pos, const int& width, const int& height, const unsigned int& color)
 {
-	return CreateUIWindow(pos, width, height, this);
+	return CreateUIWindow(this, pos, width, height, color);
 }
 
-cWindow* cUIManager::CreateUIWindow(const aqua::CVector2& pos, const int& width, const int& height, aqua::IGameObject* parent)
+cWindow* cUIManager::CreateUIWindow(aqua::IGameObject* parent, const aqua::CVector2& pos, const int& width, const int& height, const unsigned int& color)
 {
 	cWindow* window = aqua::CreateGameObject<cWindow>(parent);
-	window->Initialize(pos, width, height);
+	window->Initialize(pos, width, height, color);
 	return window;
 }
 

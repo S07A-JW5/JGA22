@@ -4,6 +4,7 @@
 #include "game/game_object/camera/camera.h"
 #include "game/game_object/database/chr_db/chr_db.h"
 #include "game/game_object/database/equip_db/equip_db.h"
+#include "game/game_object/text_manager/text_manager.h"
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -30,6 +31,7 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_Protection(0)
 	, m_SightRange(0)
 	, m_Coverage(0)
+	, m_WeaponCount(0)
 	, m_UnitNo(0)
 	, m_Status({ 0 })
 	, m_SoundManager(nullptr)
@@ -100,7 +102,15 @@ void IUnit::Create(int id, int unit_no)
 	m_Status.ShlderCount = Data.ShlderCount;
 	m_Status.CardCount = Data.CardCount;
 
-	m_Weapon.clear();
+	m_Status.EquipCount = m_Status.HeadCount + m_Status.ArmCount +
+		m_Status.HandCount + m_Status.ChestCount + m_Status.BackCount +
+		m_Status.LegCount + m_Status.ShlderCount + m_Status.CardCount;
+
+	for (int i = 0; i < 16; i++)
+	{
+		m_Weapon[i] = WeaponStat{ 0 };
+		m_Equipment[i] = 0;
+	}
 	m_Head.clear();
 	m_Arm.clear();
 	m_Hand.clear();
@@ -177,37 +187,55 @@ void IUnit::CalcStatus()
 	m_Protection = 0;
 	m_SightRange = 8;
 	m_Coverage = 0;
+	m_WeaponCount = 0;
+	std::uint8_t Count = 0;
 
-	for (int i = 0; i < m_Head.size() && i < m_Status.HeadCount; i++)
+	for (int i = 0; i < m_Status.HeadCount; i++, Count++)
 	{
+		if (i >= m_Head.size()) m_Head.push_back(0);
+		m_Equipment[Count] = m_Head[i];
 		CalcEquipmentStat(m_Head[i]);
 	}
-	for (int i = 0; i < m_Arm.size() && i < m_Status.ArmCount; i++)
+	for (int i = 0; i < m_Status.ArmCount; i++, Count++)
 	{
+		if (i >= m_Arm.size()) m_Arm.push_back(0);
+		m_Equipment[Count] = m_Arm[i];
 		CalcEquipmentStat(m_Arm[i]);
 	}
-	for (int i = 0; i < m_Hand.size() && i < m_Status.HandCount; i++)
+	for (int i = 0; i < m_Status.HandCount; i++, Count++)
 	{
+		if (i >= m_Hand.size()) m_Hand.push_back(0);
+		m_Equipment[Count] = m_Hand[i];
 		CalcEquipmentStat(m_Hand[i]);
 	}
-	for (int i = 0; i < m_Chest.size() && i < m_Status.ChestCount; i++)
+	for (int i = 0; i < m_Status.ChestCount; i++, Count++)
 	{
+		if (i >= m_Chest.size()) m_Chest.push_back(0);
+		m_Equipment[Count] = m_Chest[i];
 		CalcEquipmentStat(m_Chest[i]);
 	}
-	for (int i = 0; i < m_Back.size() && i < m_Status.BackCount; i++)
+	for (int i = 0; i < m_Status.BackCount; i++, Count++)
 	{
+		if (i >= m_Back.size()) m_Back.push_back(0);
+		m_Equipment[Count] = m_Back[i];
 		CalcEquipmentStat(m_Back[i]);
 	}
-	for (int i = 0; i < m_Leg.size() && i < m_Status.LegCount; i++)
+	for (int i = 0; i < m_Status.LegCount; i++, Count++)
 	{
+		if (i >= m_Leg.size()) m_Leg.push_back(0);
+		m_Equipment[Count] = m_Leg[i];
 		CalcEquipmentStat(m_Leg[i]);
 	}
-	for (int i = 0; i < m_Shlder.size() && i < m_Status.ShlderCount; i++)
+	for (int i = 0; i < m_Status.ShlderCount; i++, Count++)
 	{
+		if (i >= m_Shlder.size()) m_Shlder.push_back(0);
+		m_Equipment[Count] = m_Shlder[i];
 		CalcEquipmentStat(m_Shlder[i]);
 	}
-	for (int i = 0; i < m_Card.size() && i < m_Status.CardCount; i++)
+	for (int i = 0; i < m_Status.CardCount; i++, Count++)
 	{
+		if (i >= m_Card.size()) m_Card.push_back(0);
+		m_Equipment[Count] = m_Card[i];
 		CalcEquipmentStat(m_Card[i]);
 	}
 }
@@ -230,6 +258,11 @@ void IUnit::GetMap(cMap* map)
 bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 {
 	int Damage = damage;
+	bool Defeated = false;
+	std::string Text = m_Name;
+	if (m_UnitNo != 0)
+		Text += "(" + std::to_string(m_UnitNo) + ")";
+
 	Damage *= (float)(100 - m_Resist[(int)type - 1]) / (100);
 	if (type == DAMAGE_TYPE::KINETIC)
 	{
@@ -237,8 +270,21 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 		Damage -= Dice::DiceRoll(m_Protection / 4);
 	}
 	Damage = max(Damage, 0);
+
+	if (Damage == 0)
+		((CTextManager*)m_TextManager)->EnterText(Text + "はダメージを受けなかった");
+	else
+		((CTextManager*)m_TextManager)->EnterText(Text + "は" +
+			std::to_string(Damage) + "点のダメージを受けた");
+
 	m_Life = max(m_Life - Damage, 0);
-	return m_Life <= 0;
+
+	if (m_Life <= 0)
+	{
+		((CTextManager*)m_TextManager)->EnterText(Text + "は破壊された");
+		Defeated = true;
+	}
+	return Defeated;
 }
 
 bool IUnit::DidAction()
@@ -272,6 +318,94 @@ int IUnit::GetStatus(IUnit::STATUS stat)
 		break;
 	}
 	return 0;
+}
+
+IUnit::EquippedStat IUnit::GetEquipped()
+{
+	cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
+	EquippedStat Stat = {};
+	std::uint8_t Count = 0;
+	cEquipDataBase::Equipment temp;
+
+	for (int i = 0; i < m_Status.HeadCount; i++, Count++)
+	{
+		Stat.Equipment[Count]= "Head  :";
+	}
+	for (int i = 0; i < m_Status.ArmCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Arm   :";
+	}
+	for (int i = 0; i < m_Status.HandCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Hand  :";
+	}
+	for (int i = 0; i < m_Status.ChestCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Chest :";
+	}
+	for (int i = 0; i < m_Status.BackCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Back  :";
+	}
+	for (int i = 0; i < m_Status.LegCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Leg   :";
+	}
+	for (int i = 0; i < m_Status.ShlderCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Shlder:";
+	}
+	for (int i = 0; i < m_Status.CardCount; i++, Count++)
+	{
+		Stat.Equipment[Count] = "Card  :";
+	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		if (i >= m_Status.EquipCount)
+		{
+			Stat.Equipment[i] = "---------------------------------------";
+			continue;
+		}
+		if (m_Equipment[i] == 0)
+		{
+			Stat.Equipment[i] += "--------------------------------";
+			continue;
+		}
+		temp = EquipDB->GetData(m_Equipment[i]);
+
+		Stat.Equipment[i] += temp.Name;
+		if (temp.Type == cEquipDataBase::EQUIPMENT_TYPE::WEAPON)
+		{
+			Stat.Equipment[i] +=
+				"(" + std::to_string(temp.DmgRollData.DiceCount) + 'd' +
+				std::to_string(temp.DmgRollData.DiceFaces);
+			if (temp.DmgRollData.ModValue != 0)
+			{
+				if (temp.DmgRollData.ModValue > 0)
+					Stat.Equipment[i] += "+";
+				Stat.Equipment[i] += std::to_string(temp.DmgRollData.ModValue);
+			}
+			Stat.Equipment[i] += " ";
+			switch (temp.DamageType)
+			{
+			case IUnit::DAMAGE_TYPE::KINETIC:
+				Stat.Equipment[i] += "KI)";
+				break;
+			case IUnit::DAMAGE_TYPE::THERMAL:
+				Stat.Equipment[i] += "TH)";
+				break;
+			case IUnit::DAMAGE_TYPE::ELECTRO:
+				Stat.Equipment[i] += "EL)";
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	Stat.Count = m_Status.EquipCount;
+
+	return Stat;
 }
 
 bool IUnit::Action()
@@ -327,10 +461,13 @@ bool IUnit::Attack(aqua::CVector2 pos)
 	if (m_MapObj->HitWall(m_OnMapPos, pos)) return false;
 
 	aqua::CVector2 Diff = pos - m_OnMapPos;
+	std::string Text = m_Name;
+	if (m_UnitNo != 0)
+		Text += "(" + std::to_string(m_UnitNo) + ")";
 
 	bool Attacked = false;
 
-	for (int i = 0; i < m_Weapon.size(); i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (m_Weapon[i].ID == 0) continue;
 		if (m_Weapon[i].Range < Diff.Length())
@@ -340,8 +477,13 @@ bool IUnit::Attack(aqua::CVector2 pos)
 		if (m_Batt - m_Weapon[i].Energy < 0) continue;
 		if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
 
-		if (!UnitMgr->Attack(pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType)) return false;
+		((CTextManager*)m_TextManager)->EnterText(Text + "は" + m_Weapon[i].Name + 
+			"で攻撃した");
 
+		if (!UnitMgr->Attack(pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType)){
+			((CTextManager*)m_TextManager)->EnterText("相手が見つからなかった");
+			return false;
+		}
 		m_Batt = max(m_Batt - m_Weapon[i].Energy, 0);
 		m_Ammo = max(m_Ammo - m_Weapon[i].Ammo, 0);
 		m_Heat = min(m_Heat + m_Weapon[i].Heat, 999);
@@ -353,10 +495,10 @@ bool IUnit::Attack(aqua::CVector2 pos)
 
 void IUnit::CalcEquipmentStat(int id)
 {
+	if (id <= 0) return;
+
 	cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
 	cEquipDataBase::Equipment Equipment = EquipDB->GetData(id);
-
-	if (Equipment.EquipmentID == 0) return;
 
 	m_Weight += Equipment.Weight;
 	if (Equipment.Type != cEquipDataBase::EQUIPMENT_TYPE::WEAPON)
@@ -376,7 +518,8 @@ void IUnit::CalcEquipmentStat(int id)
 		Temp.Heat = Equipment.Heat;
 		Temp.Ammo = Equipment.Ammo;
 		Temp.Energy = Equipment.Energy;
-		m_Weapon.push_back(Temp);
+		m_Weapon[m_WeaponCount] = Temp;
+		m_WeaponCount++;
 	}	break;
 	case cEquipDataBase::EQUIPMENT_TYPE::ARMOR:
 		for (int j = 0; j < 3; j++)

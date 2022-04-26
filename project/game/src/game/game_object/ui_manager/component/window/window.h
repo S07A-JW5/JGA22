@@ -9,7 +9,7 @@ public:
 
 	~cWindow() = default;
 
-	void Initialize(const aqua::CVector2& pos, const int& width = 64, const int& height = 64);
+	void Initialize(const aqua::CVector2& pos, const int& width = 64, const int& height = 64, const unsigned int& color = 0xffffffff);
 
 	void Update() override;
 

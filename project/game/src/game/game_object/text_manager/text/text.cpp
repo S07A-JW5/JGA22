@@ -108,7 +108,7 @@ void cText::Initialize(const aqua::CVector2& pos, const std::string& text, const
 		default:
 			break;
 		}
-		m_Window = UIMgr->CreateUIWindow(Position, WinWidth, WinHeight, this);
+		m_Window = UIMgr->CreateUIWindow(this, Position, WinWidth, WinHeight);
 		m_Width = WinWidth;
 		m_Height = WinHeight;
 	}

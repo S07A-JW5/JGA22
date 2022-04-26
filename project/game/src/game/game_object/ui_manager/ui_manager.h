@@ -44,8 +44,8 @@ public:
 		const std::string& name = "ƒ{ƒ^ƒ“", const int& width = 64, const int& height = 64,
 		const int& font_size = 12, const std::string& description = "", const bool& select = false);
 
-	cWindow* CreateUIWindow(const aqua::CVector2& pos, const int& width, const int& height);
-	cWindow* CreateUIWindow(const aqua::CVector2& pos, const int& width, const int& height, aqua::IGameObject* parent);
+	cWindow* CreateUIWindow(const aqua::CVector2& pos, const int& width, const int& height, const unsigned int& color = 0xffffffff);
+	cWindow* CreateUIWindow(aqua::IGameObject* parent, const aqua::CVector2& pos, const int& width, const int& height, const unsigned int& color = 0xffffffff);
 
 	cValue* CreateValueText(aqua::CVector2 position, int max, int size, bool display_max);
 	cValue* CreateValueText(aqua::CVector2 position, int value, int max, int size, bool display_max);

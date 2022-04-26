@@ -6,13 +6,6 @@
 class CTextManager : public aqua::IGameObject
 {
 public:
-	enum class DISPLAY_MODE
-	{
-		STANDARD,	//通常
-		NO_WINDOW,	//ウィンドウ無し
-		BATTLE,		//戦闘時用
-	};
-
 	CTextManager(aqua::IGameObject* parent);
 
 	~CTextManager(void) = default;
@@ -29,9 +22,9 @@ public:
 
 	void SetText(std::string text);
 
-	void ClearText();
+	void EnterText(std::string text);
 
-	void SetMode(DISPLAY_MODE mode);
+	void ClearText();
 
 	void WindowCheck();
 
@@ -45,11 +38,15 @@ private:
 
 	static const int m_font_size;
 
+	static const int m_text_window_width;
+
 	static const int m_text_window_height;
 
 	static const aqua::CVector2 m_text_window_pos;
 
-	std::string m_String;
+	std::string m_DisplayText;
+
+	std::list<std::string> m_TextList;
 
 	aqua::CLabel* m_Text;
 
@@ -60,8 +57,6 @@ private:
 	std::uint8_t m_Rows;
 
 	float m_Timer;
-
-	DISPLAY_MODE m_DisplayMode;
 
 	aqua::IGameObject* m_Window;
 

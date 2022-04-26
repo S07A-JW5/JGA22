@@ -1,7 +1,7 @@
 #include "window.h"
 
-const int cWindow::m_space = 12;
-const int cWindow::m_size = 64;
+const int cWindow::m_space = 4;
+const int cWindow::m_size = 12;
 
 cWindow::cWindow(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "Window")
@@ -11,7 +11,7 @@ cWindow::cWindow(aqua::IGameObject* parent)
 {
 }
 
-void cWindow::Initialize(const aqua::CVector2& pos, const int& width, const int& height)
+void cWindow::Initialize(const aqua::CVector2& pos, const int& width, const int& height, const unsigned int& color)
 {
 	m_Position = pos;
 	m_Width = max(width, m_space * 2);
@@ -23,6 +23,7 @@ void cWindow::Initialize(const aqua::CVector2& pos, const int& width, const int&
 		{
 			m_Sprite[i * 3 + j].Create("data\\texture\\ui\\window.png");
 			m_Sprite[i * 3 + j].position = m_Position;
+			m_Sprite[i * 3 + j].color = color;
 
 			switch (j)
 			{

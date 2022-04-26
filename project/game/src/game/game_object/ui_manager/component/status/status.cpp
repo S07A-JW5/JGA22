@@ -39,11 +39,13 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 	m_HeatText.Create(16);
 	m_ResistText.Create(16);
 	m_ProtectionText.Create(16);
+	for (int i = 0; i < 17; i++)
+		m_EquipmentText[i].Create(16);
 
 	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
 	aqua::CVector2 Pos = cUIManager::m_ui_bg_pos;
 	int GaugeXPos = cUIManager::m_ui_bg_pos.x + 560 / 2;
-	Pos.x += 16;
+	Pos.x += 18;
 	Pos.y += 10;
 
 	m_LifeText.position = Pos;	
@@ -76,10 +78,19 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 	m_ResistText.position = Pos;
 
 	m_ProtectionText.position = aqua::CVector2(GaugeXPos, Pos.y);
-	m_ProtectionText.text =
-		"Protection: " + std::to_string(m_Protection);
 	Pos.y += 20;
 
+	m_EquipmentText[16].position = aqua::CVector2(Pos.x - 8, Pos.y);
+	m_EquipmentText[16].text = "Equipment";
+	Pos.y += 16;
+
+	for (int i = 0; i < 16; i++)
+	{
+		m_EquipmentText[i].position = Pos;
+		Pos.y += 16;
+	}
+
+	Pos.DebugLog();
 
 	m_Character = chr_obj;
 	m_Life = life;
@@ -137,6 +148,8 @@ void cStatusUI::Draw()
 	m_HeatText.Draw();
 	m_ResistText.Draw();
 	m_ProtectionText.Draw();
+	for (int i = 0; i < 17; i++)
+		m_EquipmentText[i].Draw();
 }
 
 void cStatusUI::Finalize()
@@ -148,6 +161,8 @@ void cStatusUI::Finalize()
 	m_HeatText.Delete();
 	m_ResistText.Delete();
 	m_ProtectionText.Delete();
+	for (int i = 0; i < 17; i++)
+		m_EquipmentText[i].Delete();
 }
 
 void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t maxBatt, std::uint16_t maxParts, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
@@ -166,7 +181,7 @@ void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t he
 		m_Resist[i] = resist[i];
 	m_Protection = protection;
 
-	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
+	IUnit::EquippedStat Stat = ((IUnit*)m_Character)->GetEquipped();
 
 	m_LifeText.text =
 		"Life: " + std::to_string(m_Life) + " / " + std::to_string(m_MaxLife);
@@ -195,7 +210,13 @@ void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t he
 	m_HeatText.text =
 		"Heat: " + std::to_string(m_Heat) + " (" + std::to_string(m_HeatFlow) + ")";
 	m_ResistText.text =
-		  "KI: " + std::to_string(m_Resist[0]) + "%" +
+		"KI: " + std::to_string(m_Resist[0]) + "%" +
 		"  TH: " + std::to_string(m_Resist[1]) + "%" +
 		"  EL: " + std::to_string(m_Resist[2]) + "%";
+
+	m_ProtectionText.text =
+		"Protection: " + std::to_string(m_Protection);
+
+	for (int i = 0; i < 16; i++)
+		m_EquipmentText[i].text = Stat.Equipment[i];
 }

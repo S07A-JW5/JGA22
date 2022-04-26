@@ -31,6 +31,11 @@ public:
 		PARTS,
 		AMMO,
 	};
+	struct EquippedStat
+	{
+		std::string	Equipment[16];
+		std::uint8_t	Count;
+	};
 
 	IUnit(aqua::IGameObject* parent, std::string name);
 
@@ -62,6 +67,8 @@ public:
 
 	int GetStatus(IUnit::STATUS stat);
 
+	EquippedStat GetEquipped();
+
 	virtual bool Action();
 
 protected:
@@ -91,6 +98,7 @@ protected:
 		std::uint8_t LegCount;		//「脚」ｽﾛｯﾄ数
 		std::uint8_t ShlderCount;	//「肩」ｽﾛｯﾄ数
 		std::uint8_t CardCount;	//「拡張ｶｰﾄﾞ」ｽﾛｯﾄ数
+		std::uint8_t EquipCount;	//総装備スロット数
 	};
 
 	struct WeaponStat
@@ -147,7 +155,9 @@ protected:
 
 	std::uint8_t m_Coverage;
 
-	std::vector<WeaponStat> m_Weapon;	//装備している武器
+	std::uint8_t	m_WeaponCount;
+	WeaponStat	m_Weapon[16];			//装備している武器
+	std::uint16_t	m_Equipment[16];		//装備している装備品
 	std::vector<uint16_t>	 m_Head;		//
 	std::vector<uint16_t>	 m_Arm;		//
 	std::vector<uint16_t>	 m_Hand;		//

@@ -2,20 +2,20 @@
 #include "../ui_manager/ui_manager.h"
 #include "../ui_manager/component/window/window.h"
 
-const int CTextManager::m_rows = 5;
-const int CTextManager::m_font_size = 24;
-const int CTextManager::m_text_window_height = m_font_size * m_rows + 12 * 2;
-const aqua::CVector2 CTextManager::m_text_window_pos = aqua::CVector2(0, aqua::GetWindowHeight() - m_text_window_height);
+const int CTextManager::m_rows = 15;
+const int CTextManager::m_font_size = 16;
+const int CTextManager::m_text_window_width = 1280 - 720;
+const int CTextManager::m_text_window_height = 720 - 462;
+const aqua::CVector2 CTextManager::m_text_window_pos = aqua::CVector2(720, 462);
 
 CTextManager::CTextManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "TextManager")
-	, m_String()
+	, m_DisplayText()
 	, m_Text(nullptr)
 	, m_TextDisplay(false)
 	, m_TextIndex(0)
 	, m_Rows(0)
 	, m_Timer(0.0f)
-	, m_DisplayMode(DISPLAY_MODE::NO_WINDOW)
 	, m_Window(nullptr)
 	, m_UIManager(nullptr)
 {
@@ -27,14 +27,15 @@ void CTextManager::Initialize()
 
 	m_UIManager = aqua::FindGameObject("UIManager");
 
-	m_String = "";
+	m_DisplayText = "";
 
 	for (int i = 0; i < m_rows; i++)
 	{
-		m_Text[i].Create(m_font_size, 1);
-		m_Text[i].position.y = aqua::GetWindowHeight() - m_text_window_height + 12 + i * m_font_size;
+		m_Text[i].Create(m_font_size);
+		m_Text[i].position = m_text_window_pos;
+		m_Text[i].position.x += 10;
+		m_Text[i].position.y += 8 + i * m_font_size;
 		m_Text[i].color = 0xffffffff;
-		m_Text[i].edge_color = 0xff010101;
 		m_Text[i].text = "";
 	}
 	WindowCheck();
@@ -42,75 +43,53 @@ void CTextManager::Initialize()
 
 void CTextManager::Update()
 {
-	if (m_String == "")
-	{
-		cWindow* Window = (cWindow*)m_Window;
-		Window->SetPosition(aqua::CVector2(0, aqua::GetWindowHeight()));
-	}
-	else
-	{
-		m_TextDisplay = true;
-		switch (m_DisplayMode)
-		{
-		case CTextManager::DISPLAY_MODE::STANDARD:
-		{
-			cWindow* Window = (cWindow*)m_Window;
-			m_TextDisplay = Window->GetPosition() == m_text_window_pos;
-		}
-		case CTextManager::DISPLAY_MODE::NO_WINDOW:
-			m_Timer += aqua::GetDeltaTime();
-			if (m_Timer >= 0.030f && m_TextIndex < m_String.size() && m_Rows <= m_rows)
-			{
-				m_Timer = 0;
-				bool NewLine = false;
-				std::string Char = m_String.substr(m_TextIndex, 1);
-				if ((Char[0] >= (char)0x80 && Char[0] <= (char)0x9F) ||
-					(Char[0] >= (char)0xE0 && Char[0] <= (char)0xFF))
-				{
-					Char += m_String.substr(++m_TextIndex, 1);
-				}
-				else
-				{
-					std::string Temp2 = "";
-					if (Char[0] == '\\')
-					{
-						Temp2 = '\\' + m_String.substr(m_TextIndex + 1, 1);
-					}
-					if (Char[0] == '\n' || Temp2 == "\\n")
-					{
-						if (Temp2 == "\\n")
-							m_TextIndex++;
-						m_Rows++;
-						NewLine = true;
-					}
-				}
-				m_TextIndex++;
-
-				if (!NewLine)
-				{
-					m_Text[m_Rows].text += Char;
-					AQUA_DEBUG_LOG(Char);
-				}
-			}
-			break;
-		case CTextManager::DISPLAY_MODE::BATTLE:
-			break;
-		default:
-			break;
-		}
-	}
-
 	IGameObject::Update();
+
+	if (m_TextDisplay)
+	{
+		m_Timer += aqua::GetDeltaTime();
+		if (m_Timer >= 0.015f)
+		{
+			m_Timer = 0;
+			if (m_TextIndex >= m_DisplayText.size())
+			{
+				if (m_TextList.size() <= 1)
+					return;
+				m_TextIndex = 0;
+				if (!(m_DisplayText == "" && m_Rows == 0))
+				{
+					if (++m_Rows >= m_rows)
+					{
+						m_Rows = m_rows - 1;
+						for (int i = 0; i < m_rows - 1; i++)
+							m_Text[i].text = m_Text[i + 1].text;
+						m_Text[m_rows - 1].text = "";
+					}
+					m_TextList.pop_front();
+				}
+				auto it = m_TextList.begin();
+				m_DisplayText = (*it);
+			}
+			std::string Char = m_DisplayText.substr(m_TextIndex, 1);
+			if ((Char[0] >= (char)0x80 && Char[0] <= (char)0x9F) ||
+				(Char[0] >= (char)0xE0 && Char[0] <= (char)0xFF))
+			{
+				Char += m_DisplayText.substr(++m_TextIndex, 1);
+			}
+			m_TextIndex++;
+
+			AQUA_DEBUG_LOG(Char);
+			m_Text[m_Rows].text += Char;
+		}
+	}
 }
 
 void CTextManager::Draw()
 {
 	IGameObject::Draw();
 
-	cWindow* Window = (cWindow*)m_Window;
-	if (Window->GetPosition() == m_text_window_pos)
-		for (int i = 0; i < m_rows; i++)
-			m_Text[i].Draw();
+	for (int i = 0; i < m_rows; i++)
+		m_Text[i].Draw();
 }
 
 void CTextManager::Finalize()
@@ -123,25 +102,44 @@ void CTextManager::Finalize()
 	IGameObject::Finalize();
 }
 
-void CTextManager::SetText(int rows, std::string text)
+void CTextManager::EnterText(std::string text)
 {
-	m_Text[rows].text = text;
-	m_Text[rows].position.x = (aqua::GetWindowWidth() - m_Text[rows].GetTextWidth()) / 2;
+	m_TextDisplay = true;
 
-	m_String = "m9(^„D^)";
+	bool NewLine = false;
+	std::string Char = "";
+	std::string Text = "";
+	std::string EnteredText = text;
 
-	WindowCheck();
-}
-
-void CTextManager::SetText(std::string text)
-{
-	ClearText();
-	m_Timer = 0;
-	m_String = text;
-	for (int i = 0; i < m_rows; i++)
-		m_Text[i].position.x = aqua::GetWindowWidth() / 4;
-
-	WindowCheck();
+	for (int Index = 0; Index < EnteredText.size(); Index++)
+	{
+		NewLine = false;
+		Char = EnteredText.substr(Index, 1);
+		if ((Char[0] >= (char)0x80 && Char[0] <= (char)0x9F) ||
+			(Char[0] >= (char)0xE0 && Char[0] <= (char)0xFF))
+		{
+			Char += EnteredText.substr(++Index, 1);
+		}
+		else
+		{
+			std::string Temp = "";
+			if (Char[0] == '\\')
+			{
+				Temp = '\\' + EnteredText.substr(Index + 1, 1);
+			}
+			if (Char[0] == '\n' || Temp == "\\n")
+			{
+				if (Temp == "\\n")
+					Index++;
+				NewLine = true;
+			}
+		}
+		if (NewLine)
+			m_TextList.push_back(Text);
+		else
+			Text += Char;
+	}
+	m_TextList.push_back(Text);
 }
 
 void CTextManager::ClearText()
@@ -152,30 +150,8 @@ void CTextManager::ClearText()
 	m_TextIndex = 0;
 	m_Rows = 0;
 
-	m_String = "";
-}
-
-void CTextManager::SetMode(DISPLAY_MODE mode)
-{
-	if (m_DisplayMode == mode) return;
-
-	m_DisplayMode = mode;
-	switch (m_DisplayMode)
-	{
-	case CTextManager::DISPLAY_MODE::STANDARD:
-		WindowCheck();
-		break;
-	case CTextManager::DISPLAY_MODE::NO_WINDOW:
-	case CTextManager::DISPLAY_MODE::BATTLE:
-		{
-			cWindow* Window = (cWindow*)m_Window;
-			Window->SetPosition(aqua::CVector2(0, aqua::GetWindowHeight()));
-			Window->SetVisible(false);
-		}
-		break;
-	default:
-		break;
-	}
+	m_DisplayText = "";
+	m_TextList.clear();
 }
 
 void CTextManager::WindowCheck()
@@ -183,15 +159,8 @@ void CTextManager::WindowCheck()
 	if (!m_Window)
 	{
 		cUIManager* UIMgr = (cUIManager*)m_UIManager;
-		m_Window = UIMgr->CreateUIWindow(aqua::CVector2(0, aqua::GetWindowHeight()), aqua::GetWindowWidth(), m_text_window_height, this);
+		m_Window = UIMgr->CreateUIWindow(this, m_text_window_pos, m_text_window_width, m_text_window_height, 0xff00c000);
 	}
-	cWindow* Window = (cWindow*)m_Window;
-		
-	if (m_DisplayMode == DISPLAY_MODE::STANDARD)
-		Window->SetVisible(true);
-
-	if (m_String != "")
-		Window->SetPosition(m_text_window_pos);
 }
 
 cText* CTextManager::CreateText(const aqua::CVector2& pos, const std::string& text, const int& font_size, bool with_window)
