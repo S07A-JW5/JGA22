@@ -13,6 +13,7 @@ public:
 		THERMAL,	//”M
 		ELECTRO,	//“d‹C
 	};
+
 	enum class DIRECTION
 	{
 		NORTH,
@@ -23,6 +24,7 @@ public:
 		COUNT,
 		DUMMY = 0xff
 	};
+
 	enum class STATUS
 	{
 		LIFE,
@@ -31,9 +33,16 @@ public:
 		PARTS,
 		AMMO,
 	};
+
 	struct EquippedStat
 	{
 		std::string	Equipment[16];
+		std::uint8_t	Count;
+	};
+
+	struct InventoryStat
+	{
+		std::string	Item[16];
 		std::uint8_t	Count;
 	};
 
@@ -69,6 +78,10 @@ public:
 
 	EquippedStat GetEquipped();
 
+	InventoryStat GetInventory();
+
+	void Dead();
+
 	virtual bool Action();
 
 protected:
@@ -82,13 +95,14 @@ protected:
 
 	struct status
 	{
-		std::uint16_t Life;		//Šî‘b‘Ï‹v—Í
-		std::uint16_t Cooling;		//Šî‘b—â‹p”\—Í
-		std::uint16_t Battery;		//Šî‘bÊŞ¯ÃØ°—e—Ê
-		std::uint16_t Parts;		//Šî‘b•”•iŠãŒÀ
-		std::uint16_t Ammo;		//Šî‘b’e–òŠãŒÀ
-		std::int16_t  Resist[3];	//Šî‘b‘Ï«’l(%)
-		std::uint8_t  Inventory;	//Šî‘b²İÍŞİÄØ—e—Ê
+		std::uint16_t	ID;			//ÕÆ¯ÄID
+		std::uint16_t	Life;		//Šî‘b‘Ï‹v—Í
+		std::uint16_t	Cooling;		//Šî‘b—â‹p”\—Í
+		std::uint16_t	Battery;		//Šî‘bÊŞ¯ÃØ°—e—Ê
+		std::uint16_t	Parts;		//Šî‘b•”•iŠãŒÀ
+		std::uint16_t	Ammo;		//Šî‘b’e–òŠãŒÀ
+		std::int16_t	Resist[3];	//Šî‘b‘Ï«’l(%)
+		std::uint8_t	Inventory;	//Šî‘b²İÍŞİÄØ—e—Ê
 
 		std::uint8_t HeadCount;	//u“ªv½Û¯Ä”
 		std::uint8_t ArmCount;		//u˜rv½Û¯Ä”
@@ -113,6 +127,14 @@ protected:
 		std::uint8_t	Energy;		//Á”ïÊŞ¯ÃØ°
 	};
 
+	struct ItemStat
+	{
+		std::uint16_t	ID;			//ƒAƒCƒeƒ€ID(0‚Í‹ó—“)
+		std::string	Name;		//ƒAƒCƒeƒ€–¼
+		std::uint8_t	Amount;		//ƒAƒCƒeƒ€‚Ì”
+		bool			IsEquipment;	//‘•”õ•i‚Å‚ ‚é‚©
+	};
+
 	virtual bool Wait();
 
 	virtual bool Move();
@@ -126,6 +148,8 @@ protected:
 	aqua::IGameObject* m_TextManager;	//Ã·½ÄÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_UIManager;		//UIÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_EquipmentDB;	//‘•”õ•iDB‚ÌÎß²İÀ
+	aqua::IGameObject* m_ItemDataBase;	//±²ÃÑDB‚ÌÎß²İÀ
+	aqua::IGameObject* m_UnitDataBase;	//ÕÆ¯ÄDB‚ÌÎß²İÀ
 
 	status m_Status;
 
@@ -153,7 +177,9 @@ protected:
 	std::int16_t	m_Protection;	//–hŒä—Í
 	std::uint8_t	m_SightRange;	//‹ŠE”¼Œa
 
-	std::uint8_t m_Coverage;
+	std::uint8_t	m_Coverage;
+
+	std::list<ItemStat> m_ItemList;
 
 	std::uint8_t	m_WeaponCount;
 	WeaponStat	m_Weapon[16];			//‘•”õ‚µ‚Ä‚¢‚é•Ší

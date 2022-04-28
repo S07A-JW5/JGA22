@@ -17,11 +17,22 @@ public:
 
 	enum class CONSUME_TYPE
 	{
-		DUMMY,	//ﾀﾞﾐｰ
+		NOT_CONSUMABLE,
 		SELF,	//自分自身
 		ENEMY,	//敵
 		THROW,	//投げ物
 	};
+
+	enum class MATERIALS
+	{
+		DUMMY,
+		AMMO,	//弾薬
+		PARTS,	//部品
+		ENERGY,	//ﾊﾞｯﾃﾘｰ
+
+		COUNT
+	};
+
 
 	struct ItemData
 	{
@@ -34,6 +45,7 @@ public:
 		CONSUME_TYPE	Consume;	//消耗品タイプ
 		std::int16_t	Life;	//使用時HP回復量
 		std::int16_t	Energy;	//使用時ﾊﾞｯﾃﾘｰ回復量
+		std::int16_t	Parts;	//使用時部品補給量
 		std::int16_t	Ammo;	//使用時弾薬補給量
 		std::int16_t	Cooling;	//使用時冷却量
 
@@ -50,9 +62,12 @@ public:
 
 	void Finalize() override;
 
-	ItemData GetData(int id);
+	ItemData GetData(int id, bool equipment = false);
 
 private:
 	void Load();
+
 	std::vector<ItemData> m_ItemDataList;
+
+	int m_ItemCount;
 };

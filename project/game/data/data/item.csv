@@ -1,0 +1,11 @@
+ItemID,Name,Description,Type,ConsumeType,Life ,Energy,Parts,Ammo,Cooling,DmgType,DmgRoll,Range
+0,Dummy,,0,0,0,0,0,0,0,0,0,0
+1,Ammo,,3,1,0,0,0,1,0,0,0,0
+2,Parts,,3,1,0,0,1,0,0,0,0,0
+3,Battery,,3,1,0,1,0,0,0,0,0,0
+4,Broken metalic parts,,1,0,0,0,0,0,0,0,0,0
+5,Broken battery,,1,0,0,0,0,0,0,0,0,0
+6,Broken gun parts,,1,0,0,0,0,0,0,0,0,0
+7,Rusted plating,,1,0,0,0,0,0,0,0,0,0
+8,Rusted toolkit,,1,0,0,0,0,0,0,0,0,0
+9,Broken processor,,1,0,0,0,0,0,0,0,0,0

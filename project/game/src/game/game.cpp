@@ -32,6 +32,7 @@ CGame::
 Initialize(void)
 {
     aqua::CreateGameObject<cUnitDataBase>(this);
+    aqua::CreateGameObject<cItemDataBase>(this);
     aqua::CreateGameObject<cEquipDataBase>(this);
     aqua::CreateGameObject<cCamera>(this);
     aqua::CreateGameObject<cSoundManager>(this);

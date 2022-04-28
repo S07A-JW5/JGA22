@@ -1,3 +1,4 @@
 UnitID,FilePath,Name,HP,Cooling,BattCapacity,PartCapacity,AmmoCapacity,KIResist%,THResist%,ELResist%,InvCapacity,HeadCount,ArmCount,HandCount,ChestCount,BackCount,LegCount,ShoulderCount,CardCount,EquippedID_0,EquippedID_1,EquippedID_2,EquippedID_3,EquippedID_4,EquippedID_5,EquippedID_6,EquippedID_7,EquippedID_8,EquippedID_9,EquippedID_10,EquippedID_11,EquippedID_12,EquippedID_13,EquippedID_14,EquippedID_15,DropItemId_0,DropRate_0,DropItemId_1,DropRate_1,DropItemId_2,DropRate_2,DropItemId_3,DropRate_3
 0,data\texture\chr\player.png,Player,100,5,100,100,100,0,0,0,4,1,2,2,1,1,2,2,1,1,1,2,3,3,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-1,data\texture\chr\bot.png,Bot,30,5,100,100,100,0,0,0,4,1,0,0,1,1,4,2,1,5,5,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1,data\texture\chr\bot.png,Tetrabot,30,5,100,100,100,0,0,0,4,1,0,0,1,1,4,2,1,5,5,6,3,3,3,3,0,0,0,0,0,0,0,0,0,4,50,5,30,6,20,7,10
+2,data\texture\chr\bot.png,Bot,50,5,100,100,100,0,0,0,4,1,2,2,1,1,2,2,1,1,1,6,3,3,0,0,0,0,0,0,0,0,0,0,0,5,50,7,30,8,20,9,10

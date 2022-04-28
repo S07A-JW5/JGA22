@@ -149,10 +149,10 @@ bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_T
 		m_Player->TakeDamage(damage, type);
 		return true;
 	}
-	if (m_NPCs[UnitNo-1]->TakeDamage(damage, type))
+	if (m_NPCs[UnitNo - 1]->TakeDamage(damage, type))
 	{
-		m_NPCs[UnitNo-1]->DeleteObject();
-		m_NPCs[UnitNo-1] = nullptr;
+		m_NPCs[UnitNo - 1]->Dead();
+		m_NPCs[UnitNo - 1] = nullptr;
 		m_UnitPos[(int)target_pos.x][(int)target_pos.y] = -1;
 	}
 	return true;

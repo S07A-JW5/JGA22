@@ -3,6 +3,7 @@
 #include "file_name.h"
 #include "game/game_object/camera/camera.h"
 #include "game/game_object/database/chr_db/chr_db.h"
+#include "game/game_object/database/item_db/item_db.h"
 #include "game/game_object/database/equip_db/equip_db.h"
 #include "game/game_object/text_manager/text_manager.h"
 #include <fstream>
@@ -38,6 +39,9 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_UnitManager(nullptr)
 	, m_TextManager(nullptr)
 	, m_UIManager(nullptr)
+	, m_EquipmentDB(nullptr)
+	, m_ItemDataBase(nullptr)
+	, m_UnitDataBase(nullptr)
 	, m_MapObj(nullptr)
 	, m_Camera(nullptr)
 	, m_DidAction(false)
@@ -50,6 +54,8 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 
 void IUnit::Initialize()
 {
+	m_UnitDataBase = aqua::FindGameObject("UnitDataBase");
+	m_ItemDataBase = aqua::FindGameObject("ItemDataBase");
 	m_EquipmentDB = aqua::FindGameObject("EquipmentDB");
 	m_SoundManager = aqua::FindGameObject("SoundManager");
 	m_TextManager = aqua::FindGameObject("TextManager");
@@ -85,6 +91,7 @@ void IUnit::Create(int id, int unit_no)
 	m_UnitNo = unit_no;
 
 	m_Name = Data.Name;
+	m_Status.ID = id;
 	m_Status.Life = Data.Life;
 	m_Status.Cooling = Data.Cooling;
 	m_Status.Battery = Data.Battery;
@@ -111,6 +118,7 @@ void IUnit::Create(int id, int unit_no)
 		m_Weapon[i] = WeaponStat{ 0 };
 		m_Equipment[i] = 0;
 	}
+	m_ItemList.clear();
 	m_Head.clear();
 	m_Arm.clear();
 	m_Hand.clear();
@@ -272,16 +280,15 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	Damage = max(Damage, 0);
 
 	if (Damage == 0)
-		((CTextManager*)m_TextManager)->EnterText(Text + "はダメージを受けなかった");
+		((CTextManager*)m_TextManager)->EnterText("  Hit - " + Text);
 	else
-		((CTextManager*)m_TextManager)->EnterText(Text + "は" +
-			std::to_string(Damage) + "点のダメージを受けた");
+		((CTextManager*)m_TextManager)->EnterText("  Hit - " + Text);
 
 	m_Life = max(m_Life - Damage, 0);
 
 	if (m_Life <= 0)
 	{
-		((CTextManager*)m_TextManager)->EnterText(Text + "は破壊された");
+		((CTextManager*)m_TextManager)->EnterText("  " + Text + " destroyed");
 		Defeated = true;
 	}
 	return Defeated;
@@ -408,6 +415,75 @@ IUnit::EquippedStat IUnit::GetEquipped()
 	return Stat;
 }
 
+IUnit::InventoryStat IUnit::GetInventory()
+{
+	cItemDataBase* ItemDB = (cItemDataBase*)m_ItemDataBase;
+	InventoryStat Stat = {};
+	cItemDataBase::ItemData temp;
+
+	auto it = m_ItemList.begin();
+	auto end = m_ItemList.end();
+
+	for (int i = 0; i < m_Inventory;i++)
+	{
+		Stat.Item[i] = std::to_string(i) + ": ";
+
+		if(it == end)
+		{
+			Stat.Item[i] += "--------------------------------";
+			continue;
+		}
+		if ((*it).ID == 0 || (*it).Amount == 0)
+		{
+			Stat.Item[i] += "--------------------------------";
+			continue;
+		}
+		temp = ItemDB->GetData((*it).ID, (*it).IsEquipment);
+
+		Stat.Item[i] += std::to_string((*it).Amount) + "x ";
+		Stat.Item[i] += temp.Name;
+		it++;
+	}
+	Stat.Count = m_Status.EquipCount;
+
+	return Stat;
+}
+
+void IUnit::Dead()
+{
+	m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, (int)cItemDataBase::MATERIALS::AMMO, m_Status.Ammo / aqua::Rand(5, 10));
+
+	cUnitDataBase::UnitData Data=((cUnitDataBase*)m_UnitDataBase)->GetData(m_Status.ID);
+	int DropXpos = m_OnMapPos.x;
+	int DropYpos = m_OnMapPos.y;
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (Data.DropItemId[i] == 0) continue;
+
+		DropXpos = m_OnMapPos.x;
+		DropYpos = m_OnMapPos.y;
+		switch (i)
+		{
+		case 0:
+			DropXpos--;
+			break;
+		case 1:
+			DropXpos++;
+			break;
+		case 2:
+			DropYpos--;
+			break;
+		case 3:
+			DropYpos++;
+			break;
+		}
+		if (Dice::PercentRoll(Data.DropRate[i]))
+			m_MapObj->PutItem(DropXpos, DropYpos, Data.DropItemId[i], 1);
+	}
+	DeleteObject();
+}
+
 bool IUnit::Action()
 {
 	return false;
@@ -459,6 +535,7 @@ bool IUnit::Attack(aqua::CVector2 pos)
 	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
 
 	if (m_MapObj->HitWall(m_OnMapPos, pos)) return false;
+	if (UnitMgr->HasSpace(pos)) return false;
 
 	aqua::CVector2 Diff = pos - m_OnMapPos;
 	std::string Text = m_Name;
@@ -477,11 +554,10 @@ bool IUnit::Attack(aqua::CVector2 pos)
 		if (m_Batt - m_Weapon[i].Energy < 0) continue;
 		if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
 
-		((CTextManager*)m_TextManager)->EnterText(Text + "は" + m_Weapon[i].Name + 
-			"で攻撃した");
+		((CTextManager*)m_TextManager)->EnterText(Text + ":" + m_Weapon[i].Name);
 
 		if (!UnitMgr->Attack(pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType)){
-			((CTextManager*)m_TextManager)->EnterText("相手が見つからなかった");
+			((CTextManager*)m_TextManager)->EnterText("  Target not found");
 			return false;
 		}
 		m_Batt = max(m_Batt - m_Weapon[i].Energy, 0);

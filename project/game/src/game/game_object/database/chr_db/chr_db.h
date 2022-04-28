@@ -28,8 +28,8 @@ public:
 		std::uint8_t CardCount;	//「拡張ｶｰﾄﾞ」ｽﾛｯﾄ数
 
 		std::uint16_t Equipped[16];	//装備している装備品ID
-		std::uint16_t DropItemId[5];	//ドロップアイテムID
-		std::uint8_t  DropRate[5];		//落とす確率(%)
+		std::uint16_t DropItemId[4];	//ドロップアイテムID
+		std::uint8_t  DropRate[4];		//落とす確率(%)
 	};
 
 	cUnitDataBase(aqua::IGameObject* parent);

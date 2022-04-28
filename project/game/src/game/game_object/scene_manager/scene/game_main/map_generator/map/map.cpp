@@ -20,6 +20,7 @@ cMap::cMap(aqua::IGameObject* parent, std::string name)
 
 void cMap::Initialize()
 {
+	m_ItemSprite.Create("data\\texture\\map\\item.png");
 	m_WallSprite.Create("data\\texture\\map\\wall.png");
 	m_TileSprite.Create("data\\texture\\map\\tile.png");
 	m_StairSprite.Create("data\\texture\\map\\stair.png");
@@ -142,12 +143,19 @@ void cMap::Draw()
 				m_StairSprite.Draw();
 				break;
 			}
+			if (m_Item[i][j].ItemID > 0 && m_Item[i][j].Num > 0)
+			{
+				m_ItemSprite.position = DrawPos;
+				m_ItemSprite.color.alpha = Alpha;
+				m_ItemSprite.Draw();
+			}
 		}
 }
 
 void cMap::Finalize()
 {
 	m_HasData = false;
+	m_ItemSprite.Delete();
 	m_WallSprite.Delete();
 	m_TileSprite.Delete();
 	m_StairSprite.Delete();

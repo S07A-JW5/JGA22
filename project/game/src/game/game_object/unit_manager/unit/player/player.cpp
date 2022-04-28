@@ -1,5 +1,6 @@
 #include "player.h"
 #include "../../unit_manager.h"
+#include "game/game_object/database/item_db/item_db.h"
 #include "game/game_object/camera/camera.h"
 #include "game/game_object/ui_manager/ui_manager.h"
 #include "game/game_object/text_manager/text_manager.h"
@@ -137,6 +138,53 @@ bool cPlayer::Action()
 
 bool cPlayer::Wait()
 {
+	cMap::DroppedItem Item = m_MapObj->GatherItem(m_OnMapPos.x, m_OnMapPos.y);
+	if (Item.ItemID > 0 && Item.Num > 0)
+	{
+		if (Item.ItemID < (int)cItemDataBase::MATERIALS::COUNT)
+		{
+			switch ((cItemDataBase::MATERIALS)Item.ItemID)
+			{
+			case cItemDataBase::MATERIALS::AMMO:
+				m_Ammo = min(m_Ammo + Item.Num, m_MaxAmmo);
+				break;
+			case cItemDataBase::MATERIALS::PARTS:
+				m_Parts = min(m_Parts + Item.Num, m_MaxParts);
+				break;
+			case cItemDataBase::MATERIALS::ENERGY:
+				m_Batt = min(m_Batt + Item.Num, m_MaxBatt);
+				break;
+			}
+		}
+		else
+		{
+			cItemDataBase::ItemData ItemData = 
+				((cItemDataBase*)m_ItemDataBase)->GetData(Item.ItemID);
+			ItemStat temp;
+			temp.ID = ItemData.ItemID;
+			temp.Name = ItemData.Name;
+			temp.Amount = Item.Num;
+			temp.IsEquipment = ItemData.Type == cItemDataBase::ITEM_TYPE::EQUIPMENT;
+
+			auto it = m_ItemList.begin();
+			auto end = m_ItemList.end();
+
+			for (;;)
+			{
+				if (it == end) break;
+				if ((*it).ID == temp.ID && (*it).IsEquipment == temp.IsEquipment)
+				{
+					temp.Amount += (*it).Amount;
+					m_ItemList.erase(it);
+					break;
+				}
+				++it;
+			}
+			m_ItemList.push_back(temp);
+			if (m_ItemList.size() > m_Inventory)
+				m_ItemList.pop_front();
+		}
+	}
 	return true;
 }
 

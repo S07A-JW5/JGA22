@@ -20,8 +20,7 @@ void cSEPlayer::Update()
 void cSEPlayer::Finalize()
 {
     if (m_SoundPlayer)
-        delete(m_SoundPlayer);
-    m_SoundPlayer = nullptr;
+        AQUA_SAFE_DELETE(m_SoundPlayer);
 
     IGameObject::Finalize();
 }

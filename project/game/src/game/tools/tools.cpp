@@ -110,7 +110,7 @@ int Dice::PercentRoll()
 	return DiceRoll(1, 100, 0);
 }
 
-bool Dice::ActRoll(unsigned char num)
+bool Dice::PercentRoll(unsigned char num)
 {
 	return PercentRoll() <= num;
 }

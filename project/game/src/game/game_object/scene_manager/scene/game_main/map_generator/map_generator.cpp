@@ -160,7 +160,7 @@ void cMapGenerator::Generate(bool step)
 			m_MapObj->DeleteObject();
 		m_MapObj = aqua::CreateGameObject<cMap>(this);
 		m_MapObj->Initialize(m_Width, m_Height, m_Map, m_StartPos, m_StairPos);
-		PutEnemy(PlayerRoom);
+		PutEnemy(PlayerRoom, aqua::Rand(1, 2));
 	}
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)

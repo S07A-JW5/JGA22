@@ -76,6 +76,7 @@ private:
 	DroppedItem** m_Item;		//アイテム配列
 	aqua::CVector2 m_StartPos;	//開始地点
 	aqua::CVector2 m_StairPos;	//階段の位置
+	aqua::CSprite m_ItemSprite;
 	aqua::CSprite m_WallSprite;
 	aqua::CSprite m_TileSprite;
 	aqua::CSprite m_StairSprite;

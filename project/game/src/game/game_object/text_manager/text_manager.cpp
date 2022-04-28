@@ -2,11 +2,11 @@
 #include "../ui_manager/ui_manager.h"
 #include "../ui_manager/component/window/window.h"
 
-const int CTextManager::m_rows = 15;
+const int CTextManager::m_rows = 10;
 const int CTextManager::m_font_size = 16;
 const int CTextManager::m_text_window_width = 1280 - 720;
-const int CTextManager::m_text_window_height = 720 - 462;
-const aqua::CVector2 CTextManager::m_text_window_pos = aqua::CVector2(720, 462);
+const int CTextManager::m_text_window_height = 720 - 546;
+const aqua::CVector2 CTextManager::m_text_window_pos = aqua::CVector2(720, 546);
 
 CTextManager::CTextManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "TextManager")

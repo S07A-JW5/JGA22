@@ -17,5 +17,5 @@ namespace Dice
 	int DiceRoll(std::string text);
 	DiceRollData GetDiceRollData(std::string text);
 	int PercentRoll();
-	bool ActRoll(unsigned char num);
+	bool PercentRoll(unsigned char num);
 }

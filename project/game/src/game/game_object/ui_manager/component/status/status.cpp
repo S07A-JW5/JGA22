@@ -41,6 +41,8 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 	m_ProtectionText.Create(16);
 	for (int i = 0; i < 17; i++)
 		m_EquipmentText[i].Create(16);
+	for (int i = 0; i < 5; i++)
+		m_InventoryText[i].Create(16);
 
 	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
 	aqua::CVector2 Pos = cUIManager::m_ui_bg_pos;
@@ -82,13 +84,23 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 
 	m_EquipmentText[16].position = aqua::CVector2(Pos.x - 8, Pos.y);
 	m_EquipmentText[16].text = "Equipment";
-	Pos.y += 16;
 
 	for (int i = 0; i < 16; i++)
 	{
-		m_EquipmentText[i].position = Pos;
 		Pos.y += 16;
+		m_EquipmentText[i].position = Pos;
 	}
+	Pos.y += 20;
+
+	m_InventoryText[4].position = aqua::CVector2(Pos.x - 8, Pos.y);
+	m_InventoryText[4].text = "Inventory";
+
+	for (int i = 0; i < 4; i++)
+	{
+		Pos.y += 16;
+		m_InventoryText[i].position = Pos;
+	}
+	Pos.y += 16;
 
 	Pos.DebugLog();
 
@@ -137,6 +149,11 @@ void cStatusUI::Update()
 		"Batt: " + std::to_string(m_Batt) + " / " + std::to_string(m_MaxBatt) + " (" + std::to_string(m_EnergyFlow) + ")";
 	m_HeatText.text =
 		"Heat: " + std::to_string(m_Heat) + " (" + std::to_string(m_HeatFlow) + ")";
+
+	IUnit::InventoryStat Inventory = chr->GetInventory();
+	for (int i = 0; i < 4; i++)
+		m_InventoryText[i].text = Inventory.Item[i];
+
 }
 
 void cStatusUI::Draw()
@@ -150,6 +167,8 @@ void cStatusUI::Draw()
 	m_ProtectionText.Draw();
 	for (int i = 0; i < 17; i++)
 		m_EquipmentText[i].Draw();
+	for (int i = 0; i < 5; i++)
+		m_InventoryText[i].Draw();
 }
 
 void cStatusUI::Finalize()
@@ -163,6 +182,8 @@ void cStatusUI::Finalize()
 	m_ProtectionText.Delete();
 	for (int i = 0; i < 17; i++)
 		m_EquipmentText[i].Delete();
+	for (int i = 0; i < 5; i++)
+		m_InventoryText[i].Delete();
 }
 
 void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t maxBatt, std::uint16_t maxParts, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
