@@ -59,7 +59,9 @@ public:
 
 	cAmountPopUp* CreateAmountPopUp(const aqua::CVector2& pos, const int& amount, cAmountPopUp::POP_UP_TYPE type, bool miss = false);
 
-	static const aqua::CVector2 m_ui_bg_pos;//Å´ÇÃï\é¶à íu
+	static const aqua::CVector2 m_ui_window_pos;
+	static const int m_ui_window_width;
+	static const int m_ui_window_height;
 private:
-	aqua::CSprite m_UIBackground;		//UIÇÃîwåi
+	cWindow* m_UIWindow;
 };

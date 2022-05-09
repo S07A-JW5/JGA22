@@ -216,11 +216,18 @@ aqua::CVector2 cMap::GetStairPos()
 
 aqua::CVector2 cMap::GetPointedTile(aqua::CPoint mouse_pos)
 {
+	bool Negative = false;
 	aqua::CVector2 MousePointedPos = ((cCamera*)m_Camera)->GetDrawBasePos();
 	MousePointedPos.x += mouse_pos.x;
 	MousePointedPos.y += mouse_pos.y;
+	Negative = MousePointedPos.x < 0;
 	MousePointedPos.x = (int)(MousePointedPos.x / m_tile_size);
+	if (Negative)
+		MousePointedPos.x -= 1;
+	Negative = MousePointedPos.y < 0;
 	MousePointedPos.y = (int)(MousePointedPos.y / m_tile_size);
+	if (Negative)
+		MousePointedPos.y -= 1;
 	return MousePointedPos;
 }
 

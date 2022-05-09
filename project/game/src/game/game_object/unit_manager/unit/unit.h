@@ -91,6 +91,15 @@ protected:
 		WAIT,
 		MOVE,
 		ATTACK,
+		ITEM,
+	};
+
+	enum class ITEM_USE_MODE
+	{
+		DUMMY,
+		USE,
+		DISCARD,
+		SWITCH,
 	};
 
 	struct status
@@ -140,6 +149,8 @@ protected:
 	virtual bool Move();
 
 	virtual bool Attack(aqua::CVector2 pos);
+
+	virtual bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE);
 
 	void CalcEquipmentStat(int id);
 
@@ -200,4 +211,6 @@ protected:
 	bool m_DidAction;
 	ACTION m_DesiredAction;
 	DIRECTION m_MoveTo;
+	std::int8_t m_UseItemSlot;
+	ITEM_USE_MODE m_ItemMode;
 };

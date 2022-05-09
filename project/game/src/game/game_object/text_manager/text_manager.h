@@ -18,15 +18,11 @@ public:
 
 	void Finalize() override;
 
-	void SetText(int rows, std::string text);
-
-	void SetText(std::string text);
+	void SetVisible(bool visible);
 
 	void EnterText(std::string text);
 
 	void ClearText();
-
-	void WindowCheck();
 
 	cText* CreateText(const aqua::CVector2& pos, const std::string& text, const int& font_size = 24, bool with_window = true);
 
@@ -34,6 +30,8 @@ public:
 		const cText::ANCHOR_POS& anchor, const int& font_size = 24, bool with_window = true);
 
 private:
+	void WindowCheck();
+
 	static const int m_rows;
 
 	static const int m_font_size;

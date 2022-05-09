@@ -17,7 +17,7 @@ void CSplashScene::Initialize(void)
 	//ラベル生成
 	m_Label.Create(50, 1);
 
-	m_Label.text = "スプラッシュ";
+	//m_Label.text = "スプラッシュ";
 	m_Label.color = aqua::CColor::WHITE;
 	m_Label.position.x = (aqua::GetWindowWidth() - m_Label.GetTextWidth()) / 2.0f;
 	m_Label.position.y = (aqua::GetWindowHeight() - m_Label.GetFontHeight()) / 2.0f;
@@ -29,6 +29,9 @@ void CSplashScene::Initialize(void)
 //更新
 void CSplashScene::Update(void)
 {
+	Change(SCENE_ID::GAMEMAIN);
+	return;
+
 	//タイマー更新
 	m_WaitTimer.Update();
 

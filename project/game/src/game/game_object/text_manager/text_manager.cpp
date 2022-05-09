@@ -39,6 +39,8 @@ void CTextManager::Initialize()
 		m_Text[i].text = "";
 	}
 	WindowCheck();
+
+	SetVisible(false);
 }
 
 void CTextManager::Update()
@@ -100,6 +102,14 @@ void CTextManager::Finalize()
 
 	m_Window = nullptr;
 	IGameObject::Finalize();
+}
+
+void CTextManager::SetVisible(bool visible)
+{
+	WindowCheck();
+	((cWindow*)m_Window)->SetVisible(visible);
+	for (int i = 0; i < m_rows; i++)
+		m_Text[i].visible = visible;
 }
 
 void CTextManager::EnterText(std::string text)

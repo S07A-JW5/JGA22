@@ -49,6 +49,8 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_MoveTo(IUnit::DIRECTION::DUMMY)
 	, m_OnMapPos(aqua::CVector2::ZERO)
 	, m_Position(aqua::CVector2::ZERO)
+	, m_ItemMode(ITEM_USE_MODE::DUMMY)
+	, m_UseItemSlot(0)
 {
 }
 
@@ -426,7 +428,7 @@ IUnit::InventoryStat IUnit::GetInventory()
 
 	for (int i = 0; i < m_Inventory;i++)
 	{
-		Stat.Item[i] = std::to_string(i) + ": ";
+		Stat.Item[i] = std::to_string(i + 1) + ": ";
 
 		if(it == end)
 		{
@@ -567,6 +569,11 @@ bool IUnit::Attack(aqua::CVector2 pos)
 		Attacked = true;
 	}
 	return Attacked;
+}
+
+bool IUnit::Item(std::int8_t slot, ITEM_USE_MODE mode)
+{
+	return false;
 }
 
 void IUnit::CalcEquipmentStat(int id)

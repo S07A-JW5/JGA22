@@ -45,8 +45,8 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 		m_InventoryText[i].Create(16);
 
 	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
-	aqua::CVector2 Pos = cUIManager::m_ui_bg_pos;
-	int GaugeXPos = cUIManager::m_ui_bg_pos.x + 560 / 2;
+	aqua::CVector2 Pos = cUIManager::m_ui_window_pos;
+	int GaugeXPos = cUIManager::m_ui_window_pos.x + 560 / 2;
 	Pos.x += 18;
 	Pos.y += 10;
 

@@ -7,6 +7,7 @@ CGameMainScene::CGameMainScene(aqua::IGameObject* parent)
 	: IScene(parent, "GameMainScene")
 	, m_MapGen(nullptr)
 	, m_UnitMgr(nullptr)
+	, m_TextMgr(nullptr)
 {
 }
 
@@ -21,10 +22,11 @@ void CGameMainScene::Initialize(void)
 	m_MapGen = aqua::CreateGameObject<cMapGenerator>(this);
 	m_UnitMgr = aqua::CreateGameObject<CUnitManager>(this);
 	m_UIMgr = aqua::FindGameObject("UIManager");
-	//UIMgr->SetUIBGVisible(true);
+	m_TextMgr = aqua::FindGameObject("TextManager");
+	((cUIManager*)m_UIMgr)->SetUIBGVisible(true);
+	((CTextManager*)m_TextMgr)->SetVisible(true);
 
 	m_Black.Setup(aqua::CVector2::ZERO, aqua::GetWindowWidth(), aqua::GetWindowHeight(), 0xff010101);
-
 
 	IGameObject::Initialize();
 }

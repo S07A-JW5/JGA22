@@ -1,6 +1,8 @@
 #include "ui_manager.h"
 
-const aqua::CVector2 cUIManager::m_ui_bg_pos = aqua::CVector2(720, 0);
+const aqua::CVector2 cUIManager::m_ui_window_pos = aqua::CVector2(720, 0);
+const int cUIManager::m_ui_window_width = 560;
+const int cUIManager::m_ui_window_height = 720;
 
 cUIManager::cUIManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent,"UIManager")
@@ -9,10 +11,11 @@ cUIManager::cUIManager(aqua::IGameObject* parent)
 
 void cUIManager::Initialize()
 {
-	m_UIBackground.Create("data\\texture\\ui\\ui_base.png");
-	m_UIBackground.position = m_ui_bg_pos;
-	m_UIBackground.visible = true;
 	IGameObject::Initialize();
+
+	m_UIWindow = CreateUIWindow(m_ui_window_pos, m_ui_window_width, m_ui_window_height, 0xff00c000);
+
+	m_UIWindow->SetVisible(false);
 }
 
 void cUIManager::Update()
@@ -22,13 +25,11 @@ void cUIManager::Update()
 
 void cUIManager::Draw()
 {
-	m_UIBackground.Draw();
 	IGameObject::Draw();
 }
 
 void cUIManager::Finalize()
 {
-	m_UIBackground.Delete();
 	IGameObject::Finalize();
 }
 
@@ -42,7 +43,7 @@ void cUIManager::ClearUI()
 
 void cUIManager::SetUIBGVisible(bool visible)
 {
-	m_UIBackground.visible = visible;
+	m_UIWindow->SetVisible(visible);
 }
 
 cStatusUI* cUIManager::CreateStatusUI(aqua::IGameObject* chr_obj, std::string name, std::uint16_t life, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t heat, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t batt, std::uint16_t maxBatt, std::uint16_t parts, std::uint16_t maxParts, std::uint16_t ammo, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)

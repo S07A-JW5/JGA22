@@ -31,7 +31,7 @@ void CSceneManager::Initialize(void)
 
 
 	// スプラッシュシーンをはじめに生成
-	Create(SCENE_ID::GAMEMAIN);
+	Create(SCENE_ID::SPLASH);
 
 	// シーン状態を維持
 	m_State = STATE::SCENE_IN;

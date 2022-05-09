@@ -49,6 +49,7 @@ private:
 
 	IGameObject* m_UIMgr;
 	IGameObject* m_UnitMgr;
+	IGameObject* m_TextMgr;
 	cMapGenerator* m_MapGen;
 	aqua::CBoxPrimitive m_Black;
 };

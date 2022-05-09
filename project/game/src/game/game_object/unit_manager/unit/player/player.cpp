@@ -24,18 +24,18 @@ void cPlayer::Update()
 	m_Line.visible = aqua::mouse::Button(aqua::mouse::BUTTON_ID::LEFT);
 	m_Line.pointA = aqua::CVector2(cCamera::m_draw_width / 2, cCamera::m_draw_height / 2);
 
-	aqua::CPoint Point = aqua::mouse::GetCursorPos();
-	aqua::CVector2 PointedTile = m_MapObj->GetPointedTile(Point);
+	aqua::CVector2 PointedTile = m_MapObj->GetPointedTile(aqua::mouse::GetCursorPos());
 
-	m_Line.pointB.x = Point.x;
-	m_Line.pointB.y = Point.y;
-
-	m_Box.position = 
+	m_Line.pointB = m_Box.position =
 		(PointedTile * cMap::m_tile_size) - ((cCamera*)m_Camera)->GetDrawBasePos();
 	m_Box.position.x += m_Box.thickness;
 	m_Box.position.y += m_Box.thickness;
 
+	m_Line.pointB.x += cMap::m_tile_size / 2.0f;
+	m_Line.pointB.y += cMap::m_tile_size / 2.0f;
+
 	m_DesiredAction = ACTION::DUMMY;
+	m_UseItemSlot = -1;
 
 	if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
 	{
@@ -67,6 +67,39 @@ void cPlayer::Update()
 		{
 			m_DesiredAction = ACTION::MOVE;
 			m_MoveTo = DIRECTION::EAST;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::ONE))
+		{
+			m_DesiredAction = ACTION::ITEM;
+			m_UseItemSlot = 0;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::TWO))
+		{
+			m_DesiredAction = ACTION::ITEM;
+			m_UseItemSlot = 1;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::THREE))
+		{
+			m_DesiredAction = ACTION::ITEM;
+			m_UseItemSlot = 2;
+		}
+		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::FOUR))
+		{
+			m_DesiredAction = ACTION::ITEM;
+			m_UseItemSlot = 3;
+		}
+
+		if (m_DesiredAction == ACTION::ITEM)
+		{
+			m_ItemMode = ITEM_USE_MODE::USE;
+			if (aqua::keyboard::Button(aqua::keyboard::KEY_ID::LSHIFT))
+			{
+				m_ItemMode = ITEM_USE_MODE::DISCARD;
+			}
+			if (aqua::keyboard::Button(aqua::keyboard::KEY_ID::LCONTROL))
+			{
+				m_ItemMode = ITEM_USE_MODE::SWITCH;
+			}
 		}
 	}
 
@@ -130,6 +163,9 @@ bool cPlayer::Action()
 		break;
 	case IUnit::ACTION::ATTACK:
 		Act = Attack(m_TargetTile);
+		break;
+	case IUnit::ACTION::ITEM:
+		Act = Item(m_UseItemSlot);
 		break;
 	}
 	m_DidAction = Act;
@@ -239,4 +275,53 @@ bool cPlayer::Attack(aqua::CVector2 pos)
 {
 	if (!m_MapObj->IsTileVisible(pos.x, pos.y))return false;
 	return IUnit::Attack(pos);
+}
+
+bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
+{
+	if (slot < 0) return false;
+	if (slot >= m_Inventory) return false;
+	if (slot >= m_ItemList.size()) return false;
+
+	auto it = m_ItemList.begin();
+	auto end = m_ItemList.end();
+	if (it == end) return false;
+
+	for (int i = 0; i < slot; i++)
+	{
+		if (it == end) return false;
+		++it;
+	}
+	if ((*it).ID <= 0) return false;
+	if ((*it).Amount <= 0) return false;
+
+	switch (m_ItemMode)
+	{
+	case IUnit::ITEM_USE_MODE::USE:
+	{
+		cItemDataBase::ItemData Item = ((cItemDataBase*)m_ItemDataBase)->GetData((*it).ID);
+		if (Item.Type != cItemDataBase::ITEM_TYPE::CONSUMABLE) return false;
+
+		if (--(*it).Amount <= 0)
+		{
+			m_ItemList.erase(it);
+		}
+		m_Life = max(min(m_Life + Item.Life, m_MaxLife), 0);
+		m_Ammo = max(min(m_Ammo + Item.Ammo, m_MaxAmmo), 0);
+		m_Batt = max(min(m_Batt + Item.Energy, m_MaxBatt), 0);
+		m_Parts = max(min(m_Parts + Item.Parts, m_MaxParts), 0);
+		m_Heat = min(m_Heat - Item.Cooling, m_BaseHeat); 
+	}
+		break;
+	case IUnit::ITEM_USE_MODE::DISCARD:
+		m_ItemList.erase(it);
+		break;
+	case IUnit::ITEM_USE_MODE::SWITCH:
+		ItemStat temp = (*it);
+		m_ItemList.erase(it);
+		m_ItemList.push_back(temp);
+		break;
+	}
+
+	return true;
 }

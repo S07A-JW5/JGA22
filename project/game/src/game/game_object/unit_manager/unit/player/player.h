@@ -33,6 +33,8 @@ private:
 
 	bool Attack(aqua::CVector2 pos) override;
 
+	bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE) override;
+
 	aqua::CVector2 m_TargetTile;
 	aqua::CVector2 m_StairPos;
 	aqua::CLinePrimitive m_Line;
