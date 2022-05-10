@@ -300,6 +300,8 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 	case IUnit::ITEM_USE_MODE::USE:
 	{
 		cItemDataBase::ItemData Item = ((cItemDataBase*)m_ItemDataBase)->GetData((*it).ID);
+
+
 		if (Item.Type != cItemDataBase::ITEM_TYPE::CONSUMABLE) return false;
 
 		if (--(*it).Amount <= 0)

@@ -58,6 +58,7 @@ public:
 
 	cMap::TILE_ID GetTile(int x_pos, int y_pos);
 	bool IsWalkableTile(int x_pos, int y_pos);
+	bool CanPutItem(int x_pos, int y_pos);
 	bool IsTileVisible(int x_pos, int y_pos);
 
 	void SetMapped(aqua::CVector2 pos, int radius);

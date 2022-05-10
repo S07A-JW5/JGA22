@@ -184,8 +184,54 @@ cMap::DroppedItem cMap::GatherItem(int x_pos, int y_pos)
 
 void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
 {
-	m_Item[x_pos][y_pos].ItemID = item_id;
-	m_Item[x_pos][y_pos].Num = num;
+	if (CanPutItem(x_pos, y_pos))
+	{
+		m_Item[x_pos][y_pos].ItemID = item_id;
+		m_Item[x_pos][y_pos].Num = num;
+		return;
+	}
+	int range = 1;
+	int count = 0;
+	int XPos = x_pos;
+	int YPos = y_pos;
+
+	while (range <= 16)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < range; j++)
+			{
+				XPos = x_pos;
+				YPos = y_pos;
+				switch (i)
+				{
+				case 0:
+					XPos += j;
+					YPos -= range - j;
+					break;
+				case 1:
+					YPos += j;
+					XPos += range - j;
+					break;
+				case 2:
+					XPos -= j;
+					YPos += range - j;
+					break;
+				case 3:
+					YPos -= j;
+					XPos -= range - j;
+					break;
+				}
+				if (CanPutItem(XPos, YPos))
+				{
+					m_Item[XPos][YPos].ItemID = item_id;
+					m_Item[XPos][YPos].Num = num;
+					return;
+				}
+			}
+		}
+		++range;
+	}
 }
 
 void cMap::PutUnit(int x_pos, int y_pos, unsigned int unit_id)
@@ -241,6 +287,20 @@ cMap::TILE_ID cMap::GetTile(int x_pos, int y_pos)
 bool cMap::IsWalkableTile(int x_pos, int y_pos)
 {
 	return GetTile(x_pos, y_pos) != TILE_ID::WALL;
+}
+
+bool cMap::CanPutItem(int x_pos, int y_pos)
+{
+	TILE_ID Tile = GetTile(x_pos, y_pos);
+
+	if (Tile == TILE_ID::WALL) return false;
+	if (Tile == TILE_ID::STAIR) return false;
+
+	DroppedItem Item = m_Item[x_pos][y_pos];
+
+	if (Item.ItemID > 0 && Item.Num > 0) return false;
+
+	return true;
 }
 
 bool cMap::IsTileVisible(int x_pos, int y_pos)

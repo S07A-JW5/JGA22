@@ -455,33 +455,14 @@ void IUnit::Dead()
 {
 	m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, (int)cItemDataBase::MATERIALS::AMMO, m_Status.Ammo / aqua::Rand(5, 10));
 
-	cUnitDataBase::UnitData Data=((cUnitDataBase*)m_UnitDataBase)->GetData(m_Status.ID);
-	int DropXpos = m_OnMapPos.x;
-	int DropYpos = m_OnMapPos.y;
+	cUnitDataBase::UnitData Data = ((cUnitDataBase*)m_UnitDataBase)->GetData(m_Status.ID);
 
 	for (int i = 0; i < 4; i++)
 	{
 		if (Data.DropItemId[i] == 0) continue;
 
-		DropXpos = m_OnMapPos.x;
-		DropYpos = m_OnMapPos.y;
-		switch (i)
-		{
-		case 0:
-			DropXpos--;
-			break;
-		case 1:
-			DropXpos++;
-			break;
-		case 2:
-			DropYpos--;
-			break;
-		case 3:
-			DropYpos++;
-			break;
-		}
 		if (Dice::PercentRoll(Data.DropRate[i]))
-			m_MapObj->PutItem(DropXpos, DropYpos, Data.DropItemId[i], 1);
+			m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, Data.DropItemId[i], 1);
 	}
 	DeleteObject();
 }
