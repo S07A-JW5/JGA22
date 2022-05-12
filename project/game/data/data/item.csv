@@ -4,7 +4,7 @@ ItemID,Name,Description,Type,ConsumeType,Life ,Energy,Parts,Ammo,Cooling,DmgType
 2,Parts,,3,1,0,0,1,0,0,0,0,0
 3,Battery,,3,1,0,1,0,0,0,0,0,0
 4,Metal parts,,2,1,0,0,5,0,0,0,0,0
-5,Old Battery,,2,1,0,5,0,0,0,0,0,0
-6,Ammo case,,2,1,0,0,0,5,0,0,0,0
+5,Old Battery,,2,1,0,8,0,0,0,0,0,0
+6,Ammo case,,2,1,0,0,0,8,0,0,0,0
 7,Metal plating,,2,1,5,0,0,0,0,0,0,0
-8,Coolant bottle,,2,1,0,0,0,0,5,0,0,0
+8,Coolant bottle,,2,1,0,0,0,0,10,0,0,0

@@ -312,7 +312,7 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 		m_Ammo = max(min(m_Ammo + Item.Ammo, m_MaxAmmo), 0);
 		m_Batt = max(min(m_Batt + Item.Energy, m_MaxBatt), 0);
 		m_Parts = max(min(m_Parts + Item.Parts, m_MaxParts), 0);
-		m_Heat = min(m_Heat - Item.Cooling, m_BaseHeat); 
+		m_Heat = max(m_Heat - Item.Cooling, m_BaseHeat); 
 	}
 		break;
 	case IUnit::ITEM_USE_MODE::DISCARD:

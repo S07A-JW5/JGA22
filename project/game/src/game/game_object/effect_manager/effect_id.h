@@ -4,4 +4,8 @@
 // エフェクトID
 enum class EFFECT_ID
 {
+	MELEE,
+	GUNSHOT,
+
+	COUNT
 };

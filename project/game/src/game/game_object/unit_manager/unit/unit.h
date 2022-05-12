@@ -154,6 +154,7 @@ protected:
 
 	void CalcEquipmentStat(int id);
 
+	aqua::IGameObject* m_EffectManager;	//´Ìª¸ÄÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_SoundManager;	//»³İÄŞÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_UnitManager;	//ÕÆ¯ÄÏÈ°¼Ş¬°‚ÌÎß²İÀ
 	aqua::IGameObject* m_TextManager;	//Ã·½ÄÏÈ°¼Ş¬°‚ÌÎß²İÀ
@@ -193,6 +194,7 @@ protected:
 	std::list<ItemStat> m_ItemList;
 
 	std::uint8_t	m_WeaponCount;
+	std::uint8_t	m_AttackingWPN;
 	WeaponStat	m_Weapon[16];			//‘•”õ‚µ‚Ä‚¢‚é•Ší
 	std::uint16_t	m_Equipment[16];		//‘•”õ‚µ‚Ä‚¢‚é‘•”õ•i
 	std::vector<uint16_t>	 m_Head;		//
@@ -207,6 +209,8 @@ protected:
 	cMap* m_MapObj;
 	IGameObject* m_Camera;
 	int m_UnitNo;
+
+	IGameObject* m_PlayingEffect;
 
 	bool m_DidAction;
 	ACTION m_DesiredAction;

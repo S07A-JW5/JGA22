@@ -40,7 +40,7 @@ void cItemDataBase::Load()
 		Temp.Consume		= (CONSUME_TYPE)ItemDataCSV.GetInteger(i, 4);
 		Temp.Life			= ItemDataCSV.GetInteger(i, 5);
 		Temp.Energy		= ItemDataCSV.GetInteger(i, 6);
-		Temp.Parts			= ItemDataCSV.GetInteger(i, 7);
+		Temp.Parts		= ItemDataCSV.GetInteger(i, 7);
 		Temp.Ammo			= ItemDataCSV.GetInteger(i, 8);
 		Temp.Cooling		= ItemDataCSV.GetInteger(i, 9);
 		Temp.DamageType	= (IUnit::DAMAGE_TYPE)ItemDataCSV.GetInteger(i, 10);

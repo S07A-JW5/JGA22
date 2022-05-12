@@ -136,13 +136,18 @@ bool CUnitManager::HasSpace(aqua::CVector2 pos)
 	return true;
 }
 
-bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type)
+bool CUnitManager::CanAttack(aqua::CVector2 target_pos)
 {
 	if (!m_UnitPos) return false;
+	if (m_UnitPos[(int)target_pos.x][(int)target_pos.y] < 0) return false;
+	return true;
+}
+
+bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type)
+{
+	if (!CanAttack(target_pos)) return false;
 
 	int UnitNo = m_UnitPos[(int)target_pos.x][(int)target_pos.y];
-
-	if (UnitNo < 0) return false;
 
 	if (UnitNo == 0)
 	{

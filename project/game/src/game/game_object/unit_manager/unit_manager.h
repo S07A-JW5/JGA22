@@ -32,6 +32,8 @@ public:
 
 	bool HasSpace(aqua::CVector2 pos);
 
+	bool CanAttack(aqua::CVector2 target_pos);
+
 	bool Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type);
 
 	void SetMovedPos(aqua::CVector2 prev, aqua::CVector2 moved);

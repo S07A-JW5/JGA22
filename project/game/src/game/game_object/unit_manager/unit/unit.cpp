@@ -6,6 +6,7 @@
 #include "game/game_object/database/item_db/item_db.h"
 #include "game/game_object/database/equip_db/equip_db.h"
 #include "game/game_object/text_manager/text_manager.h"
+#include "game/game_object/effect_manager/effect_manager.h"
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -35,6 +36,7 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_WeaponCount(0)
 	, m_UnitNo(0)
 	, m_Status({ 0 })
+	, m_EffectManager(nullptr)
 	, m_SoundManager(nullptr)
 	, m_UnitManager(nullptr)
 	, m_TextManager(nullptr)
@@ -42,6 +44,7 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_EquipmentDB(nullptr)
 	, m_ItemDataBase(nullptr)
 	, m_UnitDataBase(nullptr)
+	, m_PlayingEffect(nullptr)
 	, m_MapObj(nullptr)
 	, m_Camera(nullptr)
 	, m_DidAction(false)
@@ -51,15 +54,17 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_Position(aqua::CVector2::ZERO)
 	, m_ItemMode(ITEM_USE_MODE::DUMMY)
 	, m_UseItemSlot(0)
+	, m_AttackingWPN(0)
 {
 }
 
 void IUnit::Initialize()
 {
+	m_EffectManager = aqua::FindGameObject("EffectManager");
+	m_SoundManager = aqua::FindGameObject("SoundManager");
 	m_UnitDataBase = aqua::FindGameObject("UnitDataBase");
 	m_ItemDataBase = aqua::FindGameObject("ItemDataBase");
 	m_EquipmentDB = aqua::FindGameObject("EquipmentDB");
-	m_SoundManager = aqua::FindGameObject("SoundManager");
 	m_TextManager = aqua::FindGameObject("TextManager");
 	m_UIManager = aqua::FindGameObject("UIManager");
 	m_Camera = aqua::FindGameObject("Camera");
@@ -282,7 +287,7 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	Damage = max(Damage, 0);
 
 	if (Damage == 0)
-		((CTextManager*)m_TextManager)->EnterText("  Hit - " + Text);
+		((CTextManager*)m_TextManager)->EnterText("  Miss - " + Text);
 	else
 		((CTextManager*)m_TextManager)->EnterText("  Hit - " + Text);
 
@@ -304,6 +309,7 @@ bool IUnit::DidAction()
 void IUnit::SetActFlag(bool flag)
 {
 	m_DidAction = flag;
+	m_AttackingWPN = 0;
 }
 
 int IUnit::GetStatus(IUnit::STATUS stat)
@@ -441,8 +447,8 @@ IUnit::InventoryStat IUnit::GetInventory()
 			continue;
 		}
 		temp = ItemDB->GetData((*it).ID, (*it).IsEquipment);
-
-		Stat.Item[i] += std::to_string((*it).Amount) + "x ";
+		if (!(*it).IsEquipment)
+			Stat.Item[i] += std::to_string((*it).Amount) + "x ";
 		Stat.Item[i] += temp.Name;
 		it++;
 	}
@@ -527,7 +533,7 @@ bool IUnit::Attack(aqua::CVector2 pos)
 
 	bool Attacked = false;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = m_AttackingWPN; i < 16; i++, m_AttackingWPN++)
 	{
 		if (m_Weapon[i].ID == 0) continue;
 		if (m_Weapon[i].Range < Diff.Length())
@@ -539,16 +545,26 @@ bool IUnit::Attack(aqua::CVector2 pos)
 
 		((CTextManager*)m_TextManager)->EnterText(Text + ":" + m_Weapon[i].Name);
 
-		if (!UnitMgr->Attack(pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType)){
+		if (!UnitMgr->CanAttack(pos))
+		{
 			((CTextManager*)m_TextManager)->EnterText("  Target not found");
 			return false;
-		}
+		}/*
+		if (!m_PlayingEffect)
+			m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::GUNSHOT, m_OnMapPos, pos);
+		if (((IEffect*)m_PlayingEffect)->EffectPlaying()) return false;
+
+		m_PlayingEffect = nullptr;
+*/
+		UnitMgr->Attack(
+			pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType);
 		m_Batt = max(m_Batt - m_Weapon[i].Energy, 0);
 		m_Ammo = max(m_Ammo - m_Weapon[i].Ammo, 0);
 		m_Heat = min(m_Heat + m_Weapon[i].Heat, 999);
 
 		Attacked = true;
 	}
+	m_AttackingWPN = 0;
 	return Attacked;
 }
 
