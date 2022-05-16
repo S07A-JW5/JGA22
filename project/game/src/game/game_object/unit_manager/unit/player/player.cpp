@@ -1,6 +1,7 @@
 #include "player.h"
 #include "../../unit_manager.h"
 #include "game/game_object/database/item_db/item_db.h"
+#include "game/game_object/database/equip_db/equip_db.h"
 #include "game/game_object/camera/camera.h"
 #include "game/game_object/ui_manager/ui_manager.h"
 #include "game/game_object/text_manager/text_manager.h"
@@ -34,83 +35,85 @@ void cPlayer::Update()
 	m_Line.pointB.x += cMap::m_tile_size / 2.0f;
 	m_Line.pointB.y += cMap::m_tile_size / 2.0f;
 
-	m_DesiredAction = ACTION::DUMMY;
-	m_UseItemSlot = -1;
-
-	if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
+	if (!m_PlayingEffect)
 	{
-		m_DesiredAction = ACTION::ATTACK;
-		m_TargetTile = PointedTile;
-	}
-	else
-	{
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::SPACE))
-		{
-			m_DesiredAction = ACTION::WAIT;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
-		{
-			m_DesiredAction = ACTION::MOVE;
-			m_MoveTo = DIRECTION::NORTH;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A))
-		{
-			m_DesiredAction = ACTION::MOVE;
-			m_MoveTo = DIRECTION::WEST;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S))
-		{
-			m_DesiredAction = ACTION::MOVE;
-			m_MoveTo = DIRECTION::SOUTH;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D))
-		{
-			m_DesiredAction = ACTION::MOVE;
-			m_MoveTo = DIRECTION::EAST;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::ONE))
-		{
-			m_DesiredAction = ACTION::ITEM;
-			m_UseItemSlot = 0;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::TWO))
-		{
-			m_DesiredAction = ACTION::ITEM;
-			m_UseItemSlot = 1;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::THREE))
-		{
-			m_DesiredAction = ACTION::ITEM;
-			m_UseItemSlot = 2;
-		}
-		if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::FOUR))
-		{
-			m_DesiredAction = ACTION::ITEM;
-			m_UseItemSlot = 3;
-		}
+		m_DesiredAction = ACTION::DUMMY;
+		m_UseItemSlot = -1;
 
-		if (m_DesiredAction == ACTION::ITEM)
+		if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
 		{
-			m_ItemMode = ITEM_USE_MODE::USE;
-			if (aqua::keyboard::Button(aqua::keyboard::KEY_ID::LSHIFT))
+			m_DesiredAction = ACTION::ATTACK;
+			m_TargetTile = PointedTile;
+		}
+		else
+		{
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::SPACE))
 			{
-				m_ItemMode = ITEM_USE_MODE::DISCARD;
+				m_DesiredAction = ACTION::WAIT;
 			}
-			if (aqua::keyboard::Button(aqua::keyboard::KEY_ID::LCONTROL))
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
 			{
-				m_ItemMode = ITEM_USE_MODE::SWITCH;
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::NORTH;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::WEST;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::SOUTH;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::EAST;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::ONE))
+			{
+				m_DesiredAction = ACTION::ITEM;
+				m_UseItemSlot = 0;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::TWO))
+			{
+				m_DesiredAction = ACTION::ITEM;
+				m_UseItemSlot = 1;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::THREE))
+			{
+				m_DesiredAction = ACTION::ITEM;
+				m_UseItemSlot = 2;
+			}
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::FOUR))
+			{
+				m_DesiredAction = ACTION::ITEM;
+				m_UseItemSlot = 3;
+			}
+
+			if (m_DesiredAction == ACTION::ITEM)
+			{
+				m_ItemMode = ITEM_USE_MODE::USE;
+				if (aqua::keyboard::Button(aqua::keyboard::KEY_ID::LSHIFT))
+				{
+					m_ItemMode = ITEM_USE_MODE::DISCARD;
+				}
+				if (aqua::keyboard::Button(aqua::keyboard::KEY_ID::LCONTROL))
+				{
+					m_ItemMode = ITEM_USE_MODE::SWITCH;
+				}
 			}
 		}
 	}
-
+	if (!PlayEffect()) return;
 	if (m_DesiredAction != ACTION::DUMMY)
-		if(Action())
+		if (Action())
 		{
 			m_Batt = max(min(m_Batt + m_EnergyFlow, m_MaxBatt), 0);
 			m_Heat = max(min(m_Heat + m_HeatFlow, 999), m_BaseHeat);
 		}
-
-	CameraUpdate();	
+	CameraUpdate();
 }
 
 void cPlayer::CameraUpdate()
@@ -299,8 +302,14 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 	{
 	case IUnit::ITEM_USE_MODE::USE:
 	{
-		cItemDataBase::ItemData Item = ((cItemDataBase*)m_ItemDataBase)->GetData((*it).ID);
+		if ((*it).IsEquipment)
+		{
+			bool Changed = EquipmentChange((*it).ID);
+			m_ItemList.erase(it);
+			return Changed;
+		}
 
+		cItemDataBase::ItemData Item = ((cItemDataBase*)m_ItemDataBase)->GetData((*it).ID);
 
 		if (Item.Type != cItemDataBase::ITEM_TYPE::CONSUMABLE) return false;
 
@@ -324,6 +333,117 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 		m_ItemList.push_back(temp);
 		break;
 	}
+	return true;
+}
 
+bool cPlayer::EquipmentChange(std::uint16_t id)
+{
+	if (id <= 0) return false;
+
+	cEquipDataBase::Equipment Equipment=((cEquipDataBase*)m_EquipmentDB)->GetData(id);
+
+	std::vector<uint16_t> Temp;
+	Temp.clear();
+
+	switch (Equipment.Slot)
+	{
+	case cEquipDataBase::EQUIPMENT_SLOT::HEAD:
+		for (int i = 0; i < m_Status.HeadCount; i++)
+		{
+			if (m_Head[i] > 0)
+				Temp.push_back(m_Head[i]);
+		}
+		if (Temp.size() >= m_Status.HeadCount)
+			for (int i = 1; i < m_Head.size() && i < m_Status.HeadCount; i++)
+				Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Head = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::ARM:
+		for (int i = 0; i < m_Status.ArmCount; i++)
+		{
+			if (m_Arm[i] > 0)
+				Temp.push_back(m_Arm[i]);
+		}
+		if (Temp.size() >= m_Status.ArmCount)
+		for (int i = 1; i < m_Arm.size() && i < m_Status.ArmCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Arm = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::HAND:
+		for (int i = 0; i < m_Status.HandCount; i++)
+		{
+			if (m_Hand[i] > 0)
+				Temp.push_back(m_Hand[i]);
+		}
+		if (Temp.size() >= m_Status.HandCount)
+		for (int i = 1; i < m_Hand.size() && i < m_Status.HandCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Hand = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::CHEST:
+		for (int i = 0; i < m_Status.ChestCount; i++)
+		{
+			if (m_Chest[i] > 0)
+				Temp.push_back(m_Chest[i]);
+		}
+		if (Temp.size() >= m_Status.ChestCount)
+		for (int i = 1; i < m_Chest.size() && i < m_Status.ChestCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Chest = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::BACK:
+		for (int i = 0; i < m_Status.BackCount; i++)
+		{
+			if (m_Back[i] > 0)
+				Temp.push_back(m_Back[i]);
+		}
+		if (Temp.size() >= m_Status.BackCount)
+		for (int i = 1; i < m_Back.size() && i < m_Status.BackCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Back = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::LEG:
+		for (int i = 0; i < m_Status.LegCount; i++)
+		{
+			if (m_Leg[i] > 0)
+				Temp.push_back(m_Leg[i]);
+		}
+		if (Temp.size() >= m_Status.LegCount)
+		for (int i = 1; i < m_Leg.size() && i < m_Status.LegCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Leg = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::SHOULDER:
+		for (int i = 0; i < m_Status.ShlderCount; i++)
+		{
+			if (m_Shlder[i] > 0)
+				Temp.push_back(m_Shlder[i]);
+		}
+		if (Temp.size() >= m_Status.ShlderCount)
+		for (int i = 1; i < m_Shlder.size() && i < m_Status.ShlderCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Shlder = Temp;
+		break;
+	case cEquipDataBase::EQUIPMENT_SLOT::CARD:
+		for (int i = 0; i < m_Status.CardCount; i++)
+		{
+			if (m_Card[i] > 0)
+				Temp.push_back(m_Card[i]);
+		}
+		if (Temp.size() >= m_Status.CardCount)
+		for (int i = 1; i < m_Card.size() && i < m_Status.CardCount; i++)
+			Temp[i - 1] = Temp[i];
+		Temp.push_back(id);
+		m_Card = Temp;
+		break;
+	}
+	CalcStatus();
 	return true;
 }

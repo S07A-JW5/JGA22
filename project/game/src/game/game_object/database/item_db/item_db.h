@@ -62,6 +62,8 @@ public:
 
 	void Finalize() override;
 
+	std::uint16_t EquipmentItem(int id);
+
 	ItemData GetData(int id, bool equipment = false);
 
 private:

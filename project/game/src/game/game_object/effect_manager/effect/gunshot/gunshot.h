@@ -17,4 +17,6 @@ public:
 	void Finalize() override;
 
 private:
+
+	aqua::CLinePrimitive m_Line2;
 };

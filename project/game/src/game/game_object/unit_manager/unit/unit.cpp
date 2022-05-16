@@ -140,7 +140,7 @@ void IUnit::Create(int id, int unit_no)
 	for (int i = 0; i < 16; i++)
 	{
 		Equipment = EquipDB->GetData(Data.Equipped[i]);
-
+		
 		switch (Equipment.Slot)
 		{
 		case cEquipDataBase::EQUIPMENT_SLOT::HEAD:
@@ -463,12 +463,22 @@ void IUnit::Dead()
 
 	cUnitDataBase::UnitData Data = ((cUnitDataBase*)m_UnitDataBase)->GetData(m_Status.ID);
 
+	cItemDataBase* ItemDB = (cItemDataBase*)m_ItemDataBase;
+
 	for (int i = 0; i < 4; i++)
 	{
 		if (Data.DropItemId[i] == 0) continue;
 
 		if (Dice::PercentRoll(Data.DropRate[i]))
 			m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, Data.DropItemId[i], 1);
+	}
+	for (int i = 0; i < 16; i++)
+	{
+		if (m_Equipment[i] == 0) continue;
+
+		if (Dice::PercentRoll(10))
+			m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y,
+				ItemDB->EquipmentItem(m_Equipment[i]), 1);
 	}
 	DeleteObject();
 }
@@ -535,27 +545,29 @@ bool IUnit::Attack(aqua::CVector2 pos)
 
 	for (int i = m_AttackingWPN; i < 16; i++, m_AttackingWPN++)
 	{
-		if (m_Weapon[i].ID == 0) continue;
-		if (m_Weapon[i].Range < Diff.Length())
-			if (Diff.Length() > 1.42f)
-				continue;
-
-		if (m_Batt - m_Weapon[i].Energy < 0) continue;
-		if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
-
-		((CTextManager*)m_TextManager)->EnterText(Text + ":" + m_Weapon[i].Name);
-
-		if (!UnitMgr->CanAttack(pos))
-		{
-			((CTextManager*)m_TextManager)->EnterText("  Target not found");
-			return false;
-		}/*
 		if (!m_PlayingEffect)
-			m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::GUNSHOT, m_OnMapPos, pos);
-		if (((IEffect*)m_PlayingEffect)->EffectPlaying()) return false;
+		{
+			if (m_Weapon[i].ID == 0) continue;
+			if (m_Weapon[i].Range < Diff.Length())
+				if (Diff.Length() > 1.42f)
+					continue;
 
+			if (m_Batt - m_Weapon[i].Energy < 0) continue;
+			if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
+
+			((CTextManager*)m_TextManager)->EnterText(Text + ":" + m_Weapon[i].Name);
+
+			if (!UnitMgr->CanAttack(pos))
+			{
+				((CTextManager*)m_TextManager)->EnterText("  Target not found");
+				return false;
+			}
+			m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::GUNSHOT, m_OnMapPos, pos);
+
+			if (m_PlayingEffect) return false;
+		}
 		m_PlayingEffect = nullptr;
-*/
+
 		UnitMgr->Attack(
 			pos, Dice::DiceRoll(m_Weapon[i].DmgRollData), m_Weapon[i].DamageType);
 		m_Batt = max(m_Batt - m_Weapon[i].Energy, 0);
@@ -571,6 +583,12 @@ bool IUnit::Attack(aqua::CVector2 pos)
 bool IUnit::Item(std::int8_t slot, ITEM_USE_MODE mode)
 {
 	return false;
+}
+
+bool IUnit::PlayEffect()
+{
+	if(!m_PlayingEffect) return true;
+	return !((IEffect*)m_PlayingEffect)->EffectPlaying();
 }
 
 void IUnit::CalcEquipmentStat(int id)

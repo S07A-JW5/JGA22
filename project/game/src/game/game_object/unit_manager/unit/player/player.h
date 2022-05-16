@@ -35,6 +35,8 @@ private:
 
 	bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE) override;
 
+	bool EquipmentChange(std::uint16_t id);
+
 	aqua::CVector2 m_TargetTile;
 	aqua::CVector2 m_StairPos;
 	aqua::CLinePrimitive m_Line;

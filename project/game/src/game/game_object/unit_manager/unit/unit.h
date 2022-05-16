@@ -152,6 +152,8 @@ protected:
 
 	virtual bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE);
 
+	virtual bool PlayEffect();
+
 	void CalcEquipmentStat(int id);
 
 	aqua::IGameObject* m_EffectManager;	//´Ìª¸ÄÏÈ°¼Þ¬°‚ÌÎß²ÝÀ

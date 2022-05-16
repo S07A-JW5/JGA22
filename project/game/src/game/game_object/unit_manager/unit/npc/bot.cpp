@@ -20,13 +20,7 @@ void cBot::Initialize()
 
 void cBot::Update()
 {
-	cCamera* Camera = (cCamera*)m_Camera;
-
-	m_Position.x = m_OnMapPos.x * cMap::m_tile_size;
-	m_Position.y = m_OnMapPos.y * cMap::m_tile_size;
-	m_Sprite.position = m_Position - Camera->GetDrawBasePos();
-	if (m_MapObj)
-		m_Sprite.visible = m_MapObj->IsTileVisible(m_OnMapPos.x, m_OnMapPos.y);
+	CameraUpdate();
 }
 
 bool cBot::Action()
@@ -36,15 +30,26 @@ bool cBot::Action()
 	bool Attacked = false;
 
 	if (m_TargetVision && !m_MapObj->HitWall(m_OnMapPos, PlayerPos))
-			Attacked = Attack(PlayerPos);
-	if (!Attacked)
-		Move();
+		m_DidAction = Attacked = Attack(PlayerPos);
+	if (!Attacked && !m_PlayingEffect)
+		m_DidAction = Move();
 
 	m_TargetVision = false;
 	if (UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
 		!m_MapObj->HitWall(m_OnMapPos, PlayerPos))
 		m_TargetVision = true;
 	return true;
+}
+
+void cBot::CameraUpdate()
+{
+	cCamera* Camera = (cCamera*)m_Camera;
+
+	m_Position.x = m_OnMapPos.x * cMap::m_tile_size;
+	m_Position.y = m_OnMapPos.y * cMap::m_tile_size;
+	m_Sprite.position = m_Position - Camera->GetDrawBasePos();
+	if (m_MapObj)
+		m_Sprite.visible = m_MapObj->IsTileVisible(m_OnMapPos.x, m_OnMapPos.y);
 }
 
 bool cBot::Move()
@@ -86,11 +91,14 @@ bool cBot::Move()
 	{
 		UnitMgr->SetMovedPos(m_OnMapPos, Pos);
 		m_OnMapPos = Pos;
+		CameraUpdate();
 	}
 	return true;
 }
 
 bool cBot::Attack(aqua::CVector2 pos)
 {
+	if (m_PlayingEffect)
+		if (!PlayEffect()) return false;
 	return IUnit::Attack(pos);
 }

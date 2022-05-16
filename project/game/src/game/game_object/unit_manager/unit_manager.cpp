@@ -45,8 +45,14 @@ void CUnitManager::Update(void)
 		{
 			if (m_NPCs[i])
 				m_NPCs[i]->Action();
+			if (m_NPCs[i])
+				if (!m_NPCs[i]->DidAction())
+					return;
 		}
 		m_Player->SetActFlag(false);
+		for (int i = 0; i < m_NPCs.size(); i++)
+			if (m_NPCs[i])
+				m_NPCs[i]->SetActFlag(false);
 	}
 }
 

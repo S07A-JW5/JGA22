@@ -15,6 +15,11 @@ void cItemDataBase::Finalize()
 	m_ItemDataList.clear();
 }
 
+std::uint16_t cItemDataBase::EquipmentItem(int id)
+{
+	return id + m_ItemCount;
+}
+
 cItemDataBase::ItemData cItemDataBase::GetData(int id, bool equipment)
 {
 	int ID = id;

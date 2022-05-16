@@ -26,6 +26,7 @@ public:
 	{
 		unsigned int ItemID;
 		unsigned int Num;
+
 	};
 
 	cMap(aqua::IGameObject* parent, std::string name = "Map");

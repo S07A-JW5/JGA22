@@ -27,6 +27,8 @@ public:
 	bool Action() override;
 
 private:
+	void CameraUpdate();
+
 	//bool Wait() override;
 
 	bool Move() override;
