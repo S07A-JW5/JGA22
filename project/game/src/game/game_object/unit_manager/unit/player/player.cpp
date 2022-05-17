@@ -9,7 +9,10 @@
 
 cPlayer::cPlayer(aqua::IGameObject* parent)
 	: IUnit(parent, "Player")
+	, m_TargetTile(aqua::CVector2::ZERO)
 	, m_StairPos(aqua::CVector2::ZERO)
+	, m_StatObj(nullptr)
+	, m_InputTimer(0.0f)
 {
 }
 
@@ -144,11 +147,18 @@ void cPlayer::SetStairPosition(aqua::CVector2 pos)
 	m_StairPos = pos;
 }
 
-void cPlayer::CalcStatus()
+void cPlayer::CalcStatus(bool reset_param)
 {
-	IUnit::CalcStatus();
-	cUIManager* UIMgr = (cUIManager*)m_UIManager;
-	UIMgr->CreateStatusUI(this, m_Name, m_Life, m_MaxLife, m_HeatFlow, m_Heat, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_Batt, m_MaxBatt, m_Parts, m_MaxParts, m_Ammo, m_MaxAmmo, m_Resist, m_Protection);
+	IUnit::CalcStatus(reset_param);
+	if (reset_param)
+	{
+		cUIManager* UIMgr = (cUIManager*)m_UIManager;
+		m_StatObj = UIMgr->CreateStatusUI(this, m_Name, m_Life, m_MaxLife, m_HeatFlow, m_Heat, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_Batt, m_MaxBatt, m_Parts, m_MaxParts, m_Ammo, m_MaxAmmo, m_Resist, m_Protection);
+	}
+	else if (m_StatObj)
+	{
+		((cStatusUI*)m_StatObj)->SetStat(m_Name, m_MaxLife, m_HeatFlow, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_MaxBatt, m_MaxParts, m_MaxAmmo, m_Resist, m_Protection);
+	}
 }
 
 bool cPlayer::Action()
@@ -208,7 +218,7 @@ bool cPlayer::Wait()
 			auto it = m_ItemList.begin();
 			auto end = m_ItemList.end();
 
-			for (;;)
+			while (true)
 			{
 				if (it == end) break;
 				if ((*it).ID == temp.ID && (*it).IsEquipment == temp.IsEquipment)
@@ -224,6 +234,13 @@ bool cPlayer::Wait()
 				m_ItemList.pop_front();
 		}
 	}
+
+	if (m_OnMapPos == m_StairPos)
+	{
+		m_Life = m_MaxLife;
+		((CUnitManager*)m_UnitManager)->MapGeneration();
+	}
+
 	return true;
 }
 
@@ -259,12 +276,6 @@ bool cPlayer::Move()
 			m_OnMapPos = Pos;
 			UnitMgr->SetPlayerPos(m_OnMapPos);
 			m_MapObj->SetMapped(m_OnMapPos, 8);
-			if (m_OnMapPos == m_StairPos)
-			{
-				m_Life = m_MaxLife;
-				m_Ammo = min(m_Ammo + max(m_MaxAmmo / 10, 1), m_MaxAmmo);
-				UnitMgr->MapGeneration();
-			}
 		}
 		else
 		{
@@ -325,6 +336,7 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 	}
 		break;
 	case IUnit::ITEM_USE_MODE::DISCARD:
+		m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, (*it).ID, (*it).Amount);
 		m_ItemList.erase(it);
 		break;
 	case IUnit::ITEM_USE_MODE::SWITCH:
@@ -342,108 +354,114 @@ bool cPlayer::EquipmentChange(std::uint16_t id)
 
 	cEquipDataBase::Equipment Equipment=((cEquipDataBase*)m_EquipmentDB)->GetData(id);
 
+	if (Equipment.AttatchPart > m_Parts) return false;
+	m_Parts -= Equipment.AttatchPart;
+
+	uint16_t Drop = 0;
 	std::vector<uint16_t> Temp;
 	Temp.clear();
 
 	switch (Equipment.Slot)
 	{
 	case cEquipDataBase::EQUIPMENT_SLOT::HEAD:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.HeadCount; i++)
 		{
+			Drop = m_Head[i];
+			if (Temp.size() >= m_Status.HeadCount) break;
+
 			if (m_Head[i] > 0)
 				Temp.push_back(m_Head[i]);
 		}
-		if (Temp.size() >= m_Status.HeadCount)
-			for (int i = 1; i < m_Head.size() && i < m_Status.HeadCount; i++)
-				Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Head = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::ARM:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.ArmCount; i++)
 		{
+			Drop = m_Arm[i];
+			if (Temp.size() >= m_Status.ArmCount) break;
+
 			if (m_Arm[i] > 0)
 				Temp.push_back(m_Arm[i]);
 		}
-		if (Temp.size() >= m_Status.ArmCount)
-		for (int i = 1; i < m_Arm.size() && i < m_Status.ArmCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Arm = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::HAND:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.HandCount; i++)
 		{
+			Drop = m_Hand[i];
+			if (Temp.size() >= m_Status.HandCount) break;
+
 			if (m_Hand[i] > 0)
 				Temp.push_back(m_Hand[i]);
 		}
-		if (Temp.size() >= m_Status.HandCount)
-		for (int i = 1; i < m_Hand.size() && i < m_Status.HandCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Hand = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::CHEST:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.ChestCount; i++)
 		{
+			Drop = m_Chest[i];
+			if (Temp.size() >= m_Status.ChestCount) break;
+
 			if (m_Chest[i] > 0)
 				Temp.push_back(m_Chest[i]);
 		}
-		if (Temp.size() >= m_Status.ChestCount)
-		for (int i = 1; i < m_Chest.size() && i < m_Status.ChestCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Chest = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::BACK:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.BackCount; i++)
 		{
+			Drop = m_Back[i];
+			if (Temp.size() >= m_Status.BackCount) break;
+
 			if (m_Back[i] > 0)
 				Temp.push_back(m_Back[i]);
 		}
-		if (Temp.size() >= m_Status.BackCount)
-		for (int i = 1; i < m_Back.size() && i < m_Status.BackCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Back = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::LEG:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.LegCount; i++)
 		{
+			Drop = m_Leg[i];
+			if (Temp.size() >= m_Status.LegCount) break;
+
 			if (m_Leg[i] > 0)
 				Temp.push_back(m_Leg[i]);
 		}
-		if (Temp.size() >= m_Status.LegCount)
-		for (int i = 1; i < m_Leg.size() && i < m_Status.LegCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Leg = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::SHOULDER:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.ShlderCount; i++)
 		{
+			Drop = m_Shlder[i];
+			if (Temp.size() >= m_Status.ShlderCount) break;
+
 			if (m_Shlder[i] > 0)
 				Temp.push_back(m_Shlder[i]);
 		}
-		if (Temp.size() >= m_Status.ShlderCount)
-		for (int i = 1; i < m_Shlder.size() && i < m_Status.ShlderCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Shlder = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::CARD:
+		Temp.push_back(id);
 		for (int i = 0; i < m_Status.CardCount; i++)
 		{
+			Drop = m_Card[i];
+			if (Temp.size() >= m_Status.CardCount) break;
+
 			if (m_Card[i] > 0)
 				Temp.push_back(m_Card[i]);
 		}
-		if (Temp.size() >= m_Status.CardCount)
-		for (int i = 1; i < m_Card.size() && i < m_Status.CardCount; i++)
-			Temp[i - 1] = Temp[i];
-		Temp.push_back(id);
 		m_Card = Temp;
 		break;
 	}
+	m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, 
+		((cItemDataBase*)m_ItemDataBase)->EquipmentItem(Drop));
 	CalcStatus();
 	return true;
 }

@@ -17,6 +17,7 @@ void cItemDataBase::Finalize()
 
 std::uint16_t cItemDataBase::EquipmentItem(int id)
 {
+	if (id <= 0) return 0;
 	return id + m_ItemCount;
 }
 

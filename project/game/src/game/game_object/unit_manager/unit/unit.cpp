@@ -179,21 +179,21 @@ void IUnit::Create(int id, int unit_no)
 			break;
 		}
 	}
-	CalcStatus();
+	CalcStatus(true);
 }
 
-void IUnit::CalcStatus()
+void IUnit::CalcStatus(bool reset_param)
 {
 	cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
 	cEquipDataBase::Equipment Equipment;
 
-	m_Life = m_MaxLife = m_Status.Life;
-	m_Heat = m_BaseHeat = 0;
+	m_MaxLife = m_Status.Life;
+	m_BaseHeat = 0;
 	m_HeatFlow = -m_Status.Cooling;
-	m_Batt = m_MaxBatt = m_Status.Battery;
+	m_MaxBatt = m_Status.Battery;
 	m_EnergyFlow = 0;
-	m_Parts = m_MaxParts = m_Status.Parts;
-	m_Ammo = m_MaxAmmo = m_Status.Ammo;
+	m_MaxParts = m_Status.Parts;
+	m_MaxAmmo = m_Status.Ammo;
 	m_Inventory = m_Status.Inventory;
 	for (int i = 0; i < 3; i++)
 		m_Resist[i] = m_Status.Resist[i];
@@ -252,6 +252,23 @@ void IUnit::CalcStatus()
 		if (i >= m_Card.size()) m_Card.push_back(0);
 		m_Equipment[Count] = m_Card[i];
 		CalcEquipmentStat(m_Card[i]);
+	}
+
+	if (reset_param)
+	{
+		m_Life = m_MaxLife;
+		m_Heat = m_BaseHeat;
+		m_Batt = m_MaxBatt;
+		m_Parts = m_MaxParts;
+		m_Ammo = m_MaxAmmo;
+	}
+	else
+	{
+		m_Life = min(m_Life, m_MaxLife);
+		m_Heat = max(m_Heat, m_BaseHeat);
+		m_Batt = min(m_Batt, m_MaxBatt);
+		m_Parts = min(m_Parts, m_MaxParts);
+		m_Ammo = min(m_Ammo, m_MaxAmmo);
 	}
 }
 

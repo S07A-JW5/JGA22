@@ -22,7 +22,7 @@ public:
 
 	void SetStairPosition(aqua::CVector2 pos);
 
-	void CalcStatus() override;
+	void CalcStatus(bool reset_param = false) override;
 
 	bool Action() override;
 
@@ -37,8 +37,10 @@ private:
 
 	bool EquipmentChange(std::uint16_t id);
 
+	float m_InputTimer;
 	aqua::CVector2 m_TargetTile;
 	aqua::CVector2 m_StairPos;
 	aqua::CLinePrimitive m_Line;
 	aqua::CBoxPrimitive m_Box;
+	aqua::IGameObject* m_StatObj;
 };

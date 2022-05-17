@@ -60,7 +60,7 @@ public:
 
 	void Create(int id, int unit_no);
 
-	virtual void CalcStatus();
+	virtual void CalcStatus(bool reset_param = false);
 
 	aqua::CVector2 GetPosition();
 

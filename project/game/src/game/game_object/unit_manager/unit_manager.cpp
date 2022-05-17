@@ -44,7 +44,12 @@ void CUnitManager::Update(void)
 		for (int i = 0; i < m_NPCs.size(); i++)
 		{
 			if (m_NPCs[i])
+				if (m_NPCs[i]->DidAction())
+					continue;
+
+			if (m_NPCs[i])
 				m_NPCs[i]->Action();
+
 			if (m_NPCs[i])
 				if (!m_NPCs[i]->DidAction())
 					return;

@@ -184,6 +184,9 @@ cMap::DroppedItem cMap::GatherItem(int x_pos, int y_pos)
 
 void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
 {
+	if (item_id <= 0) return;
+	if (num <= 0) return;
+
 	if (CanPutItem(x_pos, y_pos))
 	{
 		m_Item[x_pos][y_pos].ItemID = item_id;
