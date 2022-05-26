@@ -111,7 +111,7 @@ void CUnitManager::MapGeneration()
 	Clear();
 	m_MapGenerated = false;
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
-	MapGen->GenerateMap(30 + m_Floor, 30 + m_Floor,
+	MapGen->GenerateMap(m_Floor, 30 + m_Floor, 30 + m_Floor,
 		5, 8, 2 + m_Floor, 5, 8, 1 + m_Floor);
 	cMap* Map = MapGen->GetMap();
 	m_MapObj = Map;
@@ -224,4 +224,9 @@ void CUnitManager::SetMapSize(int width, int height)
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
 			m_UnitPos[i][j] = -1;
+}
+
+uint8_t CUnitManager::GetFloorCount()
+{
+	return m_Floor;
 }

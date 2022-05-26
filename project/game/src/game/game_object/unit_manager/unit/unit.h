@@ -115,7 +115,6 @@ protected:
 
 		std::uint8_t HeadCount;	//「頭」ｽﾛｯﾄ数
 		std::uint8_t ArmCount;		//「腕」ｽﾛｯﾄ数
-		std::uint8_t HandCount;	//「手」ｽﾛｯﾄ数
 		std::uint8_t ChestCount;	//「胸部」ｽﾛｯﾄ数
 		std::uint8_t BackCount;	//「背中」ｽﾛｯﾄ数
 		std::uint8_t LegCount;		//「脚」ｽﾛｯﾄ数
@@ -201,7 +200,6 @@ protected:
 	std::uint16_t	m_Equipment[16];		//装備している装備品
 	std::vector<uint16_t>	 m_Head;		//
 	std::vector<uint16_t>	 m_Arm;		//
-	std::vector<uint16_t>	 m_Hand;		//
 	std::vector<uint16_t>	 m_Chest;	//
 	std::vector<uint16_t>	 m_Back;		//
 	std::vector<uint16_t>	 m_Leg;		//

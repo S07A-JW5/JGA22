@@ -46,6 +46,8 @@ public:
 
 	void SetMapSize(int width, int height);
 
+	uint8_t GetFloorCount();
+
 private:
 	aqua::IGameObject* m_TextManager;
 	cPlayer* m_Player;

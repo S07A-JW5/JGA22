@@ -207,7 +207,7 @@ bool cPlayer::Wait()
 		}
 		else
 		{
-			cItemDataBase::ItemData ItemData = 
+			cItemDataBase::ItemData ItemData =
 				((cItemDataBase*)m_ItemDataBase)->GetData(Item.ItemID);
 			ItemStat temp;
 			temp.ID = ItemData.ItemID;
@@ -231,16 +231,21 @@ bool cPlayer::Wait()
 			}
 			m_ItemList.push_back(temp);
 			if (m_ItemList.size() > m_Inventory)
-				m_ItemList.pop_front();
+			{
+				m_ItemList.pop_back();
+				m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, Item.ItemID, Item.Num);
+				((CTextManager*)m_TextManager)->EnterText("ƒCƒ“ƒxƒ“ƒgƒŠ‚ª–ž”t‚ÅE‚¦‚È‚¢I");
+				return false;
+			}
 		}
 	}
 
 	if (m_OnMapPos == m_StairPos)
 	{
-		m_Life = m_MaxLife;
-		((CUnitManager*)m_UnitManager)->MapGeneration();
+		CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+		UnitMgr->MapGeneration();
+		((CTextManager*)m_TextManager)->EnterText(std::to_string(UnitMgr->GetFloorCount()) + "ŠK");
 	}
-
 	return true;
 }
 
@@ -316,18 +321,15 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 		if ((*it).IsEquipment)
 		{
 			bool Changed = EquipmentChange((*it).ID);
-			m_ItemList.erase(it);
+			if (--(*it).Amount <= 0) m_ItemList.erase(it);
 			return Changed;
 		}
-
 		cItemDataBase::ItemData Item = ((cItemDataBase*)m_ItemDataBase)->GetData((*it).ID);
 
 		if (Item.Type != cItemDataBase::ITEM_TYPE::CONSUMABLE) return false;
 
-		if (--(*it).Amount <= 0)
-		{
-			m_ItemList.erase(it);
-		}
+		if (--(*it).Amount <= 0) m_ItemList.erase(it);
+
 		m_Life = max(min(m_Life + Item.Life, m_MaxLife), 0);
 		m_Ammo = max(min(m_Ammo + Item.Ammo, m_MaxAmmo), 0);
 		m_Batt = max(min(m_Batt + Item.Energy, m_MaxBatt), 0);
@@ -386,18 +388,6 @@ bool cPlayer::EquipmentChange(std::uint16_t id)
 				Temp.push_back(m_Arm[i]);
 		}
 		m_Arm = Temp;
-		break;
-	case cEquipDataBase::EQUIPMENT_SLOT::HAND:
-		Temp.push_back(id);
-		for (int i = 0; i < m_Status.HandCount; i++)
-		{
-			Drop = m_Hand[i];
-			if (Temp.size() >= m_Status.HandCount) break;
-
-			if (m_Hand[i] > 0)
-				Temp.push_back(m_Hand[i]);
-		}
-		m_Hand = Temp;
 		break;
 	case cEquipDataBase::EQUIPMENT_SLOT::CHEST:
 		Temp.push_back(id);

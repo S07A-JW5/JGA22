@@ -55,11 +55,15 @@ void CTextManager::Update()
 			m_Timer = 0;
 			if (m_TextIndex >= m_DisplayText.size())
 			{
-				if (m_TextList.size() <= 1)
-					return;
-				m_TextIndex = 0;
-				if (!(m_DisplayText == "" && m_Rows == 0))
+				if (m_DisplayText == "" && m_Rows == 0)
 				{
+					if (m_TextList.size() <= 0) return;
+					m_TextIndex = 0;
+				}
+				else
+				{
+					if (m_TextList.size() <= 1) return;
+					m_TextIndex = 0;
 					if (++m_Rows >= m_rows)
 					{
 						m_Rows = m_rows - 1;

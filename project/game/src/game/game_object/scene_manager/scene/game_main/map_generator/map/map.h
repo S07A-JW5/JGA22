@@ -1,5 +1,6 @@
 #pragma once
 #include "aqua.h"
+//#include 
 
 class cMap : public aqua::IGameObject
 {
@@ -26,7 +27,19 @@ public:
 	{
 		unsigned int ItemID;
 		unsigned int Num;
+	};
 
+	struct Room
+	{
+		aqua::CRect RoomRect;
+		std::list<std::uint16_t> ConnectedCorner;
+	};
+
+	struct Corner
+	{
+		aqua::CVector2 Position;
+		std::int16_t RoomNo[2];
+		std::list<std::uint16_t> ConnectedCorner;
 	};
 
 	cMap(aqua::IGameObject* parent, std::string name = "Map");
@@ -35,7 +48,8 @@ public:
 
 	void Initialize() override;
 	void Initialize(int width, int height, std::uint8_t** mapdata,
-		aqua::CVector2 start, aqua::CVector2 stair);
+		aqua::CVector2 start, aqua::CVector2 stair, std::vector<Room> room,
+		std::vector<Room> corridor, std::vector<Corner> corner);
 
 	void Update() override;
 
@@ -70,6 +84,9 @@ public:
 
 	void SetTile(int x_pos, int y_pos, TILE_ID tile);
 
+	int16_t GetRoom(aqua::CVector2 pos);
+	std::list<int16_t> GetPath(aqua::CVector2 posA, aqua::CVector2 posB);
+
 private:
 	bool m_HasData;
 	std::uint8_t	m_Width;		//マップの横サイズ
@@ -78,12 +95,15 @@ private:
 	DroppedItem** m_Item;		//アイテム配列
 	aqua::CVector2 m_StartPos;	//開始地点
 	aqua::CVector2 m_StairPos;	//階段の位置
-	aqua::CSprite m_ItemSprite;
-	aqua::CSprite m_WallSprite;
-	aqua::CSprite m_TileSprite;
-	aqua::CSprite m_StairSprite;
-	aqua::CVector2 m_TileDrawPos;
-	aqua::CRect m_DrawArea;
-	IGameObject* m_Camera;
-	IGameObject* m_UnitManager;
+	aqua::CSprite m_ItemSprite;	//アイテムスプライト
+	aqua::CSprite m_WallSprite;	//壁スプライト
+	aqua::CSprite m_TileSprite;	//床スプライト
+	aqua::CSprite m_StairSprite;	//階段スプライト
+	aqua::CVector2 m_TileDrawPos;	//タイル描画位置
+	std::vector<Room> m_Room;		//部屋配列格納変数
+	std::vector<Room> m_Corridor;	//廊下配列格納変数
+	std::vector<Corner> m_Corner;	//境界配列格納変数
+	aqua::CRect m_DrawArea;	//描画範囲
+	IGameObject* m_Camera;		//カメラ
+	IGameObject* m_UnitManager;	//ﾕﾆｯﾄﾏﾈｰｼﾞｬｰ
 };

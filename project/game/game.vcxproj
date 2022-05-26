@@ -106,6 +106,7 @@
     <ClCompile Include="src\game\game_object\database\item_db\item_db.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\effect.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\gunshot\gunshot.cpp" />
+    <ClCompile Include="src\game\game_object\effect_manager\effect\melee\melee.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect_manager.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\game_main.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\map_generator\map\map.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="src\game\game_object\database\item_db\item_db.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\effect.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\gunshot\gunshot.h" />
+    <ClInclude Include="src\game\game_object\effect_manager\effect\melee\melee.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect_id.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect_manager.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect_with_sound_def.h" />

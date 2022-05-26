@@ -9,6 +9,7 @@
 cBot::cBot(aqua::IGameObject* parent)
 	: IUnit(parent, "Player")
 	, m_TargetVision(false)
+	, m_LastSeenTargetPos(aqua::CVector2::ZERO)
 {
 }
 
@@ -29,15 +30,19 @@ bool cBot::Action()
 	aqua::CVector2 PlayerPos = UnitMgr->GetPlayerPos();
 	bool Attacked = false;
 
-	if (m_TargetVision && !m_MapObj->HitWall(m_OnMapPos, PlayerPos))
+	if (m_TargetVision &&
+		UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
+		!m_MapObj->HitWall(m_OnMapPos, PlayerPos))
 		m_DidAction = Attacked = Attack(PlayerPos);
+
+	m_TargetVision = (UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
+		!m_MapObj->HitWall(m_OnMapPos, PlayerPos));
+	if (m_TargetVision)
+		m_LastSeenTargetPos = PlayerPos;
+
 	if (!Attacked && !m_PlayingEffect)
 		m_DidAction = Move();
 
-	m_TargetVision = false;
-	if (UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
-		!m_MapObj->HitWall(m_OnMapPos, PlayerPos))
-		m_TargetVision = true;
 	return true;
 }
 

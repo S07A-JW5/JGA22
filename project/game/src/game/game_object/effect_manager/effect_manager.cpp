@@ -1,5 +1,6 @@
 #include "effect_manager.h"
 #include "effect_with_sound_def.h"
+#include "effect/melee/melee.h"
 #include "effect/gunshot/gunshot.h"
 
 cEffectManager::cEffectManager(aqua::IGameObject* parent)
@@ -34,7 +35,7 @@ IEffect* cEffectManager::CreateEffect(EFFECT_ID id, aqua::CVector2 posA, aqua::C
 
 	switch (id)
 	{
-	//case EFFECT_ID::MELEE:	Effect = aqua::CreateGameObject<IEffect>(this); break;
+	case EFFECT_ID::MELEE:		Effect = aqua::CreateGameObject<cEffectMelee>(this); break;
 	case EFFECT_ID::GUNSHOT:	Effect = aqua::CreateGameObject<cEffectGunshot>(this); break;
 	default: Effect = aqua::CreateGameObject<IEffect>(this, "Effect"); break;
 	}

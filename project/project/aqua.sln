@@ -7,11 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aqua", "..\aqua\aqua.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "..\game\game.vcxproj", "{55BED679-FC95-467B-8E3B-EEB7A21A5661}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{439B9750-7542-4999-8F78-1E13A6EC9B4A}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\memo.txt = ..\..\memo.txt
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

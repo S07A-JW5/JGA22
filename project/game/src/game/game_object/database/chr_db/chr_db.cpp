@@ -42,18 +42,17 @@ void cUnitDataBase::Load()
 		Temp.Inventory	= UnitDataCSV.GetInteger(i, 11);
 		Temp.HeadCount	= UnitDataCSV.GetInteger(i, 12);
 		Temp.ArmCount		= UnitDataCSV.GetInteger(i, 13);
-		Temp.HandCount	= UnitDataCSV.GetInteger(i, 14);
-		Temp.ChestCount	= UnitDataCSV.GetInteger(i, 15);
-		Temp.BackCount	= UnitDataCSV.GetInteger(i, 16);
-		Temp.LegCount		= UnitDataCSV.GetInteger(i, 17);
-		Temp.ShlderCount	= UnitDataCSV.GetInteger(i, 18);
-		Temp.CardCount	= UnitDataCSV.GetInteger(i, 19);
+		Temp.ChestCount	= UnitDataCSV.GetInteger(i, 14);
+		Temp.BackCount	= UnitDataCSV.GetInteger(i, 15);
+		Temp.LegCount		= UnitDataCSV.GetInteger(i, 16);
+		Temp.ShlderCount	= UnitDataCSV.GetInteger(i, 17);
+		Temp.CardCount	= UnitDataCSV.GetInteger(i, 18);
 		for (int j = 0; j < 16; j++)
-			Temp.Equipped[j] = UnitDataCSV.GetInteger(i, j + 20);
+			Temp.Equipped[j] = UnitDataCSV.GetInteger(i, j + 19);
 		for (int j = 0; j < 4; j++)
 		{
-			Temp.DropItemId[j]	= UnitDataCSV.GetInteger(i, j * 2 + 36);
-			Temp.DropRate[j]	= UnitDataCSV.GetInteger(i, j * 2 + 1 + 36);
+			Temp.DropItemId[j]	= UnitDataCSV.GetInteger(i, j * 2 + 35);
+			Temp.DropRate[j]	= UnitDataCSV.GetInteger(i, j * 2 + 1 + 35);
 		}
 		m_UnitDataList.push_back(Temp);
 	}

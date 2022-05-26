@@ -109,7 +109,6 @@ void IUnit::Create(int id, int unit_no)
 	m_Status.Inventory = Data.Inventory;
 	m_Status.HeadCount = Data.HeadCount;
 	m_Status.ArmCount = Data.ArmCount;
-	m_Status.HandCount = Data.HandCount;
 	m_Status.ChestCount = Data.ChestCount;
 	m_Status.BackCount = Data.BackCount;
 	m_Status.LegCount = Data.LegCount;
@@ -117,8 +116,8 @@ void IUnit::Create(int id, int unit_no)
 	m_Status.CardCount = Data.CardCount;
 
 	m_Status.EquipCount = m_Status.HeadCount + m_Status.ArmCount +
-		m_Status.HandCount + m_Status.ChestCount + m_Status.BackCount +
-		m_Status.LegCount + m_Status.ShlderCount + m_Status.CardCount;
+		m_Status.ChestCount + m_Status.BackCount + m_Status.LegCount +
+		m_Status.ShlderCount + m_Status.CardCount;
 
 	for (int i = 0; i < 16; i++)
 	{
@@ -128,7 +127,6 @@ void IUnit::Create(int id, int unit_no)
 	m_ItemList.clear();
 	m_Head.clear();
 	m_Arm.clear();
-	m_Hand.clear();
 	m_Chest.clear();
 	m_Back.clear();
 	m_Leg.clear();
@@ -150,10 +148,6 @@ void IUnit::Create(int id, int unit_no)
 		case cEquipDataBase::EQUIPMENT_SLOT::ARM:
 			if (m_Arm.size() >= m_Status.ArmCount) break;
 			m_Arm.push_back(Equipment.EquipmentID);
-			break;
-		case cEquipDataBase::EQUIPMENT_SLOT::HAND:
-			if (m_Hand.size() >= m_Status.HandCount) break;
-			m_Hand.push_back(Equipment.EquipmentID);
 			break;
 		case cEquipDataBase::EQUIPMENT_SLOT::CHEST:
 			if (m_Chest.size() >= m_Status.ChestCount) break;
@@ -216,12 +210,6 @@ void IUnit::CalcStatus(bool reset_param)
 		if (i >= m_Arm.size()) m_Arm.push_back(0);
 		m_Equipment[Count] = m_Arm[i];
 		CalcEquipmentStat(m_Arm[i]);
-	}
-	for (int i = 0; i < m_Status.HandCount; i++, Count++)
-	{
-		if (i >= m_Hand.size()) m_Hand.push_back(0);
-		m_Equipment[Count] = m_Hand[i];
-		CalcEquipmentStat(m_Hand[i]);
 	}
 	for (int i = 0; i < m_Status.ChestCount; i++, Count++)
 	{
@@ -304,15 +292,15 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	Damage = max(Damage, 0);
 
 	if (Damage == 0)
-		((CTextManager*)m_TextManager)->EnterText("  Miss - " + Text);
+		((CTextManager*)m_TextManager)->EnterText("  ミス - " + Text);
 	else
-		((CTextManager*)m_TextManager)->EnterText("  Hit - " + Text);
+		((CTextManager*)m_TextManager)->EnterText("  " + std::to_string(Damage) + "ダメージ - " + Text);
 
 	m_Life = max(m_Life - Damage, 0);
 
 	if (m_Life <= 0)
 	{
-		((CTextManager*)m_TextManager)->EnterText("  " + Text + " destroyed");
+		((CTextManager*)m_TextManager)->EnterText("  " + Text + "は破壊された");
 		Defeated = true;
 	}
 	return Defeated;
@@ -361,35 +349,31 @@ IUnit::EquippedStat IUnit::GetEquipped()
 
 	for (int i = 0; i < m_Status.HeadCount; i++, Count++)
 	{
-		Stat.Equipment[Count]= "Head  :";
+		Stat.Equipment[Count] = "頭  :";
 	}
 	for (int i = 0; i < m_Status.ArmCount; i++, Count++)
 	{
-		Stat.Equipment[Count] = "Arm   :";
-	}
-	for (int i = 0; i < m_Status.HandCount; i++, Count++)
-	{
-		Stat.Equipment[Count] = "Hand  :";
+		Stat.Equipment[Count] = "ウデ:";
 	}
 	for (int i = 0; i < m_Status.ChestCount; i++, Count++)
 	{
-		Stat.Equipment[Count] = "Chest :";
+		Stat.Equipment[Count] = "胸部:";
 	}
 	for (int i = 0; i < m_Status.BackCount; i++, Count++)
 	{
-		Stat.Equipment[Count] = "Back  :";
+		Stat.Equipment[Count] = "背中:";
 	}
 	for (int i = 0; i < m_Status.LegCount; i++, Count++)
 	{
-		Stat.Equipment[Count] = "Leg   :";
+		Stat.Equipment[Count] = "脚  :";
 	}
 	for (int i = 0; i < m_Status.ShlderCount; i++, Count++)
 	{
-		Stat.Equipment[Count] = "Shlder:";
+		Stat.Equipment[Count] = "肩  :";
 	}
 	for (int i = 0; i < m_Status.CardCount; i++, Count++)
 	{
-		Stat.Equipment[Count] = "Card  :";
+		Stat.Equipment[Count] = "ｶｰﾄﾞ:";
 	}
 
 	for (int i = 0; i < 16; i++)
@@ -401,7 +385,7 @@ IUnit::EquippedStat IUnit::GetEquipped()
 		}
 		if (m_Equipment[i] == 0)
 		{
-			Stat.Equipment[i] += "--------------------------------";
+			Stat.Equipment[i] += "----------------------------------";
 			continue;
 		}
 		temp = EquipDB->GetData(m_Equipment[i]);
@@ -464,9 +448,7 @@ IUnit::InventoryStat IUnit::GetInventory()
 			continue;
 		}
 		temp = ItemDB->GetData((*it).ID, (*it).IsEquipment);
-		if (!(*it).IsEquipment)
-			Stat.Item[i] += std::to_string((*it).Amount) + "x ";
-		Stat.Item[i] += temp.Name;
+		Stat.Item[i] += std::to_string((*it).Amount) + "x " + temp.Name;
 		it++;
 	}
 	Stat.Count = m_Status.EquipCount;
@@ -559,6 +541,7 @@ bool IUnit::Attack(aqua::CVector2 pos)
 		Text += "(" + std::to_string(m_UnitNo) + ")";
 
 	bool Attacked = false;
+	bool Melee = false;
 
 	for (int i = m_AttackingWPN; i < 16; i++, m_AttackingWPN++)
 	{
@@ -566,9 +549,10 @@ bool IUnit::Attack(aqua::CVector2 pos)
 		{
 			if (m_Weapon[i].ID == 0) continue;
 			if (m_Weapon[i].Range < Diff.Length())
-				if (Diff.Length() > 1.42f)
-					continue;
-
+			{
+				if (Diff.Length() > 1.42f) continue;
+				else Melee = true;
+			}
 			if (m_Batt - m_Weapon[i].Energy < 0) continue;
 			if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
 
@@ -576,13 +560,22 @@ bool IUnit::Attack(aqua::CVector2 pos)
 
 			if (!UnitMgr->CanAttack(pos))
 			{
-				((CTextManager*)m_TextManager)->EnterText("  Target not found");
-				return false;
+				((CTextManager*)m_TextManager)->EnterText("  対象が見つからない");
+				return m_AttackingWPN > 0;
 			}
-			m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::GUNSHOT, m_OnMapPos, pos);
+
+			if (Melee)
+			{
+				m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::MELEE, m_OnMapPos, pos);
+			}
+			else
+			{
+				m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::GUNSHOT, m_OnMapPos, pos);
+			}
 
 			if (m_PlayingEffect) return false;
 		}
+		m_PlayingEffect->DeleteObject();
 		m_PlayingEffect = nullptr;
 
 		UnitMgr->Attack(

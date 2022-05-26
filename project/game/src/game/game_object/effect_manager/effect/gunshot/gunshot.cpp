@@ -38,7 +38,8 @@ void cEffectGunshot::Update()
 {
 	if (m_Timer <= 0)
 	{
-		DeleteObject();
+		m_Line.visible = false;
+		m_Line2.visible = false;
 		return;
 	}
 	m_Line.visible = false;

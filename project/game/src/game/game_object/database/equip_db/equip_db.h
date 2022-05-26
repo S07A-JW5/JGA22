@@ -20,7 +20,6 @@ public:
 		DUMMY,	//ÀÞÐ°
 		HEAD,	//“ª
 		ARM,		//˜r
-		HAND,	//Žè
 		CHEST,	//‹¹•”
 		BACK,	//”w’†
 		LEG,		//‹r

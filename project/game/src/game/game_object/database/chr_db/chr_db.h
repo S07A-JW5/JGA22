@@ -20,7 +20,6 @@ public:
 
 		std::uint8_t HeadCount;	//「頭」ｽﾛｯﾄ数
 		std::uint8_t ArmCount;		//「腕」ｽﾛｯﾄ数
-		std::uint8_t HandCount;	//「手」ｽﾛｯﾄ数
 		std::uint8_t ChestCount;	//「胸部」ｽﾛｯﾄ数
 		std::uint8_t BackCount;	//「背中」ｽﾛｯﾄ数
 		std::uint8_t LegCount;		//「脚」ｽﾛｯﾄ数

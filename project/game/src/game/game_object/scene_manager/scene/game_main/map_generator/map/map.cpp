@@ -29,8 +29,7 @@ void cMap::Initialize()
 	aqua::GetWindowWidth();
 }
 
-void cMap::Initialize(int width, int height, std::uint8_t** mapdata,
-	aqua::CVector2 start, aqua::CVector2 stair)
+void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVector2 start, aqua::CVector2 stair, std::vector<Room> room, std::vector<Room> corridor, std::vector<Corner> corner)
 {
 	Initialize();
 
@@ -87,6 +86,10 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata,
 		}
 	m_StartPos = start;
 	m_StairPos = stair;
+
+	m_Room = room;
+	m_Corridor = corridor;
+	m_Corner = corner;
 }
 
 void cMap::Update()
@@ -553,4 +556,37 @@ void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return;
 	m_Tile[x_pos][y_pos].TileID = tile;
+}
+
+int16_t cMap::GetRoom(aqua::CVector2 pos)
+{
+	TILE_ID Tile = GetTile(pos.x, pos.y);
+	if (Tile == TILE_ID::ROOM || Tile == TILE_ID::STAIR)
+	{
+		for (int i = 0; i < m_Room.size(); i++)
+		{
+			if (pos.x < m_Room[i].RoomRect.left && pos.x > m_Room[i].RoomRect.right &&
+				pos.y < m_Room[i].RoomRect.top && pos.y > m_Room[i].RoomRect.bottom)
+				continue;
+			return i;
+		}
+	}
+	if (Tile == TILE_ID::CORRIDOR)
+	{
+		for (int i = 0; i < m_Corridor.size(); i++)
+		{
+			if (pos.x < m_Corridor[i].RoomRect.left && pos.x > m_Corridor[i].RoomRect.right &&
+				pos.y < m_Corridor[i].RoomRect.top && pos.y > m_Corridor[i].RoomRect.bottom)
+				continue;
+			return i + 256;
+		}
+	}
+	if (Tile == TILE_ID::GATE)
+	{
+		for (int i = 0; i < m_Corner.size(); i++)
+		{
+			if (pos == m_Corner[i].Position) return -i;
+		}
+	}
+	return INT16_MAX;
 }
