@@ -36,7 +36,6 @@ private:
 	bool Attack(aqua::CVector2 pos) override;
 
 	AI_TYPE m_AIType;		//性格
-	//IUnit* m_Target;		//攻撃対象
 	bool m_TargetVision;	//対象を視認出来ているか
 	aqua::CVector2 m_LastSeenTargetPos;	//最後に視認した位置
 };

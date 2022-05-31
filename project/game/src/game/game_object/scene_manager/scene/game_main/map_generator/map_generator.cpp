@@ -167,7 +167,7 @@ void cMapGenerator::Generate()
 		m_MapObj = aqua::CreateGameObject<cMap>(this);
 		m_MapObj->Initialize(m_Width, m_Height, m_Map, m_StartPos, m_StairPos,
 			m_Room, m_Corridor, m_Corner);
-		//PutEnemy(PlayerRoom);
+		PutEnemy(PlayerRoom);
 	}
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
@@ -205,7 +205,7 @@ void cMapGenerator::Generate()
 		AQUA_DEBUG_LOG("Time: " + std::to_string(GetNowCount() - m_Timer) + "ms");
 		AQUA_DEBUG_LOG(std::to_string(m_Room.size()) + "rooms");
 		AQUA_DEBUG_LOG(std::to_string(m_Corridor.size()) + "corridors");
-		AQUA_DEBUG_LOG(std::to_string(m_Corner.size()) + "corners");
+		//AQUA_DEBUG_LOG(std::to_string(m_Corner.size()) + "corners");
 	}
 #endif // _DEBUG
 }
@@ -670,7 +670,8 @@ void cMapGenerator::PutEnemy(int start_room)
 		if (i == start_room) continue;
 
 		Point = GetRandomPointInRoom(i);
-		m_MapObj->PutUnit(Point.x, Point.y, aqua::Rand(max(1, m_Level - 5), m_Level));
+		//m_MapObj->PutUnit(Point.x, Point.y, aqua::Rand(max(1, m_Level - 5), m_Level));
+		m_MapObj->PutUnit(Point.x, Point.y, 2);
 	}
 }
 

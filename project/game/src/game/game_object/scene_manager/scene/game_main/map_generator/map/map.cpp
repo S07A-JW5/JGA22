@@ -590,3 +590,90 @@ int16_t cMap::GetRoom(aqua::CVector2 pos)
 	}
 	return INT16_MAX;
 }
+
+std::list<aqua::CVector2> cMap::GetPath(aqua::CVector2 posA, aqua::CVector2 posB)
+{
+	std::list<aqua::CVector2> Path;
+	std::list<uint16_t> CornerList;
+	std::list<uint16_t> CornerTemp;
+	std::list<uint16_t> CornerListA;
+	std::list<uint16_t> CornerListB;
+
+	int16_t RoomA = GetRoom(posA);
+	int16_t RoomB = GetRoom(posB);
+
+	if (RoomA == RoomB)
+	{
+		Path.push_back(posB);
+		return Path;
+	}
+
+	CornerListA = GetCornerList(RoomA);
+	CornerListB = GetCornerList(RoomB);
+
+	for (auto it : CornerListA)
+	{
+		CornerTemp = FindCorner(it, CornerListB);
+		if (CornerList.empty())
+			CornerList = CornerTemp;
+		if (CornerList.size() < CornerTemp.size()) break;
+		if (CornerList.size() > CornerTemp.size())
+		{
+			CornerList = CornerTemp;
+			break;
+		}
+	}
+	if (!CornerList.empty())
+	{
+		for (auto it : CornerList)
+		{
+			Path.push_back(m_Corner[it].Position);
+		}
+		Path.push_back(posB);
+	}
+	return Path;
+}
+
+std::list<uint16_t> cMap::GetCornerList(int16_t room)
+{
+	if (room == INT16_MAX) return std::list<uint16_t>();
+
+	std::list<uint16_t> List;
+
+	if (room < 0)
+	{
+		List.push_back(-room);
+		return List;
+	}
+	if (room >= 256)
+	{
+		List = m_Corridor[room - 256].ConnectedCorner;
+		return List;
+	}
+	List = m_Room[room].ConnectedCorner;
+	return List;
+}
+
+std::list<uint16_t> cMap::FindCorner(uint16_t parent, std::list<uint16_t> target)
+{
+	m_PathTemp.clear();
+
+	for (auto it : m_Corner[parent].ConnectedCorner)
+	{
+		for (auto tgt : target)
+		{
+			if (it == tgt)
+			{
+				m_PathTemp.push_front(it);
+				return m_PathTemp;
+			}
+		}
+		m_PathTemp = FindCorner(it, target);
+		if (!m_PathTemp.empty())
+		{
+			m_PathTemp.push_front(it);
+			break;
+		}
+	}
+	return m_PathTemp;
+}

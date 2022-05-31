@@ -85,9 +85,12 @@ public:
 	void SetTile(int x_pos, int y_pos, TILE_ID tile);
 
 	int16_t GetRoom(aqua::CVector2 pos);
-	std::list<int16_t> GetPath(aqua::CVector2 posA, aqua::CVector2 posB);
+	std::list<aqua::CVector2> GetPath(aqua::CVector2 posA, aqua::CVector2 posB);
 
 private:
+	std::list<uint16_t> GetCornerList(int16_t room);
+	std::list<uint16_t> FindCorner(uint16_t parent, std::list<uint16_t> target);
+
 	bool m_HasData;
 	std::uint8_t	m_Width;		//マップの横サイズ
 	std::uint8_t	m_Height;		//マップの縦サイズ
@@ -106,4 +109,6 @@ private:
 	aqua::CRect m_DrawArea;	//描画範囲
 	IGameObject* m_Camera;		//カメラ
 	IGameObject* m_UnitManager;	//ﾕﾆｯﾄﾏﾈｰｼﾞｬｰ
+
+	std::list<uint16_t> m_PathTemp;
 };

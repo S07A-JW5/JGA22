@@ -38,10 +38,19 @@ bool cBot::Action()
 	m_TargetVision = (UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
 		!m_MapObj->HitWall(m_OnMapPos, PlayerPos));
 	if (m_TargetVision)
+	{
 		m_LastSeenTargetPos = PlayerPos;
+	}
 
 	if (!Attacked && !m_PlayingEffect)
 		m_DidAction = Move();
+
+	m_TargetVision = (UnitMgr->BetweenPlayer(m_OnMapPos) <= m_SightRange &&
+		!m_MapObj->HitWall(m_OnMapPos, PlayerPos));
+	if (m_TargetVision)
+	{
+		m_LastSeenTargetPos = PlayerPos;
+	}
 
 	return true;
 }
@@ -61,42 +70,94 @@ bool cBot::Move()
 {
 	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
 	aqua::CVector2 Pos = aqua::CVector2::ZERO;
+	aqua::CVector2 Diff = aqua::CVector2::ZERO;
+	IUnit::DIRECTION Dir = IUnit::DIRECTION::DUMMY;
 	bool Moved = false;
 	
-	for (int i = 0; i < 4; i++)
+	if (m_LastSeenTargetPos==aqua::CVector2::ZERO)
 	{
-		Pos = m_OnMapPos;
-		m_MoveTo = (IUnit::DIRECTION)(rand() % (int)IUnit::DIRECTION::COUNT);
+		for (int i = 0; i < 4; i++)
+		{
+			m_MoveTo = (IUnit::DIRECTION)(rand() % (int)IUnit::DIRECTION::COUNT);
 
-		switch (m_MoveTo)
-		{
-		case IUnit::DIRECTION::DUMMY:
-			return false;
-			break;
-		case IUnit::DIRECTION::NORTH:
-			Pos.y -= 1;
-			break;
-		case IUnit::DIRECTION::SOUTH:
-			Pos.y += 1;
-			break;
-		case IUnit::DIRECTION::EAST:
-			Pos.x -= 1;
-			break;
-		case IUnit::DIRECTION::WEST:
-			Pos.x += 1;
-			break;
+			if (CanMove())
+			{
+				Moved = true;
+				break;
+			}
 		}
-		if (m_MapObj->IsWalkableTile(Pos.x, Pos.y) && UnitMgr->HasSpace(Pos))
+	}
+	else
+	{
+		Diff = m_LastSeenTargetPos - m_OnMapPos;
+		if (abs(Diff.x) > 0 && abs(Diff.y) > 0)
 		{
-			Moved = true;
-			break;
+			if (Diff.x < 0)
+			{
+				if (Diff.y < 0)
+					m_MoveTo = IUnit::DIRECTION::NORTH_WEST;
+				else if (Diff.y > 0)
+					m_MoveTo = IUnit::DIRECTION::SOUTH_WEST;
+			}
+			else if (Diff.x > 0)
+			{
+				if (Diff.y < 0)
+					m_MoveTo = IUnit::DIRECTION::NORTH_EAST;
+				else if (Diff.y > 0)
+					m_MoveTo = IUnit::DIRECTION::SOUTH_EAST;
+			}
+			if (CanMove())
+			{
+				Moved = true;
+			}
+		}
+		if (!Moved)
+		{
+			if (abs(Diff.x) > abs(Diff.y))
+			{
+				if (Diff.x > 0)
+					m_MoveTo = IUnit::DIRECTION::EAST;
+				else if (Diff.x < 0)
+					m_MoveTo = IUnit::DIRECTION::WEST;
+			}
+			else
+			{
+				if (Diff.y > 0)
+					m_MoveTo = IUnit::DIRECTION::SOUTH;
+				else if (Diff.y < 0)
+					m_MoveTo = IUnit::DIRECTION::NORTH;
+			}
+			if (CanMove())
+			{
+				Moved = true;
+			}
+			else
+			{
+				m_MoveTo = Dir;
+				if (CanMove())
+					Moved = true;
+				else
+					for (int i = 0; i < 4; i++)
+					{
+						m_MoveTo = (IUnit::DIRECTION)(rand() % (int)IUnit::DIRECTION::COUNT);
+
+						if (CanMove())
+						{
+							Moved = true;
+							break;
+						}
+					}
+			}
 		}
 	}
 	if (Moved)
 	{
+		Pos = GetMovedPos();
 		UnitMgr->SetMovedPos(m_OnMapPos, Pos);
 		m_OnMapPos = Pos;
 		CameraUpdate();
+		if (m_LastSeenTargetPos != aqua::CVector2::ZERO && m_LastSeenTargetPos == m_OnMapPos)
+			m_LastSeenTargetPos = aqua::CVector2::ZERO;
 	}
 	return true;
 }

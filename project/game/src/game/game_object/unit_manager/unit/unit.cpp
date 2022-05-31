@@ -601,6 +601,59 @@ bool IUnit::PlayEffect()
 	return !((IEffect*)m_PlayingEffect)->EffectPlaying();
 }
 
+bool IUnit::CanMove()
+{
+	if (m_MoveTo == IUnit::DIRECTION::DUMMY) return false;
+
+	aqua::CVector2 Pos = GetMovedPos();
+
+	if (m_MapObj->IsWalkableTile(Pos.x, Pos.y) && ((CUnitManager*)m_UnitManager)->HasSpace(Pos))
+		return true;
+	return false;
+}
+
+aqua::CVector2 IUnit::GetMovedPos()
+{
+	aqua::CVector2 Pos = m_OnMapPos;
+
+	switch (m_MoveTo)
+	{
+	case IUnit::DIRECTION::NORTH:
+		Pos.y -= 1;
+		break;
+	case IUnit::DIRECTION::SOUTH:
+		Pos.y += 1;
+		break;
+	case IUnit::DIRECTION::EAST:
+		Pos.x += 1;
+		break;
+	case IUnit::DIRECTION::WEST:
+		Pos.x -= 1;
+		break;
+	case IUnit::DIRECTION::NORTH_EAST:
+		Pos.x += 1;
+		Pos.y -= 1;
+		break;
+	case IUnit::DIRECTION::NORTH_WEST:
+		Pos.x -= 1;
+		Pos.y -= 1;
+		break;
+	case IUnit::DIRECTION::SOUTH_EAST:
+		Pos.x += 1;
+		Pos.y += 1;
+		break;
+	case IUnit::DIRECTION::SOUTH_WEST:
+		Pos.x -= 1;
+		Pos.y += 1;
+		break;
+	default:
+		return aqua::CVector2::ZERO;
+		break;
+	}
+
+	return Pos;
+}
+
 void IUnit::CalcEquipmentStat(int id)
 {
 	if (id <= 0) return;

@@ -30,6 +30,8 @@ void cPlayer::Update()
 
 	aqua::CVector2 PointedTile = m_MapObj->GetPointedTile(aqua::mouse::GetCursorPos());
 
+	//AQUA_DEBUG_LOG(std::to_string((int)PointedTile.x) + "," + std::to_string((int)PointedTile.y));
+
 	m_Line.pointB = m_Box.position =
 		(PointedTile * cMap::m_tile_size) - ((cCamera*)m_Camera)->GetDrawBasePos();
 	m_Box.position.x += m_Box.thickness;
@@ -50,29 +52,62 @@ void cPlayer::Update()
 		}
 		else
 		{
-			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::SPACE))
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::SPACE) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD5))
 			{
 				m_DesiredAction = ACTION::WAIT;
 			}
-			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W))
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W)||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD8))
 			{
 				m_DesiredAction = ACTION::MOVE;
 				m_MoveTo = DIRECTION::NORTH;
 			}
-			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A))
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD4))
 			{
 				m_DesiredAction = ACTION::MOVE;
 				m_MoveTo = DIRECTION::WEST;
 			}
-			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S))
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD2))
 			{
 				m_DesiredAction = ACTION::MOVE;
 				m_MoveTo = DIRECTION::SOUTH;
 			}
-			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D))
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD6))
 			{
 				m_DesiredAction = ACTION::MOVE;
 				m_MoveTo = DIRECTION::EAST;
+			}
+			if ((aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W) &&
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A)) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD7))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::NORTH_WEST;
+			}
+			if ((aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::A) &&
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S)) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD1))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::SOUTH_WEST;
+			}
+			if ((aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::S) &&
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D)) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD3))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::SOUTH_EAST;
+			}
+			if ((aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::D) &&
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W)) ||
+				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD9))
+			{
+				m_DesiredAction = ACTION::MOVE;
+				m_MoveTo = DIRECTION::NORTH_EAST;
 			}
 			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::ONE))
 			{
@@ -234,7 +269,7 @@ bool cPlayer::Wait()
 			{
 				m_ItemList.pop_back();
 				m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, Item.ItemID, Item.Num);
-				((CTextManager*)m_TextManager)->EnterText("ƒCƒ“ƒxƒ“ƒgƒŠ‚ª–ž”t‚ÅE‚¦‚È‚¢I");
+				((CTextManager*)m_TextManager)->EnterText("²ÝÍÞÝÄØ‚ª–ž”t‚Å " + temp.Name + " ‚ðE‚¦‚È‚¢I");
 				return false;
 			}
 		}
@@ -255,24 +290,8 @@ bool cPlayer::Move()
 	aqua::CVector2 Pos = m_OnMapPos;
 	bool Moved = false;
 
-	switch (m_MoveTo)
-	{
-	case IUnit::DIRECTION::DUMMY:
-		return false;
-		break;
-	case IUnit::DIRECTION::NORTH:
-		Pos.y -= 1;
-		break;
-	case IUnit::DIRECTION::SOUTH:
-		Pos.y += 1;
-		break;
-	case IUnit::DIRECTION::EAST:
-		Pos.x += 1;
-		break;
-	case IUnit::DIRECTION::WEST:
-		Pos.x -= 1;
-		break;
-	}
+	Pos = GetMovedPos();
+
 	if (m_MapObj->IsWalkableTile(Pos.x, Pos.y))
 	{
 		if (UnitMgr->HasSpace(Pos))

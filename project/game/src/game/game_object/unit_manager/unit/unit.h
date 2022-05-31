@@ -21,6 +21,11 @@ public:
 		EAST,
 		WEST,
 
+		NORTH_EAST,
+		NORTH_WEST,
+		SOUTH_EAST,
+		SOUTH_WEST,
+
 		COUNT,
 		DUMMY = 0xff
 	};
@@ -152,6 +157,10 @@ protected:
 	virtual bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE);
 
 	virtual bool PlayEffect();
+
+	bool CanMove();
+
+	aqua::CVector2 GetMovedPos();
 
 	void CalcEquipmentStat(int id);
 

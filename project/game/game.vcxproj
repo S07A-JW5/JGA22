@@ -183,9 +183,6 @@
     <ClInclude Include="src\game\game_object\unit_manager\unit_manager.h" />
     <ClInclude Include="src\game\tools\tools.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

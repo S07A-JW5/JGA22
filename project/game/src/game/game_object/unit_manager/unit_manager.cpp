@@ -114,9 +114,11 @@ void CUnitManager::MapGeneration()
 	MapGen->GenerateMap(m_Floor, 30 + m_Floor, 30 + m_Floor,
 		5, 8, 2 + m_Floor, 5, 8, 1 + m_Floor);
 	cMap* Map = MapGen->GetMap();
+	aqua::CVector2 PlayerPos = Map->GetStartPoint();
 	m_MapObj = Map;
 	m_Player->GetMap(Map);
-	m_Player->SetPosition(Map->GetStartPoint());
+	m_Player->SetPosition(PlayerPos);
+	SetPlayerPos(PlayerPos);
 	m_Player->CameraUpdate();
 	m_Player->SetStairPosition(Map->GetStairPos());
 	Map->Update();
