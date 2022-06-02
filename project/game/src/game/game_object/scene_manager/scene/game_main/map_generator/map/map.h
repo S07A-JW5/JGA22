@@ -61,7 +61,7 @@ public:
 
 	void PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num = 1);
 
-	void PutUnit(int x_pos, int y_pos, unsigned int unit_id);
+	void PutUnit(int x_pos, int y_pos, uint16_t unit_id);
 
 	int GetMapWidth();
 	int GetMapHeight();

@@ -1,7 +1,7 @@
 #include "result.h"
 
-CResultScene::CResultScene(aqua::IGameObject* parent, std::string name)
-	:IScene(parent,name)
+CResultScene::CResultScene(aqua::IGameObject* parent)
+	: IScene(parent, "Result")
 {
 }
 

@@ -43,8 +43,8 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVect
 
 	m_HasData = true;
 
-	m_Width = width;
-	m_Height = height;
+	m_Width = (uint8_t)width;
+	m_Height = (uint8_t)height;
 
 	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
 	UnitMgr->SetMapSize(m_Width, m_Height);
@@ -98,8 +98,8 @@ void cMap::Update()
 
 	cCamera* Camera = (cCamera*)m_Camera;
 	aqua::CVector2 DrawBasePos = Camera->GetDrawBasePos();
-	m_DrawArea.left = DrawBasePos.x / m_tile_size - 1;
-	m_DrawArea.top = DrawBasePos.y / m_tile_size - 1;
+	m_DrawArea.left = (int)DrawBasePos.x / m_tile_size - 1;
+	m_DrawArea.top = (int)DrawBasePos.y / m_tile_size - 1;
 	m_DrawArea.right = m_DrawArea.left + cCamera::m_draw_width / m_tile_size + 1;
 	m_DrawArea.bottom = m_DrawArea.top + cCamera::m_draw_height / m_tile_size + 1;
 	m_TileDrawPos.x = m_DrawArea.left * m_tile_size - DrawBasePos.x;
@@ -197,7 +197,6 @@ void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
 		return;
 	}
 	int range = 1;
-	int count = 0;
 	int XPos = x_pos;
 	int YPos = y_pos;
 
@@ -240,7 +239,7 @@ void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
 	}
 }
 
-void cMap::PutUnit(int x_pos, int y_pos, unsigned int unit_id)
+void cMap::PutUnit(int x_pos, int y_pos, uint16_t unit_id)
 {
 	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
 	UnitMgr->Create(unit_id, x_pos, y_pos);
@@ -273,11 +272,11 @@ aqua::CVector2 cMap::GetPointedTile(aqua::CPoint mouse_pos)
 	MousePointedPos.x += mouse_pos.x;
 	MousePointedPos.y += mouse_pos.y;
 	Negative = MousePointedPos.x < 0;
-	MousePointedPos.x = (int)(MousePointedPos.x / m_tile_size);
+	MousePointedPos.x = (float)((int)(MousePointedPos.x / m_tile_size));
 	if (Negative)
 		MousePointedPos.x -= 1;
 	Negative = MousePointedPos.y < 0;
-	MousePointedPos.y = (int)(MousePointedPos.y / m_tile_size);
+	MousePointedPos.y = (float)((int)(MousePointedPos.y / m_tile_size));
 	if (Negative)
 		MousePointedPos.y -= 1;
 	return MousePointedPos;
@@ -327,10 +326,10 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 	aqua::CVector2 Diff = aqua::CVector2::ZERO;
 	std::vector<aqua::CRect> TileRect;
 	TileRect.clear();
-	Rect.left = pos.x - radius;
-	Rect.right = pos.x + radius;
-	Rect.top = pos.y - radius;
-	Rect.bottom = pos.y + radius;
+	Rect.left = (int)(pos.x - radius);
+	Rect.right = (int)(pos.x + radius);
+	Rect.top = (int)(pos.y - radius);
+	Rect.bottom = (int)(pos.y + radius);
 	bool Hit = false;
 	int Count = 0;
 	int LOD = 8;
@@ -358,7 +357,7 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 		{
 			if (i < 0 || i >= m_Width || j < 0 || j >= m_Height) continue;
 
-			Diff = aqua::CVector2(i, j) - pos;
+			Diff = aqua::CVector2((float)i, (float)j) - pos;
 			if (Diff.Length() > radius) continue;
 
 			if (Diff.Length() < 1.42f)
@@ -370,18 +369,18 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 
 			if (abs(Diff.x) == abs(Diff.y) && abs(Diff.x) == 0 && abs(Diff.x) == 0)
 			{
-				Count = max(abs(Diff.x), abs(Diff.y));
-				Diff = Diff / Count;
+				Count = (int)max(abs(Diff.x), abs(Diff.y));
+				Diff = Diff / (float)Count;
 				for (int k = 1; k <= Count; k++)
 				{
-					Pos = Diff * k + pos;
+					Pos = Diff * (float)k + pos;
 					if (k == Count)
 					{
 						m_Tile[i][j].Mapped = true;
 						m_Tile[i][j].Visible = true;
 						break;
 					}
-					if (!IsWalkableTile(Pos.x, Pos.y)) break;
+					if (!IsWalkableTile((int)Pos.x, (int)Pos.y)) break;
 				}
 			}
 			else
@@ -389,7 +388,7 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 				for (int k = 0; k < 4; k++)
 				{
 					aqua::CVector2 PointA = pos * m_tile_size;
-					aqua::CVector2 PointB = aqua::CVector2(i, j) * m_tile_size;
+					aqua::CVector2 PointB = aqua::CVector2((float)i, (float)j) * m_tile_size;
 					PointA.x += (m_tile_size) / 2 - (k / 2);
 					PointA.y += (m_tile_size) / 2 - (k % 2);
 					PointB.x += (m_tile_size) / 2 - (k / 2);
@@ -402,16 +401,16 @@ void cMap::SetMappedFloatRadius(aqua::CVector2 pos, float radius)
 
 					if (abs(Diff.x) > abs(Diff.y))
 					{
-						Count = abs(Diff.x);
+						Count = (int)abs(Diff.x);
 					}
 					else
 					{
-						Count = abs(Diff.y);
+						Count = (int)abs(Diff.y);
 					}
-					Diff = Diff / Count;
+					Diff = Diff / (float)Count;
 					for (int m = 1; m <= Count; m += max(m_tile_size / LOD, 1))
 					{
-						Pos = Diff * m + PointA;
+						Pos = Diff * (float)m + PointA;
 						for (int n = 0; n < TileRect.size(); n++)
 						{
 							if (Pos.x >= TileRect[n].left &&
@@ -449,23 +448,23 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 	TileRect.clear();
 	if (posA.x < posB.x)
 	{
-		Rect.left = posA.x;
-		Rect.right = posB.x;
+		Rect.left = (int)posA.x;
+		Rect.right = (int)posB.x;
 	}
 	else
 	{
-		Rect.left = posB.x;
-		Rect.right = posA.x;
+		Rect.left = (int)posB.x;
+		Rect.right = (int)posA.x;
 	}
 	if (posA.y < posB.y)
 	{
-		Rect.top = posA.y;
-		Rect.bottom = posB.y;
+		Rect.top = (int)posA.y;
+		Rect.bottom = (int)posB.y;
 	}
 	else
 	{
-		Rect.top = posB.y;
-		Rect.bottom = posA.y;
+		Rect.top = (int)posB.y;
+		Rect.bottom = (int)posA.y;
 	}
 	aqua::CRect Temp = aqua::CRect::ZERO;
 	for (int i = Rect.left; i <= Rect.right; i++)
@@ -484,16 +483,16 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 
 	if (abs(Diff.x) == abs(Diff.y) && abs(Diff.x) == 0 && abs(Diff.x) == 0)
 	{
-		Count = max(abs(Diff.x), abs(Diff.y));
-		Diff = Diff / Count;
+		Count = (int)max(abs(Diff.x), abs(Diff.y));
+		Diff = Diff / (float)Count;
 		for (int k = 1; k <= Count; k++)
 		{
-			Pos = Diff * k + posA;
+			Pos = Diff * (float)k + posA;
 			if (k == Count)
 			{
 				return false;
 			}
-			if (!IsWalkableTile(Pos.x, Pos.y)) return true;
+			if (!IsWalkableTile((int)Pos.x, (int)Pos.y)) return true;
 		}
 	}
 	else
@@ -513,16 +512,15 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 			Hit = false;
 			if (abs(Diff.x) > abs(Diff.y))
 			{
-				Count = abs(Diff.x);
+				Count = (int)abs(Diff.x);
 			}
 			else
 			{
-				Count = abs(Diff.y);
+				Count = (int)abs(Diff.y);
 			}
-			//Diff = Diff / Count;
 			for (int m = 1; m <= Count; m += max(m_tile_size / LOD, 1))
 			{
-				Pos = (Diff * m) / Count + PointA;
+				Pos = (Diff * (float)m) / (float)Count + PointA;
 				for (int n = 0; n < TileRect.size(); n++)
 				{
 					if (Pos.x >= TileRect[n].left &&
@@ -544,6 +542,7 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 		}
 		return Hit;
 	}
+	return false;
 }
 
 bool cMap::HasData()
@@ -560,7 +559,7 @@ void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
 
 int16_t cMap::GetRoom(aqua::CVector2 pos)
 {
-	TILE_ID Tile = GetTile(pos.x, pos.y);
+	TILE_ID Tile = GetTile((int)pos.x, (int)pos.y);
 	if (Tile == TILE_ID::ROOM || Tile == TILE_ID::STAIR)
 	{
 		for (int i = 0; i < m_Room.size(); i++)
@@ -568,7 +567,7 @@ int16_t cMap::GetRoom(aqua::CVector2 pos)
 			if (pos.x < m_Room[i].RoomRect.left && pos.x > m_Room[i].RoomRect.right &&
 				pos.y < m_Room[i].RoomRect.top && pos.y > m_Room[i].RoomRect.bottom)
 				continue;
-			return i;
+			return (int16_t)i;
 		}
 	}
 	if (Tile == TILE_ID::CORRIDOR)
@@ -578,14 +577,14 @@ int16_t cMap::GetRoom(aqua::CVector2 pos)
 			if (pos.x < m_Corridor[i].RoomRect.left && pos.x > m_Corridor[i].RoomRect.right &&
 				pos.y < m_Corridor[i].RoomRect.top && pos.y > m_Corridor[i].RoomRect.bottom)
 				continue;
-			return i + 256;
+			return (int16_t)(i + 256);
 		}
 	}
 	if (Tile == TILE_ID::GATE)
 	{
 		for (int i = 0; i < m_Corner.size(); i++)
 		{
-			if (pos == m_Corner[i].Position) return -i;
+			if (pos == m_Corner[i].Position) return (int16_t)-i;
 		}
 	}
 	return INT16_MAX;

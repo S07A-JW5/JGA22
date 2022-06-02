@@ -47,13 +47,13 @@ void cAmountPopUp::Initialize(const aqua::CVector2& pos, const int& amount, POP_
 
 		m_Width += m_AmountSprite[i].GetTextureWidth();
 	}
-	for (int i = 0, Xpos = m_Position.x + m_Width / 2; i < m_Digit; i++)
+	for (int i = 0, Xpos = (int)m_Position.x + m_Width / 2; i < m_Digit; i++)
 	{
 		Xpos -= m_AmountSprite[i].GetTextureWidth();
-		m_AmountSprite[i].position.x = Xpos;
+		m_AmountSprite[i].position.x = (float)Xpos;
 
-		m_AmountSprite[i].anchor.x = m_AmountSprite[i].GetTextureWidth() / 2;
-		m_AmountSprite[i].anchor.y = m_AmountSprite[i].GetTextureHeight() / 2;
+		m_AmountSprite[i].anchor.x = (float)m_AmountSprite[i].GetTextureWidth() / 2;
+		m_AmountSprite[i].anchor.y = (float)m_AmountSprite[i].GetTextureHeight() / 2;
 
 		m_AmountSprite[i].scale.x = m_AmountSprite[i].scale.y = 0;
 	}

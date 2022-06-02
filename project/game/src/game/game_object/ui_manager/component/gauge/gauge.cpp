@@ -19,7 +19,7 @@ cGauge::cGauge(aqua::IGameObject* parent)
 void cGauge::Initialize(aqua::CVector2 position, int value, int limit, int width, int height, bool mirror, bool has_bg, aqua::IGameObject* sync_obj)
 {
 	aqua::CVector2 Position = position;
-	m_PrevValue = m_CalcValue = m_Value = max(value, 0);
+	m_PrevValue = m_CalcValue = m_Value = (float)max(value, 0);
 	m_Max = max(limit, 0);
 	m_Mirror = mirror;
 	m_SyncObject = sync_obj;
@@ -101,7 +101,7 @@ void cGauge::Initialize(aqua::CVector2 position, int value, int limit, int width
 		m_Gauge[i].position = Position;
 		m_Gauge[i].color = Color;
 		m_Gauge[i].scale.x = m_Width * m_Value / m_Max;
-		m_Gauge[i].scale.y = m_Height;
+		m_Gauge[i].scale.y = (float)m_Height;
 		if (m_Mirror)
 			m_Gauge[i].scale.x *= -1;
 	}
@@ -114,8 +114,8 @@ void cGauge::Update()
 		if (m_SyncObject->GetGameObjectName() == "Value")
 		{
 			cValue* Value = (cValue*)m_SyncObject;
-			m_Value = Value->GetNum();
-			m_CalcValue = Value->GetNum(true);
+			m_Value = (float)Value->GetNum();
+			m_CalcValue = (float)Value->GetNum(true);
 		}
 	}
 	else
@@ -143,12 +143,12 @@ void cGauge::Update()
 		Color = 0xffc00000;
 
 	int length[2];
-	length[0] = m_Width * m_Value / m_Max;
-	length[1] = m_Width * m_CalcValue / m_Max;
+	length[0] = (int)(m_Width * m_Value / m_Max);
+	length[1] = (int)(m_Width * m_CalcValue / m_Max);
 
 	if (length[0] < length[1])
 	{
-		float  temp = 0;
+		int temp = 0;
 
 		temp = length[1];
 		length[1] = length[0];
@@ -161,7 +161,7 @@ void cGauge::Update()
 			length[i] = 1;
 
 		m_Gauge[i].color = Color;
-		m_Gauge[i].scale.x = length[i];
+		m_Gauge[i].scale.x = (float)length[i];
 		if (m_Mirror)
 			m_Gauge[i].scale.x *= -1;
 	}
@@ -193,7 +193,7 @@ void cGauge::SetNum(int value)
 
 	m_PrevValue = m_Value;
 	m_Timer = 0;
-	m_CalcValue = max(min(value, m_Max), 0);
+	m_CalcValue = (float)max(min(value, m_Max), 0);
 }
 
 void cGauge::SetMax(int value)

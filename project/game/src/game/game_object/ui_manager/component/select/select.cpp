@@ -41,7 +41,7 @@ void cSelection::Initialize(std::vector<int> number, std::vector<std::string> na
 	m_PrevFramePage = -1;
 	m_Page = 0;
 
-	m_MaxPage = max((m_Number.size() - 1) / m_selection_per_page + 1, 1);
+	m_MaxPage = max(((int)m_Number.size() - 1) / m_selection_per_page + 1, 1);
 
 	m_Position = pos;
 	m_Position.x -= m_width / 2;

@@ -3,8 +3,6 @@
 #include"scene/game_main/game_main.h"
 #include"scene/title/title.h"
 #include"scene/result/result.h"
-#include"scene/result/win/win.h"
-#include"scene/result/lose/lose.h"
 #include"scene/splash/splash.h"
 
 const float CSceneManager::m_fade_speed = 255.0f;
@@ -31,7 +29,7 @@ void CSceneManager::Initialize(void)
 
 
 	// スプラッシュシーンをはじめに生成
-	Create(SCENE_ID::SPLASH);
+	Create(SCENE_ID::TITLE);
 
 	// シーン状態を維持
 	m_State = STATE::SCENE_IN;
@@ -132,13 +130,11 @@ void CSceneManager::Create(SCENE_ID id)
 	//idごとに新たなシーン生成
 	switch (id)
 	{
-	case SCENE_ID::SPLASH:		scene = aqua::CreateGameObject<CSplashScene>(this);		break;
-	case SCENE_ID::TITLE:		scene = aqua::CreateGameObject<CTitleScene>(this);		break;
+	case SCENE_ID::SPLASH:		scene = aqua::CreateGameObject<CSplashScene>(this);	break;
+	case SCENE_ID::TITLE:		scene = aqua::CreateGameObject<CTitleScene>(this);	break;
 	case SCENE_ID::GAMEMAIN:	scene = aqua::CreateGameObject<CGameMainScene>(this);	break;
 	//case SCENE_ID::MENU:		scene = aqua::CreateGameObject<CMenuScene>(this);		break;
-	//case SCENE_ID::RESULT:		scene = aqua::CreateGameObject<CResultScene>(this);		break;
-	case SCENE_ID::WIN:			scene = aqua::CreateGameObject<CResultWin>(this);		break;
-	case SCENE_ID::LOSE:		scene = aqua::CreateGameObject<CResultLose>(this);		break;
+	case SCENE_ID::RESULT:		scene = aqua::CreateGameObject<CResultScene>(this);	break;
 	}
 
 	AQUA_ASSERT(scene, "シーンが生成できませんでした。");

@@ -149,7 +149,7 @@ void cButton::Update()
 		if (m_Timer > 2.0f)
 		{
 			cText* Text = (cText*)m_DescObj;
-			Text->SetPosition(aqua::CVector2(mouse.x, mouse.y));
+			Text->SetPosition(aqua::CVector2((float)mouse.x, (float)mouse.y));
 			Text->SetVisible(true);
 		}
 	}
@@ -162,7 +162,7 @@ void cButton::Update()
 	}
 	else
 	{
-		std::uint8_t alpha = abs(cos(m_Timer * DX_PI)) * 255;
+		std::uint8_t alpha = (uint8_t)(abs(cos(m_Timer * DX_PI)) * 255);
 		for (int i = 0; i < 9; i++)
 		{
 			m_Sprite[i].color = 0xffffffff;

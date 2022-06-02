@@ -41,8 +41,6 @@ void cMapGenerator::Draw()
 
 void cMapGenerator::Finalize()
 {
-	if (m_MapObj)
-		m_MapObj->Finalize();
 	m_Room.clear();
 	m_Corridor.clear();
 	m_Corner.clear();
@@ -50,6 +48,8 @@ void cMapGenerator::Finalize()
 	for (int i = 0; i < m_Width; i++)
 		AQUA_SAFE_DELETE_ARRAY(m_Map[i]);
 	AQUA_SAFE_DELETE_ARRAY(m_Map);
+
+	IGameObject::Finalize();
 }
 
 bool cMapGenerator::GenerateMap(uint8_t level, uint8_t width, uint8_t height,
@@ -157,10 +157,10 @@ void cMapGenerator::Generate()
 		m_Map[PlayerStartPoint.x][PlayerStartPoint.y] = TILE_TYPE::START;
 		m_Map[StairPoint.x][StairPoint.y] = TILE_TYPE::STAIR;
 
-		m_StartPos.x = PlayerStartPoint.x;
-		m_StartPos.y = PlayerStartPoint.y;
-		m_StairPos.x = StairPoint.x;
-		m_StairPos.y = StairPoint.y;
+		m_StartPos.x = (float)PlayerStartPoint.x;
+		m_StartPos.y = (float)PlayerStartPoint.y;
+		m_StairPos.x = (float)StairPoint.x;
+		m_StairPos.y = (float)StairPoint.y;
 
 		if (m_MapObj)
 			m_MapObj->DeleteObject();
@@ -172,7 +172,7 @@ void cMapGenerator::Generate()
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
 		{
-			m_Tile[i][j].Setup(aqua::CVector2(i * 8, j * 8), 8, 8);
+			m_Tile[i][j].Setup(aqua::CVector2(i * 8.0f, j * 8.0f), 8.0f, 8.0f);
 			switch (m_Map[i][j])
 			{
 			case cMapGenerator::WALL:
@@ -425,22 +425,22 @@ bool cMapGenerator::CreateRoom(bool first)
 							m_Map[i][j] = TILE_TYPE::WALL;
 					}
 				Room.RoomRect = RoomRect;
-				Room.ConnectedCorner.push_back(m_Corner.size());
+				Room.ConnectedCorner.push_back((uint16_t)m_Corner.size());
 
 				m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::GATE;
 				cMap::Corner Corner;
-				Corner.Position = aqua::CVector2(GatePoint.x, GatePoint.y);
+				Corner.Position = aqua::CVector2((float)GatePoint.x, (float)GatePoint.y);
 				Corner.RoomNo[0] = m_BranchPoint[m_CurrentBranchP].RootRoom;
-				Corner.RoomNo[1] = m_Corridor.size() + 256;
+				Corner.RoomNo[1] = (int16_t)m_Corridor.size() + 256;
 				if (Corner.RoomNo[0] < 256)
 				{
 					if (!m_Room[Corner.RoomNo[0]].ConnectedCorner.empty())
 						for (auto it : m_Room[Corner.RoomNo[0]].ConnectedCorner)
 						{
 							Corner.ConnectedCorner.push_back(it);
-							m_Corner[it].ConnectedCorner.push_back(m_Corner.size());
+							m_Corner[it].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 						}
-					m_Room[Corner.RoomNo[0]].ConnectedCorner.push_back(m_Corner.size());
+					m_Room[Corner.RoomNo[0]].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 				}
 				else
 				{
@@ -448,9 +448,9 @@ bool cMapGenerator::CreateRoom(bool first)
 						for (auto it : m_Corridor[Corner.RoomNo[0] - 256].ConnectedCorner)
 						{
 							Corner.ConnectedCorner.push_back(it);
-							m_Corner[it].ConnectedCorner.push_back(m_Corner.size());
+							m_Corner[it].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 						}
-					m_Corridor[Corner.RoomNo[0] - 256].ConnectedCorner.push_back(m_Corner.size());
+					m_Corridor[Corner.RoomNo[0] - 256].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 				}
 				m_Corner.push_back(Corner);
 				m_Corridor.push_back(Room);
@@ -494,7 +494,7 @@ bool cMapGenerator::CreateRoom(bool first)
 						break;
 					}
 					BranchP.Rect = Temp;
-					BranchP.RootRoom = m_Corridor.size() - 1 + 256;
+					BranchP.RootRoom = (uint16_t)m_Corridor.size() - 1 + 256;
 					BranchP.Used = false;
 					BranchP.RootIsCorridor = true;
 					m_BranchPoint.push_back(BranchP);
@@ -512,8 +512,8 @@ bool cMapGenerator::CreateRoom(bool first)
 			if (m_Room.size() >= m_MaxRoomCount)
 				SEARCH_NEXT_BRANCH
 
-				std::uint8_t RoomWidth = aqua::Rand(m_MinRoomSize, m_MaxRoomSize);
-			std::uint8_t RoomHeight = aqua::Rand(m_MinRoomSize, m_MaxRoomSize);
+				std::uint8_t RoomWidth = (uint8_t)aqua::Rand(m_MinRoomSize, m_MaxRoomSize);
+			std::uint8_t RoomHeight = (uint8_t)aqua::Rand(m_MinRoomSize, m_MaxRoomSize);
 			std::uint8_t RoomShiftX = 0;
 			std::uint8_t RoomShiftY = 0;
 			switch (BranchP.Direction)
@@ -563,22 +563,22 @@ bool cMapGenerator::CreateRoom(bool first)
 							m_Map[i][j] = TILE_TYPE::WALL;
 					}
 				Room.RoomRect = RoomRect;
-				Room.ConnectedCorner.push_back(m_Corner.size());
+				Room.ConnectedCorner.push_back((uint16_t)m_Corner.size());
 
 				m_Map[GatePoint.x][GatePoint.y] = TILE_TYPE::GATE;
 				cMap::Corner Corner;
-				Corner.Position = aqua::CVector2(GatePoint.x, GatePoint.y);
+				Corner.Position = aqua::CVector2((float)GatePoint.x, (float)GatePoint.y);
 				Corner.RoomNo[0] = m_BranchPoint[m_CurrentBranchP].RootRoom;
-				Corner.RoomNo[1] = m_Room.size();
+				Corner.RoomNo[1] = (int16_t)m_Room.size();
 				if (Corner.RoomNo[0] < 256)
 				{
 					if (!m_Room[Corner.RoomNo[0]].ConnectedCorner.empty())
 						for (auto it : m_Room[Corner.RoomNo[0]].ConnectedCorner)
 						{
 							Corner.ConnectedCorner.push_back(it);
-							m_Corner[it].ConnectedCorner.push_back(m_Corner.size());
+							m_Corner[it].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 						}
-					m_Room[Corner.RoomNo[0]].ConnectedCorner.push_back(m_Corner.size());
+					m_Room[Corner.RoomNo[0]].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 				}
 				else
 				{
@@ -586,9 +586,9 @@ bool cMapGenerator::CreateRoom(bool first)
 						for (auto it : m_Corridor[Corner.RoomNo[0] - 256].ConnectedCorner)
 						{
 							Corner.ConnectedCorner.push_back(it);
-							m_Corner[it].ConnectedCorner.push_back(m_Corner.size());
+							m_Corner[it].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 						}
-					m_Corridor[Corner.RoomNo[0] - 256].ConnectedCorner.push_back(m_Corner.size());
+					m_Corridor[Corner.RoomNo[0] - 256].ConnectedCorner.push_back((uint16_t)m_Corner.size());
 				}
 				m_Corner.push_back(Corner);
 				m_Room.push_back(Room);
@@ -633,7 +633,7 @@ bool cMapGenerator::CreateRoom(bool first)
 						break;
 					}
 					BranchP.Rect = Temp;
-					BranchP.RootRoom = m_Room.size() - 1;
+					BranchP.RootRoom = (uint16_t)m_Room.size() - 1;
 					BranchP.Used = false;
 					BranchP.RootIsCorridor = false;
 					m_BranchPoint.push_back(BranchP);
@@ -659,7 +659,7 @@ bool cMapGenerator::TileEmptyCheck(aqua::CRect Range)
 
 void cMapGenerator::PutEnemy(int start_room)
 {
-	int Count = m_Room.size();
+	int Count = (int)m_Room.size();
 
 	if (Count <= 1) return;
 
@@ -678,14 +678,14 @@ void cMapGenerator::PutEnemy(int start_room)
 aqua::CPoint cMapGenerator::GetRandomPointInRoom(int room_no, int space)
 {
 	aqua::CVector2 Pos = GetRandomPositionInRoom(room_no, space);
-	return aqua::CPoint(Pos.x, Pos.y);
+	return aqua::CPoint((int)Pos.x, (int)Pos.y);
 }
 
 aqua::CVector2 cMapGenerator::GetRandomPositionInRoom(int room_no, int space)
 {
 	return aqua::CVector2(
-		aqua::Rand(m_Room[room_no].RoomRect.left + space,
+		(float)aqua::Rand(m_Room[room_no].RoomRect.left + space,
 			m_Room[room_no].RoomRect.right - space), 
-		aqua::Rand(m_Room[room_no].RoomRect.top + space, 
+		(float)aqua::Rand(m_Room[room_no].RoomRect.top + space,
 			m_Room[room_no].RoomRect.bottom - space));
 }

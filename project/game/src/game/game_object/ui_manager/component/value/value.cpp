@@ -88,7 +88,7 @@ int cValue::GetNum(bool calcvalue)
 
 float cValue::GetFloatNum()
 {
-	return m_Value;
+	return (float)m_Value;
 }
 
 bool cValue::IsZero()

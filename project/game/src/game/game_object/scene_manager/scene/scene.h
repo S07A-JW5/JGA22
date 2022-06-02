@@ -3,8 +3,7 @@
 #include "aqua.h"
 #include "scene_id.h"
 
-class IScene
-	:public aqua::IGameObject
+class IScene : public aqua::IGameObject
 {
 public:
 	//コンストラクタ

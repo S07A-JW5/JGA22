@@ -99,11 +99,11 @@ void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 	cBot* Bot = aqua::CreateGameObject<cBot>(this);
 
 	m_NPCs.push_back(Bot);
-	m_UnitPos[x_pos][y_pos] = m_NPCs.size();
+	m_UnitPos[x_pos][y_pos] = (int)m_NPCs.size();
 
 	Bot->Initialize();
-	Bot->Create(id, m_NPCs.size());
-	Bot->SetPosition(aqua::CVector2(x_pos, y_pos));
+	Bot->Create(id, (int)m_NPCs.size());
+	Bot->SetPosition(aqua::CVector2((float)x_pos, (float)y_pos));
 }
 
 void CUnitManager::MapGeneration()
@@ -128,7 +128,7 @@ void CUnitManager::MapGeneration()
 		if (m_NPCs[i])
 			m_NPCs[i]->GetMap(Map);
 	}
-	++m_Floor;
+	((CTextManager*)m_TextManager)->EnterText(std::to_string(++m_Floor) + "ŠK");
 }
 
 bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
@@ -216,8 +216,8 @@ void CUnitManager::SetMapSize(int width, int height)
 			AQUA_SAFE_DELETE_ARRAY(m_UnitPos[i]);
 		AQUA_SAFE_DELETE_ARRAY(m_UnitPos);
 	}
-	m_Width = width;
-	m_Height = height;
+	m_Width = (uint8_t)width;
+	m_Height = (uint8_t)height;
 
 	m_UnitPos = AQUA_NEW int * [m_Width];
 	for (int i = 0; i < m_Width; i++)

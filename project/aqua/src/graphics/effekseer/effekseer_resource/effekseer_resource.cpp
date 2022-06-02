@@ -32,7 +32,7 @@ void
 aqua::core::CEffekseerResource::
 Load( const std::string& file_name )
 {
-    if( m_Enabel ) return;
+    if( m_Enable ) return;
 
     // エフェクト読み込み
     m_ResourceHandle = LoadEffekseerEffect( file_name.c_str( ) );
@@ -43,7 +43,7 @@ Load( const std::string& file_name )
     m_ResourceName = file_name;
 
     // 読み込み済み
-    m_Enabel = true;
+    m_Enable = true;
 }
 
 /*
@@ -63,5 +63,5 @@ Unload( void )
 
     m_ResourceType = RESOURCE_TYPE::DUMMY;
 
-    m_Enabel = false;
+    m_Enable = false;
 }

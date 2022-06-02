@@ -111,9 +111,7 @@
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\game_main.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\map_generator\map\map.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\game_main\map_generator\map_generator.cpp" />
-    <ClCompile Include="src\game\game_object\scene_manager\scene\result\lose\lose.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\result\result.cpp" />
-    <ClCompile Include="src\game\game_object\scene_manager\scene\result\win\win.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\scene.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\splash\splash.cpp" />
     <ClCompile Include="src\game\game_object\scene_manager\scene\title\title.cpp" />
@@ -154,9 +152,7 @@
     <ClInclude Include="src\game\game_object\scene_manager\scene\game_main\game_main.h" />
     <ClInclude Include="src\game\game_object\scene_manager\scene\game_main\map_generator\map\map.h" />
     <ClInclude Include="src\game\game_object\scene_manager\scene\game_main\map_generator\map_generator.h" />
-    <ClInclude Include="src\game\game_object\scene_manager\scene\result\lose\lose.h" />
     <ClInclude Include="src\game\game_object\scene_manager\scene\result\result.h" />
-    <ClInclude Include="src\game\game_object\scene_manager\scene\result\win\win.h" />
     <ClInclude Include="src\game\game_object\scene_manager\scene\scene.h" />
     <ClInclude Include="src\game\game_object\scene_manager\scene\scene_id.h" />
     <ClInclude Include="src\game\game_object\scene_manager\scene\splash\splash.h" />

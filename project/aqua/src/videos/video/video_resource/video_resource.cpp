@@ -30,7 +30,7 @@ void
 aqua::core::CVideoResource::
 Load( const std::string& file_name )
 {
-    if( m_Enabel ) return;
+    if( m_Enable ) return;
 
     // ÉrÉfÉIì«Ç›çûÇ›
     m_ResourceHandle = LoadGraph( file_name.c_str( ) );
@@ -41,7 +41,7 @@ Load( const std::string& file_name )
     m_ResourceName = file_name;
 
     // ì«Ç›çûÇ›çœÇ›
-    m_Enabel = true;
+    m_Enable = true;
 }
 
 /*
@@ -61,5 +61,5 @@ Unload( void )
 
     m_ResourceType = RESOURCE_TYPE::DUMMY;
 
-    m_Enabel = false;
+    m_Enable = false;
 }

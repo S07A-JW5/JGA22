@@ -46,7 +46,7 @@ void
 aqua::core::CFontResource::
 Create( int size, int edge_bold, bool anti_aliasing, aqua::FONT_FAMILY_ID family_id )
 {
-    if( m_Enabel ) return;
+    if( m_Enable ) return;
 
     // フォント生成
     // エッジの有無
@@ -71,7 +71,7 @@ Create( int size, int edge_bold, bool anti_aliasing, aqua::FONT_FAMILY_ID family
     m_EdgeBold      = edge_bold;
 
     // 生成済み
-    m_Enabel = true;
+    m_Enable = true;
 }
 
 /*
@@ -90,7 +90,7 @@ Delete( void )
     m_ResourceHandle    = AQUA_UNUSED_HANDLE;
     m_ReferenceCount    = 0;
     m_ResourceType      = RESOURCE_TYPE::DUMMY;
-    m_Enabel            = false;
+    m_Enable            = false;
 }
 
 /*

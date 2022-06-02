@@ -167,11 +167,11 @@ void cText::SetPosition(const aqua::CVector2& pos)
 	if (TargetPos.x < 0)
 		TargetPos.x = 0;
 	if (TargetPos.x > w)
-		TargetPos.x = w;
+		TargetPos.x = (float)w;
 	if (TargetPos.y < 0)
 		TargetPos.y = 0;
 	if (TargetPos.y > h)
-		TargetPos.y = h;
+		TargetPos.y = (float)h;
 
 	aqua::CVector2 Mov = TargetPos - PrevPos;
 	m_Position = TargetPos;
@@ -257,8 +257,8 @@ std::vector<std::string> cText::SeparateText()
 	{
 		bool NewLine = false;
 		std::string Char = m_String.substr(TextIndex, 1);
-		if ((Char[0] >= (signed char)0x80 && Char[0] <= (signed char)0x9F) ||
-			(Char[0] >= (signed char)0xE0 && Char[0] <= (signed char)0xFF))
+		if ((Char[0] >= 0x80i8 && Char[0] <= 0x9Fi8) ||
+			(Char[0] >= 0xE0i8 && Char[0] <= 0xFFi8))
 		{
 			Char += m_String.substr(++TextIndex, 1);
 		}

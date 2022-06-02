@@ -36,7 +36,7 @@ void
 aqua::core::CTextureResource::
 Load( const std::string& file_name )
 {
-    if( m_Enabel ) return;
+    if( m_Enable ) return;
 
     // ìßâﬂêFéwíË
     SetTransColor( ( m_transparent_color >> 16 ) & 0xff, ( m_transparent_color >> 8 ) & 0xff, m_transparent_color & 0xff );
@@ -53,7 +53,7 @@ Load( const std::string& file_name )
     m_ResourceName = file_name;
 
     // ì«Ç›çûÇ›çœÇ›
-    m_Enabel = true;
+    m_Enable = true;
 }
 
 /*
@@ -73,7 +73,7 @@ Unload( void )
 
     m_ResourceType = RESOURCE_TYPE::DUMMY;
 
-    m_Enabel = false;
+    m_Enable = false;
 
     m_Width = m_Height = 0;
 }
@@ -85,7 +85,7 @@ void
 aqua::core::CTextureResource::
 Create( int width, int height, bool alpha_channel )
 {
-    if( m_Enabel ) return;
+    if( m_Enable ) return;
 
     m_Width  = width;
     m_Height = height;
@@ -113,7 +113,7 @@ Create( int width, int height, bool alpha_channel )
     m_ResourceName += std::to_string( local_time.tm_hour ) + std::to_string( local_time.tm_min ) + std::to_string( local_time.tm_sec );
 
     // ê∂ê¨çœÇ›
-    m_Enabel = true;
+    m_Enable = true;
 }
 
 /*
@@ -129,7 +129,7 @@ Delete( void )
 
     m_ResourceType = RESOURCE_TYPE::DUMMY;
 
-    m_Enabel = false;
+    m_Enable = false;
 
     m_Width = m_Height = 0;
 }

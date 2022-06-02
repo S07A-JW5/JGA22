@@ -155,7 +155,7 @@ namespace aqua
              *  @retval     true    利用可能
              *  @retval     false   利用不可能
              */
-            bool            IsEnable(void) const { return m_Enabel; }
+            bool            IsEnable(void) const { return m_Enable; }
 
         protected:
             //! リソースタイプ
@@ -167,7 +167,7 @@ namespace aqua
             //! 参照カウント
             int             m_ReferenceCount;
             //! 利用可能フラグ
-            bool            m_Enabel;
+            bool            m_Enable;
         };
     }
 }

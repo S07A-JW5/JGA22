@@ -18,7 +18,7 @@ void cItemDataBase::Finalize()
 std::uint16_t cItemDataBase::EquipmentItem(int id)
 {
 	if (id <= 0) return 0;
-	return id + m_ItemCount;
+	return (uint16_t)(id + m_ItemCount);
 }
 
 cItemDataBase::ItemData cItemDataBase::GetData(int id, bool equipment)
@@ -39,40 +39,40 @@ void cItemDataBase::Load()
 	ItemDataCSV.Load("data\\data\\item.csv");
 	for (int i = 1; i < ItemDataCSV.GetRows(); i++)
 	{
-		Temp.ItemID		= ItemDataCSV.GetInteger(i, 0);
+		Temp.ItemID		= (uint16_t)ItemDataCSV.GetInteger(i, 0);
 		Temp.Name			= ItemDataCSV.GetString(i, 1);
 		Temp.Description	= ItemDataCSV.GetString(i, 2);
 		Temp.Type			= (ITEM_TYPE)ItemDataCSV.GetInteger(i, 3);
 		Temp.Consume		= (CONSUME_TYPE)ItemDataCSV.GetInteger(i, 4);
-		Temp.Life			= ItemDataCSV.GetInteger(i, 5);
-		Temp.Energy		= ItemDataCSV.GetInteger(i, 6);
-		Temp.Parts		= ItemDataCSV.GetInteger(i, 7);
-		Temp.Ammo			= ItemDataCSV.GetInteger(i, 8);
-		Temp.Cooling		= ItemDataCSV.GetInteger(i, 9);
+		Temp.Life			= (int16_t)ItemDataCSV.GetInteger(i, 5);
+		Temp.Energy		= (int16_t)ItemDataCSV.GetInteger(i, 6);
+		Temp.Parts		= (int16_t)ItemDataCSV.GetInteger(i, 7);
+		Temp.Ammo			= (int16_t)ItemDataCSV.GetInteger(i, 8);
+		Temp.Cooling		= (int16_t)ItemDataCSV.GetInteger(i, 9);
 		Temp.DamageType	= (IUnit::DAMAGE_TYPE)ItemDataCSV.GetInteger(i, 10);
 		Temp.DmgRollData	= Dice::GetDiceRollData(ItemDataCSV.GetString(i, 11));
-		Temp.Range		= ItemDataCSV.GetInteger(i, 12);
+		Temp.Range		= (uint8_t)ItemDataCSV.GetInteger(i, 12);
 		m_ItemDataList.push_back(Temp);
 	}
-	m_ItemCount = m_ItemDataList.size();
+	m_ItemCount = (int)m_ItemDataList.size();
 	ItemDataCSV.Unload();
 
 	aqua::CCSVLoader EquipmentCSV;
 	EquipmentCSV.Load("data\\data\\equipment.csv");
 	for (int i = 1; i < EquipmentCSV.GetRows(); i++)
 	{
-		Temp.ItemID = EquipmentCSV.GetInteger(i, 0);
-		Temp.Name = EquipmentCSV.GetString(i, 1);
-		Temp.Description = EquipmentCSV.GetString(i, 2);
-		Temp.Type = ITEM_TYPE::EQUIPMENT;
-		Temp.Consume = CONSUME_TYPE::NOT_CONSUMABLE;
+		Temp.ItemID		= (uint16_t)EquipmentCSV.GetInteger(i, 0);
+		Temp.Name			= EquipmentCSV.GetString(i, 1);
+		Temp.Description	= EquipmentCSV.GetString(i, 2);
+		Temp.Type			= ITEM_TYPE::EQUIPMENT;
+		Temp.Consume		= CONSUME_TYPE::NOT_CONSUMABLE;
 		Temp.Life			= 0;
 		Temp.Energy		= 0;
 		Temp.Ammo			= 0;
 		Temp.Cooling		= 0;
-		Temp.DamageType = (IUnit::DAMAGE_TYPE)EquipmentCSV.GetInteger(i, 11);
-		Temp.DmgRollData = Dice::GetDiceRollData(EquipmentCSV.GetString(i, 12));
-		Temp.Range = 0;
+		Temp.DamageType	= (IUnit::DAMAGE_TYPE)EquipmentCSV.GetInteger(i, 11);
+		Temp.DmgRollData	= Dice::GetDiceRollData(EquipmentCSV.GetString(i, 12));
+		Temp.Range		= 0;
 
 		if (EquipmentCSV.GetInteger(i, 3) == 1)
 		{

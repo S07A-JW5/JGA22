@@ -4,13 +4,11 @@
 #include "aqua.h"
 #include "../scene.h"
 
-class CResultScene
-	: public IScene
+class CResultScene : public IScene
 {
 public:
-
 	//コンストラクタ
-	CResultScene(aqua::IGameObject* parent, std::string name);
+	CResultScene(aqua::IGameObject* parent);
 
 	//デストラクタ
 	~CResultScene(void) = default;
@@ -27,9 +25,9 @@ public:
 	//解放
 	void Finalize(void) override;
 
-protected:
-	aqua::CSprite		m_BackgroundSprite;	//! 背景スプライト
-	aqua::CSprite		m_ResultSprite;		//! リザルトスプライト
+private:
+	aqua::CSprite		m_BackgroundSprite;	// 背景スプライト
+	aqua::CSprite		m_ResultSprite;		// リザルトスプライト
 
-	aqua::CLabel		m_Label;				//!テキスト
+	aqua::CLabel		m_Label;				//テキスト
 };

@@ -50,7 +50,6 @@ private:
 
 	float m_Timer;
 
-	bool m_Active;//ボタンの機能を利用できるか
 	bool m_Switch;//機能しているか
 	bool m_MouseOver;//マウスカーソルを合わせているか
 

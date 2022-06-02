@@ -63,7 +63,7 @@ void cBot::CameraUpdate()
 	m_Position.y = m_OnMapPos.y * cMap::m_tile_size;
 	m_Sprite.position = m_Position - Camera->GetDrawBasePos();
 	if (m_MapObj)
-		m_Sprite.visible = m_MapObj->IsTileVisible(m_OnMapPos.x, m_OnMapPos.y);
+		m_Sprite.visible = m_MapObj->IsTileVisible((int)m_OnMapPos.x, (int)m_OnMapPos.y);
 }
 
 bool cBot::Move()

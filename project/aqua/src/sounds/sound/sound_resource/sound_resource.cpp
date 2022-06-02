@@ -34,7 +34,7 @@ void
 aqua::core::CSoundResource::
 Load( const std::string& file_name, int buffer_count )
 {
-    if( m_Enabel ) return;
+    if( m_Enable ) return;
 
     // ソフトウェアサウンドの生成
     m_SoftSoundHandle = LoadSoftSound(file_name.c_str());
@@ -53,7 +53,7 @@ Load( const std::string& file_name, int buffer_count )
     m_ResourceName = file_name;
 
     // 読み込み済み
-    m_Enabel = true;
+    m_Enable = true;
 }
 
 /*
@@ -77,7 +77,7 @@ Unload( void )
 
     m_DefaultFrequency = 0;
 
-    m_Enabel = false;
+    m_Enable = false;
 }
 
 /*

@@ -20,7 +20,7 @@ IResourceObject( void )
     , m_ResourceName( "none" )
     , m_ResourceHandle( AQUA_UNUSED_HANDLE )
     , m_ReferenceCount( 0 )
-    , m_Enabel( false )
+    , m_Enable( false )
 {
 }
 
@@ -33,7 +33,7 @@ IResourceObject( aqua::core::RESOURCE_TYPE type )
     , m_ResourceName( "none" )
     , m_ResourceHandle( AQUA_UNUSED_HANDLE )
     , m_ReferenceCount( 0 )
-    , m_Enabel( false )
+    , m_Enable( false )
 {
 }
 
@@ -46,6 +46,6 @@ aqua::core::IResourceObject::
     , m_ResourceName( name )
     , m_ResourceHandle( AQUA_UNUSED_HANDLE )
     , m_ReferenceCount( 0 )
-    , m_Enabel( false )
+    , m_Enable( false )
 {
 }

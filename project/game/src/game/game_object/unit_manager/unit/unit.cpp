@@ -98,7 +98,7 @@ void IUnit::Create(int id, int unit_no)
 	m_UnitNo = unit_no;
 
 	m_Name = Data.Name;
-	m_Status.ID = id;
+	m_Status.ID = (uint16_t)id;
 	m_Status.Life = Data.Life;
 	m_Status.Cooling = Data.Cooling;
 	m_Status.Battery = Data.Battery;
@@ -178,7 +178,7 @@ void IUnit::Create(int id, int unit_no)
 
 void IUnit::CalcStatus(bool reset_param)
 {
-	cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
+	//cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
 	cEquipDataBase::Equipment Equipment;
 
 	m_MaxLife = m_Status.Life;
@@ -283,10 +283,10 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	if (m_UnitNo != 0)
 		Text += "(" + std::to_string(m_UnitNo) + ")";
 
-	Damage *= (float)(100 - m_Resist[(int)type - 1]) / (100);
+	Damage = Damage * (100 - m_Resist[(int)type - 1]) / 100;
 	if (type == DAMAGE_TYPE::KINETIC)
 	{
-		Damage *= 100.0f / (100 + m_Protection);
+		Damage = Damage * 100 / (100 + m_Protection);
 		Damage -= Dice::DiceRoll(m_Protection / 4);
 	}
 	Damage = max(Damage, 0);
@@ -296,7 +296,7 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	else
 		((CTextManager*)m_TextManager)->EnterText("  " + std::to_string(Damage) + "É_ÉÅÅ[ÉW - " + Text);
 
-	m_Life = max(m_Life - Damage, 0);
+	m_Life = (uint16_t)max(m_Life - Damage, 0);
 
 	if (m_Life <= 0)
 	{
@@ -458,7 +458,7 @@ IUnit::InventoryStat IUnit::GetInventory()
 
 void IUnit::Dead()
 {
-	m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, (int)cItemDataBase::MATERIALS::AMMO, m_Status.Ammo / aqua::Rand(5, 10));
+	m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, (int)cItemDataBase::MATERIALS::AMMO, m_Status.Ammo / aqua::Rand(5, 10));
 
 	cUnitDataBase::UnitData Data = ((cUnitDataBase*)m_UnitDataBase)->GetData(m_Status.ID);
 
@@ -469,14 +469,14 @@ void IUnit::Dead()
 		if (Data.DropItemId[i] == 0) continue;
 
 		if (Dice::PercentRoll(Data.DropRate[i]))
-			m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, Data.DropItemId[i], 1);
+			m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, Data.DropItemId[i], 1);
 	}
 	for (int i = 0; i < 16; i++)
 	{
 		if (m_Equipment[i] == 0) continue;
 
 		if (Dice::PercentRoll(10))
-			m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y,
+			m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y,
 				ItemDB->EquipmentItem(m_Equipment[i]), 1);
 	}
 	DeleteObject();
@@ -516,7 +516,7 @@ bool IUnit::Move()
 		Pos.x += 1;
 		break;
 	}
-	if (m_MapObj->IsWalkableTile(Pos.x, Pos.y) && UnitMgr->HasSpace(Pos))
+	if (m_MapObj->IsWalkableTile((int)Pos.x, (int)Pos.y) && UnitMgr->HasSpace(Pos))
 	{
 		m_OnMapPos = Pos;
 		Moved = true;
@@ -607,7 +607,7 @@ bool IUnit::CanMove()
 
 	aqua::CVector2 Pos = GetMovedPos();
 
-	if (m_MapObj->IsWalkableTile(Pos.x, Pos.y) && ((CUnitManager*)m_UnitManager)->HasSpace(Pos))
+	if (m_MapObj->IsWalkableTile((int)Pos.x, (int)Pos.y) && ((CUnitManager*)m_UnitManager)->HasSpace(Pos))
 		return true;
 	return false;
 }

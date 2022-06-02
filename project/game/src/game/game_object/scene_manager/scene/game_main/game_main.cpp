@@ -26,7 +26,7 @@ void CGameMainScene::Initialize(void)
 	((cUIManager*)m_UIMgr)->SetUIBGVisible(true);
 	((CTextManager*)m_TextMgr)->SetVisible(true);
 
-	m_Black.Setup(aqua::CVector2::ZERO, aqua::GetWindowWidth(), aqua::GetWindowHeight(), 0xff010101);
+	m_Black.Setup(aqua::CVector2::ZERO, (float)aqua::GetWindowWidth(), (float)aqua::GetWindowHeight(), 0xff010101);
 
 	IGameObject::Initialize();
 }

@@ -46,32 +46,32 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 
 	cUIManager* UIMgr = (cUIManager*)m_ParentObject;
 	aqua::CVector2 Pos = cUIManager::m_ui_window_pos;
-	int GaugeXPos = cUIManager::m_ui_window_pos.x + 560 / 2;
+	int GaugeXPos = (int)cUIManager::m_ui_window_pos.x + 560 / 2;
 	Pos.x += 18;
 	Pos.y += 10;
 
 	m_LifeText.position = Pos;	
 	Pos.y += 20;
 
-	m_LifeGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Life, m_MaxLife, 540, 8, false, true);
+	m_LifeGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2((float)GaugeXPos, Pos.y + 4), m_Life, m_MaxLife, 540, 8, false, true);
 	Pos.y += 16;
 
 	m_BattText.position = Pos;
 	Pos.y += 20;
 
-	m_BattGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Parts, m_MaxParts, 540, 8, false, true);
+	m_BattGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2((float)GaugeXPos, Pos.y + 4), m_Parts, m_MaxParts, 540, 8, false, true);
 	Pos.y += 16;
 
 	m_AmmoText.position = Pos;
 	Pos.y += 20;
 
-	m_AmmoGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Ammo, m_MaxAmmo, 540, 8, false, true);
+	m_AmmoGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2((float)GaugeXPos, Pos.y + 4), m_Ammo, m_MaxAmmo, 540, 8, false, true);
 	Pos.y += 16;
 
 	m_PartText.position = Pos;
 	Pos.y += 20;
 
-	m_PartGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2(GaugeXPos, Pos.y + 4), m_Batt, m_MaxBatt, 540, 8, false, true);
+	m_PartGauge = UIMgr->CreateGaugeWithSpecifySize(aqua::CVector2((float)GaugeXPos, Pos.y + 4), m_Batt, m_MaxBatt, 540, 8, false, true);
 	Pos.y += 16;
 
 	m_HeatText.position = Pos;
@@ -79,7 +79,7 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 
 	m_ResistText.position = Pos;
 
-	m_ProtectionText.position = aqua::CVector2(GaugeXPos, Pos.y);
+	m_ProtectionText.position = aqua::CVector2((float)GaugeXPos, Pos.y);
 	Pos.y += 20;
 
 	m_EquipmentText[16].position = aqua::CVector2(Pos.x - 8, Pos.y);
@@ -120,24 +120,24 @@ void cStatusUI::Update()
 	num = chr->GetStatus(IUnit::STATUS::LIFE);
 	if (m_Life != num)
 		((cGauge*)m_LifeGauge)->SetNum(num);
-	m_Life = num;
+	m_Life = (uint16_t)num;
 
 	num = chr->GetStatus(IUnit::STATUS::BATT);
 	if (m_Batt != num)
 		((cGauge*)m_BattGauge)->SetNum(num);
-	m_Batt = num;
+	m_Batt = (uint16_t)num;
 
 	num = chr->GetStatus(IUnit::STATUS::PARTS);
 	if (m_Parts != num)
 		((cGauge*)m_PartGauge)->SetNum(num);
-	m_Parts = num;
+	m_Parts = (uint16_t)num;
 
 	num = chr->GetStatus(IUnit::STATUS::AMMO);
 	if (m_Ammo != num)
 		((cGauge*)m_AmmoGauge)->SetNum(num);
-	m_Ammo = num;
+	m_Ammo = (uint16_t)num;
 
-	m_Heat = chr->GetStatus(IUnit::STATUS::HEAT);
+	m_Heat = (int16_t)chr->GetStatus(IUnit::STATUS::HEAT);
 
 	m_LifeText.text =
 		"Life: " + std::to_string(m_Life) + " / " + std::to_string(m_MaxLife);

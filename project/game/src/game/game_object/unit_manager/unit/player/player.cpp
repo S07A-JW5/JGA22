@@ -26,7 +26,7 @@ void cPlayer::Initialize()
 void cPlayer::Update()
 {
 	m_Line.visible = aqua::mouse::Button(aqua::mouse::BUTTON_ID::LEFT);
-	m_Line.pointA = aqua::CVector2(cCamera::m_draw_width / 2, cCamera::m_draw_height / 2);
+	m_Line.pointA = aqua::CVector2((float)cCamera::m_draw_width / 2, (float)cCamera::m_draw_height / 2);
 
 	aqua::CVector2 PointedTile = m_MapObj->GetPointedTile(aqua::mouse::GetCursorPos());
 
@@ -222,7 +222,7 @@ bool cPlayer::Action()
 
 bool cPlayer::Wait()
 {
-	cMap::DroppedItem Item = m_MapObj->GatherItem(m_OnMapPos.x, m_OnMapPos.y);
+	cMap::DroppedItem Item = m_MapObj->GatherItem((int)m_OnMapPos.x, (int)m_OnMapPos.y);
 	if (Item.ItemID > 0 && Item.Num > 0)
 	{
 		if (Item.ItemID < (int)cItemDataBase::MATERIALS::COUNT)
@@ -230,13 +230,13 @@ bool cPlayer::Wait()
 			switch ((cItemDataBase::MATERIALS)Item.ItemID)
 			{
 			case cItemDataBase::MATERIALS::AMMO:
-				m_Ammo = min(m_Ammo + Item.Num, m_MaxAmmo);
+				m_Ammo = (uint16_t)min(m_Ammo + Item.Num, m_MaxAmmo);
 				break;
 			case cItemDataBase::MATERIALS::PARTS:
-				m_Parts = min(m_Parts + Item.Num, m_MaxParts);
+				m_Parts = (uint16_t)min(m_Parts + Item.Num, m_MaxParts);
 				break;
 			case cItemDataBase::MATERIALS::ENERGY:
-				m_Batt = min(m_Batt + Item.Num, m_MaxBatt);
+				m_Batt = (uint16_t)min(m_Batt + Item.Num, m_MaxBatt);
 				break;
 			}
 		}
@@ -247,7 +247,7 @@ bool cPlayer::Wait()
 			ItemStat temp;
 			temp.ID = ItemData.ItemID;
 			temp.Name = ItemData.Name;
-			temp.Amount = Item.Num;
+			temp.Amount = (uint8_t)Item.Num;
 			temp.IsEquipment = ItemData.Type == cItemDataBase::ITEM_TYPE::EQUIPMENT;
 
 			auto it = m_ItemList.begin();
@@ -268,7 +268,7 @@ bool cPlayer::Wait()
 			if (m_ItemList.size() > m_Inventory)
 			{
 				m_ItemList.pop_back();
-				m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, Item.ItemID, Item.Num);
+				m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, Item.ItemID, Item.Num);
 				((CTextManager*)m_TextManager)->EnterText("²ÝÍÞÝÄØ‚ª–ž”t‚Å " + temp.Name + " ‚ðE‚¦‚È‚¢I");
 				return false;
 			}
@@ -279,7 +279,6 @@ bool cPlayer::Wait()
 	{
 		CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
 		UnitMgr->MapGeneration();
-		((CTextManager*)m_TextManager)->EnterText(std::to_string(UnitMgr->GetFloorCount()) + "ŠK");
 	}
 	return true;
 }
@@ -292,7 +291,7 @@ bool cPlayer::Move()
 
 	Pos = GetMovedPos();
 
-	if (m_MapObj->IsWalkableTile(Pos.x, Pos.y))
+	if (m_MapObj->IsWalkableTile((int)Pos.x, (int)Pos.y))
 	{
 		if (UnitMgr->HasSpace(Pos))
 		{
@@ -311,7 +310,7 @@ bool cPlayer::Move()
 
 bool cPlayer::Attack(aqua::CVector2 pos)
 {
-	if (!m_MapObj->IsTileVisible(pos.x, pos.y))return false;
+	if (!m_MapObj->IsTileVisible((int)pos.x, (int)pos.y))return false;
 	return IUnit::Attack(pos);
 }
 
@@ -357,7 +356,7 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 	}
 		break;
 	case IUnit::ITEM_USE_MODE::DISCARD:
-		m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, (*it).ID, (*it).Amount);
+		m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, (*it).ID, (*it).Amount);
 		m_ItemList.erase(it);
 		break;
 	case IUnit::ITEM_USE_MODE::SWITCH:
@@ -469,7 +468,7 @@ bool cPlayer::EquipmentChange(std::uint16_t id)
 		m_Card = Temp;
 		break;
 	}
-	m_MapObj->PutItem(m_OnMapPos.x, m_OnMapPos.y, 
+	m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y,
 		((cItemDataBase*)m_ItemDataBase)->EquipmentItem(Drop));
 	CalcStatus();
 	return true;

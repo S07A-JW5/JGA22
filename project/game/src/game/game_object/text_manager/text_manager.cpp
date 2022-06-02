@@ -77,8 +77,8 @@ void CTextManager::Update()
 				m_DisplayText = (*it);
 			}
 			std::string Char = m_DisplayText.substr(m_TextIndex, 1);
-			if ((Char[0] >= (char)0x80 && Char[0] <= (char)0x9F) ||
-				(Char[0] >= (char)0xE0 && Char[0] <= (char)0xFF))
+			if ((Char[0] >= 0x80i8 && Char[0] <= 0x9Fi8) ||
+				(Char[0] >= 0xE0i8 && Char[0] <= 0xFFi8))
 			{
 				Char += m_DisplayText.substr(++m_TextIndex, 1);
 			}
@@ -129,8 +129,8 @@ void CTextManager::EnterText(std::string text)
 	{
 		NewLine = false;
 		Char = EnteredText.substr(Index, 1);
-		if ((Char[0] >= (char)0x80 && Char[0] <= (char)0x9F) ||
-			(Char[0] >= (char)0xE0 && Char[0] <= (char)0xFF))
+		if ((Char[0] >= 0x80i8 && Char[0] <= 0x9Fi8) ||
+			(Char[0] >= 0xE0i8 && Char[0] <= 0xFFi8))
 		{
 			Char += EnteredText.substr(++Index, 1);
 		}
