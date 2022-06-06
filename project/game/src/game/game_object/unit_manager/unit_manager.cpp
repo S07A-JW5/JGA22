@@ -15,12 +15,14 @@ CUnitManager::CUnitManager(aqua::IGameObject* parent)
 	, m_PlayerPos(aqua::CVector2::ZERO)
 	, m_Floor(0)
 	, m_UnitPos(nullptr)
+	, m_GameMain(nullptr)
 {
 }
 
 void CUnitManager::Initialize(void)
 {
-	CGameMainScene* Gamemain = (CGameMainScene*)GetParent();
+	m_GameMain = GetParent();
+	CGameMainScene* Gamemain = (CGameMainScene*)m_GameMain;
 	m_MapGenerator = Gamemain->GetMapGenerator();
 
 	m_TextManager = aqua::FindGameObject("TextManager");
@@ -39,26 +41,28 @@ void CUnitManager::Update(void)
 	if (!MapGen->MapGenerated()) return;
 
 	IGameObject::Update();
-	if (m_Player->DidAction())
-	{
-		for (int i = 0; i < m_NPCs.size(); i++)
+	if (m_Player)
+		if (m_Player->DidAction())
 		{
-			if (m_NPCs[i])
-				if (m_NPCs[i]->DidAction())
-					continue;
+			for (int i = 0; i < m_NPCs.size(); i++)
+			{
+				if (m_NPCs[i])
+					if (m_NPCs[i]->DidAction())
+						continue;
 
-			if (m_NPCs[i])
-				m_NPCs[i]->Action();
+				if (m_NPCs[i])
+					m_NPCs[i]->Action();
 
-			if (m_NPCs[i])
-				if (!m_NPCs[i]->DidAction())
-					return;
+				if (m_NPCs[i])
+					if (!m_NPCs[i]->DidAction())
+						return;
+			}
+			if (m_Player)
+				m_Player->SetActFlag(false);
+			for (int i = 0; i < m_NPCs.size(); i++)
+				if (m_NPCs[i])
+					m_NPCs[i]->SetActFlag(false);
 		}
-		m_Player->SetActFlag(false);
-		for (int i = 0; i < m_NPCs.size(); i++)
-			if (m_NPCs[i])
-				m_NPCs[i]->SetActFlag(false);
-	}
 }
 
 void CUnitManager::Draw(void)
@@ -164,7 +168,14 @@ bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_T
 
 	if (UnitNo == 0)
 	{
-		m_Player->TakeDamage(damage, type);
+		if (m_Player->TakeDamage(damage, type))
+		{
+			((CTextManager*)m_TextManager)->m_Temp = std::to_string(m_Floor) + "ŠK‚Ü‚Å“ž’B‚µ‚½";
+			m_Player->Dead();
+			m_Player = nullptr;
+			m_UnitPos[(int)target_pos.x][(int)target_pos.y] = -1;
+			((CGameMainScene*)m_GameMain)->Change(SCENE_ID::RESULT);
+		}
 		return true;
 	}
 	if (m_NPCs[UnitNo - 1]->TakeDamage(damage, type))
@@ -186,7 +197,6 @@ void CUnitManager::SetMovedPos(aqua::CVector2 prev, aqua::CVector2 moved)
 
 	m_UnitPos[(int)prev.x][(int)prev.y] = -1;
 	m_UnitPos[(int)moved.x][(int)moved.y] = UnitNo;
-
 }
 
 void CUnitManager::SetPlayerPos(aqua::CVector2 pos)

@@ -173,6 +173,10 @@ void cStatusUI::Draw()
 
 void cStatusUI::Finalize()
 {
+	m_LifeGauge->DeleteObject();
+	m_BattGauge->DeleteObject();
+	m_AmmoGauge->DeleteObject();
+	m_PartGauge->DeleteObject();
 	m_LifeText.Delete();
 	m_BattText.Delete();
 	m_AmmoText.Delete();

@@ -29,6 +29,8 @@ public:
 	cText* CreateText(const aqua::CVector2& pos, const std::string& text,
 		const cText::ANCHOR_POS& anchor, const int& font_size = 24, bool with_window = true);
 
+	std::string m_Temp;
+
 private:
 	void WindowCheck();
 

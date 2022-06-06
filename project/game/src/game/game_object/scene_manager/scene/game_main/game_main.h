@@ -23,7 +23,8 @@ public:
 	// •`‰æ
 	void Draw(void);
 
-	//void Finalize() override;
+	//‰ð•ú
+	void Finalize() override;
 
 	cMapGenerator* GetMapGenerator();
 private:

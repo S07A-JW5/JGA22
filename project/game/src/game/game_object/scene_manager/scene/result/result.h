@@ -26,8 +26,8 @@ public:
 	void Finalize(void) override;
 
 private:
-	aqua::CSprite		m_BackgroundSprite;	// 背景スプライト
-	aqua::CSprite		m_ResultSprite;		// リザルトスプライト
-
-	aqua::CLabel		m_Label;				//テキスト
+	aqua::IGameObject*	 m_ResultText;		//
+	aqua::IGameObject*	 m_ReturnTitleButton;	//
+	aqua::CSprite		 m_ResultSprite;		//リザルトスプライト
+	bool				 m_UIVisible;
 };

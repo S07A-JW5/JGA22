@@ -50,6 +50,14 @@ void CGameMainScene::Draw(void)
 	IGameObject::Draw();
 }
 
+void CGameMainScene::Finalize()
+{
+	((CTextManager*)m_TextMgr)->ClearText();
+	((CTextManager*)m_TextMgr)->SetVisible(false);
+	((cUIManager*)m_UIMgr)->SetUIBGVisible(false);
+	IGameObject::Finalize();
+}
+
 cMapGenerator* CGameMainScene::GetMapGenerator()
 {
 	return m_MapGen;

@@ -24,6 +24,8 @@ public:
 
 	void CalcStatus(bool reset_param = false) override;
 
+	void Dead() override;
+
 	bool Action() override;
 
 private:
@@ -33,14 +35,13 @@ private:
 
 	bool Attack(aqua::CVector2 pos) override;
 
-	bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE) override;
+	bool Item(std::int8_t slot) override;
 
 	bool EquipmentChange(std::uint16_t id);
 
 	float m_InputTimer;
 	aqua::CVector2 m_TargetTile;
 	aqua::CVector2 m_StairPos;
-	aqua::CLinePrimitive m_Line;
 	aqua::CBoxPrimitive m_Box;
 	aqua::IGameObject* m_StatObj;
 };

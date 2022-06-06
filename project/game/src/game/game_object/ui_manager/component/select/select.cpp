@@ -70,7 +70,7 @@ void cSelection::Initialize(std::vector<int> number, std::vector<std::string> na
 		m_ButtonList.push_back(Button);
 	}
 
-	//if(m_MaxPage<=1)
+	//if(m_MaxPage <= 1)
 	//{
 	//	m_NextPage->SetActive(false);
 	//	m_PrevPage->SetActive(false);

@@ -19,7 +19,7 @@ public:
 	void Update();
 
 	void Draw();
-
+	
 	void Finalize();
 
 	void Clear();
@@ -60,4 +60,5 @@ private:
 	aqua::IGameObject* m_MapObj;
 	bool m_MapGenerated;
 	aqua::CVector2 m_PlayerPos;
+	aqua::IGameObject* m_GameMain;
 };

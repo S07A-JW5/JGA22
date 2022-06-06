@@ -19,33 +19,25 @@ cPlayer::cPlayer(aqua::IGameObject* parent)
 void cPlayer::Initialize()
 {
 	IUnit::Initialize();
-	m_Line.Setup(aqua::CVector2::ZERO, aqua::CVector2::ZERO, 0xc07fff00);
-	m_Box.Setup(aqua::CVector2::ZERO, 14, 14, 0xffff0000, false, 1);
+	m_Box.Setup(aqua::CVector2::ZERO, 14, 14, 0xc0ff0000, false, 1);
 }
 
 void cPlayer::Update()
 {
-	m_Line.visible = aqua::mouse::Button(aqua::mouse::BUTTON_ID::LEFT);
-	m_Line.pointA = aqua::CVector2((float)cCamera::m_draw_width / 2, (float)cCamera::m_draw_height / 2);
+	m_Box.fill = aqua::mouse::Button(aqua::mouse::BUTTON_ID::LEFT);
 
 	aqua::CVector2 PointedTile = m_MapObj->GetPointedTile(aqua::mouse::GetCursorPos());
 
-	//AQUA_DEBUG_LOG(std::to_string((int)PointedTile.x) + "," + std::to_string((int)PointedTile.y));
-
-	m_Line.pointB = m_Box.position =
-		(PointedTile * cMap::m_tile_size) - ((cCamera*)m_Camera)->GetDrawBasePos();
+	m_Box.position = (PointedTile * cMap::m_tile_size) - ((cCamera*)m_Camera)->GetDrawBasePos();
 	m_Box.position.x += m_Box.thickness;
 	m_Box.position.y += m_Box.thickness;
-
-	m_Line.pointB.x += cMap::m_tile_size / 2.0f;
-	m_Line.pointB.y += cMap::m_tile_size / 2.0f;
 
 	if (!m_PlayingEffect)
 	{
 		m_DesiredAction = ACTION::DUMMY;
 		m_UseItemSlot = -1;
 
-		if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT))
+		if (aqua::mouse::Trigger(aqua::mouse::BUTTON_ID::LEFT) && PointedTile != m_OnMapPos)
 		{
 			m_DesiredAction = ACTION::ATTACK;
 			m_TargetTile = PointedTile;
@@ -57,7 +49,7 @@ void cPlayer::Update()
 			{
 				m_DesiredAction = ACTION::WAIT;
 			}
-			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W)||
+			if (aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::W) ||
 				aqua::keyboard::Trigger(aqua::keyboard::KEY_ID::NUMPAD8))
 			{
 				m_DesiredAction = ACTION::MOVE;
@@ -168,13 +160,13 @@ void cPlayer::CameraUpdate()
 void cPlayer::Draw()
 {
 	m_Sprite.Draw();
-	m_Line.Draw();
 	m_Box.Draw();
 }
 
 void cPlayer::Finalize()
 {
 	m_Sprite.Delete();
+	m_StatObj->DeleteObject();
 }
 
 void cPlayer::SetStairPosition(aqua::CVector2 pos)
@@ -194,6 +186,12 @@ void cPlayer::CalcStatus(bool reset_param)
 	{
 		((cStatusUI*)m_StatObj)->SetStat(m_Name, m_MaxLife, m_HeatFlow, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_MaxBatt, m_MaxParts, m_MaxAmmo, m_Resist, m_Protection);
 	}
+}
+
+void cPlayer::Dead()
+{
+	m_Sprite.visible = false;
+	m_Box.visible = false;
 }
 
 bool cPlayer::Action()
@@ -253,9 +251,8 @@ bool cPlayer::Wait()
 			auto it = m_ItemList.begin();
 			auto end = m_ItemList.end();
 
-			while (true)
+			while (it != end)
 			{
-				if (it == end) break;
 				if ((*it).ID == temp.ID && (*it).IsEquipment == temp.IsEquipment)
 				{
 					temp.Amount += (*it).Amount;
@@ -314,7 +311,7 @@ bool cPlayer::Attack(aqua::CVector2 pos)
 	return IUnit::Attack(pos);
 }
 
-bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
+bool cPlayer::Item(std::int8_t slot)
 {
 	if (slot < 0) return false;
 	if (slot >= m_Inventory) return false;
@@ -352,12 +349,19 @@ bool cPlayer::Item(std::int8_t slot, ITEM_USE_MODE mode)
 		m_Ammo = max(min(m_Ammo + Item.Ammo, m_MaxAmmo), 0);
 		m_Batt = max(min(m_Batt + Item.Energy, m_MaxBatt), 0);
 		m_Parts = max(min(m_Parts + Item.Parts, m_MaxParts), 0);
-		m_Heat = max(m_Heat - Item.Cooling, m_BaseHeat); 
+		m_Heat = max(m_Heat - Item.Cooling, m_BaseHeat);
 	}
 		break;
 	case IUnit::ITEM_USE_MODE::DISCARD:
-		m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, (*it).ID, (*it).Amount);
+	{
+		unsigned int ItemID = (*it).ID;
+		if ((*it).IsEquipment)
+		{
+			ItemID = ((cItemDataBase*)m_ItemDataBase)->EquipmentItem(ItemID);
+		}
+		m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, ItemID, (*it).Amount);
 		m_ItemList.erase(it);
+	}
 		break;
 	case IUnit::ITEM_USE_MODE::SWITCH:
 		ItemStat temp = (*it);
@@ -372,7 +376,7 @@ bool cPlayer::EquipmentChange(std::uint16_t id)
 {
 	if (id <= 0) return false;
 
-	cEquipDataBase::Equipment Equipment=((cEquipDataBase*)m_EquipmentDB)->GetData(id);
+	cEquipDataBase::Equipment Equipment = ((cEquipDataBase*)m_EquipmentDB)->GetData(id);
 
 	if (Equipment.AttatchPart > m_Parts) return false;
 	m_Parts -= Equipment.AttatchPart;

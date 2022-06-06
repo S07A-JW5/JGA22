@@ -85,7 +85,7 @@ public:
 
 	InventoryStat GetInventory();
 
-	void Dead();
+	virtual void Dead();
 
 	virtual bool Action();
 
@@ -154,7 +154,7 @@ protected:
 
 	virtual bool Attack(aqua::CVector2 pos);
 
-	virtual bool Item(std::int8_t slot, ITEM_USE_MODE mode = ITEM_USE_MODE::USE);
+	virtual bool Item(std::int8_t slot);
 
 	virtual bool PlayEffect();
 

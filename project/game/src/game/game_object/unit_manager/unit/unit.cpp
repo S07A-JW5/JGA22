@@ -138,7 +138,7 @@ void IUnit::Create(int id, int unit_no)
 	for (int i = 0; i < 16; i++)
 	{
 		Equipment = EquipDB->GetData(Data.Equipped[i]);
-		
+
 		switch (Equipment.Slot)
 		{
 		case cEquipDataBase::EQUIPMENT_SLOT::HEAD:
@@ -178,7 +178,6 @@ void IUnit::Create(int id, int unit_no)
 
 void IUnit::CalcStatus(bool reset_param)
 {
-	//cEquipDataBase* EquipDB = (cEquipDataBase*)m_EquipmentDB;
 	cEquipDataBase::Equipment Equipment;
 
 	m_MaxLife = m_Status.Life;
@@ -433,11 +432,11 @@ IUnit::InventoryStat IUnit::GetInventory()
 	auto it = m_ItemList.begin();
 	auto end = m_ItemList.end();
 
-	for (int i = 0; i < m_Inventory;i++)
+	for (int i = 0; i < m_Inventory; i++)
 	{
 		Stat.Item[i] = std::to_string(i + 1) + ": ";
 
-		if(it == end)
+		if (it == end)
 		{
 			Stat.Item[i] += "--------------------------------";
 			continue;
@@ -590,14 +589,14 @@ bool IUnit::Attack(aqua::CVector2 pos)
 	return Attacked;
 }
 
-bool IUnit::Item(std::int8_t slot, ITEM_USE_MODE mode)
+bool IUnit::Item(std::int8_t slot)
 {
 	return false;
 }
 
 bool IUnit::PlayEffect()
 {
-	if(!m_PlayingEffect) return true;
+	if (!m_PlayingEffect) return true;
 	return !((IEffect*)m_PlayingEffect)->EffectPlaying();
 }
 
@@ -650,7 +649,6 @@ aqua::CVector2 IUnit::GetMovedPos()
 		return aqua::CVector2::ZERO;
 		break;
 	}
-
 	return Pos;
 }
 
@@ -671,14 +669,14 @@ void IUnit::CalcEquipmentStat(int id)
 	{
 	case cEquipDataBase::EQUIPMENT_TYPE::WEAPON: {
 		WeaponStat Temp;
-		Temp.ID = Equipment.EquipmentID;
-		Temp.Name = Equipment.Name;
-		Temp.DamageType = Equipment.DamageType;
-		Temp.DmgRollData = Equipment.DmgRollData;
-		Temp.Range = Equipment.Range;
-		Temp.Heat = Equipment.Heat;
-		Temp.Ammo = Equipment.Ammo;
-		Temp.Energy = Equipment.Energy;
+		Temp.ID			= Equipment.EquipmentID;
+		Temp.Name			= Equipment.Name;
+		Temp.DamageType	= Equipment.DamageType;
+		Temp.DmgRollData	= Equipment.DmgRollData;
+		Temp.Range		= Equipment.Range;
+		Temp.Heat			= Equipment.Heat;
+		Temp.Ammo			= Equipment.Ammo;
+		Temp.Energy		= Equipment.Energy;
 		m_Weapon[m_WeaponCount] = Temp;
 		m_WeaponCount++;
 	}	break;
@@ -691,14 +689,14 @@ void IUnit::CalcEquipmentStat(int id)
 		m_Support += Equipment.Support;
 		break;
 	case cEquipDataBase::EQUIPMENT_TYPE::UTIL:
-		m_EnergyFlow += Equipment.Power;
-		m_HeatFlow -= Equipment.Cooling;
-		m_SightRange += Equipment.Range;
-		m_BaseHeat += Equipment.BaseHeat;
-		m_Inventory += Equipment.Inventory;
-		m_MaxBatt += Equipment.MaxBatt;
-		m_MaxParts += Equipment.MaxPart;
-		m_MaxAmmo += Equipment.MaxAmmo;
+		m_EnergyFlow	+= Equipment.Power;
+		m_HeatFlow	-= Equipment.Cooling;
+		m_SightRange	+= Equipment.Range;
+		m_BaseHeat	+= Equipment.BaseHeat;
+		m_Inventory	+= Equipment.Inventory;
+		m_MaxBatt		+= Equipment.MaxBatt;
+		m_MaxParts	+= Equipment.MaxPart;
+		m_MaxAmmo		+= Equipment.MaxAmmo;
 		break;
 	default:
 		break;

@@ -125,7 +125,7 @@ cGauge* cUIManager::CreateGaugeWithSpecifySize(aqua::CVector2 position, int valu
 
 cAmountPopUp* cUIManager::CreateAmountPopUp(const aqua::CVector2& pos, const int& amount, cAmountPopUp::POP_UP_TYPE type, bool miss)
 {
-	cAmountPopUp* popup = aqua::CreateGameObject< cAmountPopUp>(this);
+	cAmountPopUp* popup = aqua::CreateGameObject<cAmountPopUp>(this);
 	popup->Initialize(pos, amount, type, miss);
 	return popup;
 }
