@@ -44,10 +44,11 @@ public:
 		std::uint8_t	Heat;		//発熱量
 
 		//======================武器用========================
-		IUnit::DAMAGE_TYPE DamageType;	//ﾀﾞﾒｰｼﾞ属性
-		Dice::DiceRollData DmgRollData;	//ﾀﾞﾒｰｼﾞﾛｰﾙﾃﾞｰﾀ
 		//   uint8_t Range;		//射程(0の場合、近接攻撃武器)
-		std::uint8_t Ammo;			//弾薬消費量
+		IUnit::DAMAGE_TYPE	 DamageType;	//ﾀﾞﾒｰｼﾞ属性
+		Dice::DiceRollData	 DmgRollData;	//ﾀﾞﾒｰｼﾞﾛｰﾙﾃﾞｰﾀ
+		std::uint8_t		 EffectID;	//攻撃エフェクトID
+		std::uint8_t		 Ammo;		//弾薬消費量
 
 		//======================装甲用========================
 		std::int16_t  Resist[3];	//耐性値(%)
@@ -75,6 +76,7 @@ public:
 
 	void Finalize() override;
 
+	//装備品データ取得
 	Equipment GetData(int id);
 
 private:

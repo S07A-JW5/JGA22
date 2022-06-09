@@ -131,6 +131,7 @@ void cText::Finalize()
 {
 	for (int i = 0; i < m_Rows; i++)
 		m_Text[i].Delete();
+	AQUA_SAFE_DELETE_ARRAY(m_Text);
 
 	IGameObject::Finalize();
 }

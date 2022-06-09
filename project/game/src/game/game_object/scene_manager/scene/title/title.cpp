@@ -67,6 +67,7 @@ void CTitleScene::Initialize(void)
 		},
 		ButtonPos, cButton::BUTTON_TYPE::SWITCH, "•Â‚¶‚é", 120, 48, 24);
 
+	m_ManualOpenButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::WAIT);
 	m_ManualCloseButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::WAIT);
 }
 

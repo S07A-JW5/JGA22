@@ -13,10 +13,8 @@ IEffect::IEffect(aqua::IGameObject* parent, std::string name)
 void IEffect::Initialize(aqua::CVector2 posA, aqua::CVector2 posB)
 {
 	m_Camera = aqua::FindGameObject("Camera");
-	cCamera* Camera = (cCamera*)m_Camera;
-
-	m_Line.pointA = posA - Camera->GetDrawBasePos();
-	m_Line.pointB = posB - Camera->GetDrawBasePos();
+	m_PositionA = posA;
+	m_PositionB = posB;
 	m_Timer = 1.0f;
 }
 

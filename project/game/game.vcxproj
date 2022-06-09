@@ -104,6 +104,7 @@
     <ClCompile Include="src\game\game_object\database\chr_db\chr_db.cpp" />
     <ClCompile Include="src\game\game_object\database\equip_db\equip_db.cpp" />
     <ClCompile Include="src\game\game_object\database\item_db\item_db.cpp" />
+    <ClCompile Include="src\game\game_object\effect_manager\effect\cannon\cannon.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\effect.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\gunshot\gunshot.cpp" />
     <ClCompile Include="src\game\game_object\effect_manager\effect\melee\melee.cpp" />
@@ -121,7 +122,6 @@
     <ClCompile Include="src\game\game_object\text_manager\text\text.cpp" />
     <ClCompile Include="src\game\game_object\text_manager\text_manager.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\button\button.cpp" />
-    <ClCompile Include="src\game\game_object\ui_manager\component\damage_heal\dmg_heal.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\gauge\gauge.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\select\select.cpp" />
     <ClCompile Include="src\game\game_object\ui_manager\component\status\status.cpp" />
@@ -142,6 +142,7 @@
     <ClInclude Include="src\game\game_object\database\chr_db\chr_db.h" />
     <ClInclude Include="src\game\game_object\database\equip_db\equip_db.h" />
     <ClInclude Include="src\game\game_object\database\item_db\item_db.h" />
+    <ClInclude Include="src\game\game_object\effect_manager\effect\cannon\cannon.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\effect.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\gunshot\gunshot.h" />
     <ClInclude Include="src\game\game_object\effect_manager\effect\melee\melee.h" />
@@ -164,7 +165,6 @@
     <ClInclude Include="src\game\game_object\text_manager\text\text.h" />
     <ClInclude Include="src\game\game_object\text_manager\text_manager.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\button\button.h" />
-    <ClInclude Include="src\game\game_object\ui_manager\component\damage_heal\dmg_heal.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\gauge\gauge.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\select\select.h" />
     <ClInclude Include="src\game\game_object\ui_manager\component\status\status.h" />

@@ -136,7 +136,7 @@ void cPlayer::Update()
 			}
 		}
 	}
-	if (!PlayEffect()) return;
+	if (!EffectPlaying()) return;
 	if (m_DesiredAction != ACTION::DUMMY)
 		if (Action())
 		{
@@ -296,6 +296,7 @@ bool cPlayer::Move()
 			m_OnMapPos = Pos;
 			UnitMgr->SetPlayerPos(m_OnMapPos);
 			m_MapObj->SetMapped(m_OnMapPos, 8);
+			//m_MapObj->SetMapped(m_OnMapPos, m_SightRange);
 		}
 		else
 		{

@@ -102,7 +102,7 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 	}
 	Pos.y += 16;
 
-	Pos.DebugLog();
+	//Pos.DebugLog();
 
 	m_Character = chr_obj;
 	m_Life = life;

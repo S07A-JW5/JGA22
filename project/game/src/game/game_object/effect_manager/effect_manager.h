@@ -18,8 +18,9 @@ public:
 
 	void Finalize() override;
 
+	//エフェクト再生
 	IEffect* CreateEffect(EFFECT_ID id, aqua::CVector2 posA, aqua::CVector2 posB);
 
 private:
-	IGameObject* m_SoundMgr;
+	IGameObject* m_SoundManager; //サウンドマネージャー
 };

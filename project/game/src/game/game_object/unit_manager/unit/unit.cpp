@@ -1,16 +1,11 @@
 #include "unit.h"
 #include "../unit_manager.h"
-#include "file_name.h"
 #include "game/game_object/camera/camera.h"
 #include "game/game_object/database/chr_db/chr_db.h"
 #include "game/game_object/database/item_db/item_db.h"
 #include "game/game_object/database/equip_db/equip_db.h"
 #include "game/game_object/text_manager/text_manager.h"
 #include "game/game_object/effect_manager/effect_manager.h"
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <filesystem>
 
 IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	: aqua::IGameObject(parent, name, "Unit")
@@ -32,7 +27,6 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_Resist()
 	, m_Protection(0)
 	, m_SightRange(0)
-	, m_Coverage(0)
 	, m_WeaponCount(0)
 	, m_UnitNo(0)
 	, m_Status({ 0 })
@@ -48,7 +42,7 @@ IUnit::IUnit(aqua::IGameObject* parent, std::string name)
 	, m_MapObj(nullptr)
 	, m_Camera(nullptr)
 	, m_DidAction(false)
-	, m_DesiredAction(IUnit::ACTION::WAIT)
+	, m_DesiredAction(IUnit::ACTION::DUMMY)
 	, m_MoveTo(IUnit::DIRECTION::DUMMY)
 	, m_OnMapPos(aqua::CVector2::ZERO)
 	, m_Position(aqua::CVector2::ZERO)
@@ -194,7 +188,6 @@ void IUnit::CalcStatus(bool reset_param)
 	m_Support = 0;
 	m_Protection = 0;
 	m_SightRange = 8;
-	m_Coverage = 0;
 	m_WeaponCount = 0;
 	std::uint8_t Count = 0;
 
@@ -269,7 +262,7 @@ void IUnit::SetPosition(aqua::CVector2 pos)
 	m_OnMapPos = pos;
 }
 
-void IUnit::GetMap(cMap* map)
+void IUnit::SetMapObj(cMap* map)
 {
 	m_MapObj = map;
 }
@@ -287,6 +280,10 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	{
 		Damage = Damage * 100 / (100 + m_Protection);
 		Damage -= Dice::DiceRoll(m_Protection / 4);
+	}
+	if (type == DAMAGE_TYPE::THERMAL)
+	{
+		m_Heat += (int16_t)Damage * 2;
 	}
 	Damage = max(Damage, 0);
 
@@ -540,7 +537,6 @@ bool IUnit::Attack(aqua::CVector2 pos)
 		Text += "(" + std::to_string(m_UnitNo) + ")";
 
 	bool Attacked = false;
-	bool Melee = false;
 
 	for (int i = m_AttackingWPN; i < 16; i++, m_AttackingWPN++)
 	{
@@ -550,7 +546,6 @@ bool IUnit::Attack(aqua::CVector2 pos)
 			if (m_Weapon[i].Range < Diff.Length())
 			{
 				if (Diff.Length() > 1.42f) continue;
-				else Melee = true;
 			}
 			if (m_Batt - m_Weapon[i].Energy < 0) continue;
 			if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
@@ -562,15 +557,7 @@ bool IUnit::Attack(aqua::CVector2 pos)
 				((CTextManager*)m_TextManager)->EnterText("  ‘ÎÛ‚ªŒ©‚Â‚©‚ç‚È‚¢");
 				return m_AttackingWPN > 0;
 			}
-
-			if (Melee)
-			{
-				m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::MELEE, m_OnMapPos, pos);
-			}
-			else
-			{
-				m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect(EFFECT_ID::GUNSHOT, m_OnMapPos, pos);
-			}
+			m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect((EFFECT_ID)m_Weapon[i].EffectID, m_OnMapPos, pos);
 
 			if (m_PlayingEffect) return false;
 		}
@@ -594,7 +581,7 @@ bool IUnit::Item(std::int8_t slot)
 	return false;
 }
 
-bool IUnit::PlayEffect()
+bool IUnit::EffectPlaying()
 {
 	if (!m_PlayingEffect) return true;
 	return !((IEffect*)m_PlayingEffect)->EffectPlaying();
@@ -673,6 +660,7 @@ void IUnit::CalcEquipmentStat(int id)
 		Temp.Name			= Equipment.Name;
 		Temp.DamageType	= Equipment.DamageType;
 		Temp.DmgRollData	= Equipment.DmgRollData;
+		Temp.EffectID		= Equipment.EffectID;
 		Temp.Range		= Equipment.Range;
 		Temp.Heat			= Equipment.Heat;
 		Temp.Ammo			= Equipment.Ammo;

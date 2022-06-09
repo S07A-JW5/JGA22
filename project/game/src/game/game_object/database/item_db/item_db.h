@@ -17,7 +17,7 @@ public:
 
 	enum class CONSUME_TYPE
 	{
-		NOT_CONSUMABLE,
+		NOT_CONSUMABLE,	//使うことの出来ないアイテム
 		SELF,	//自分自身
 		ENEMY,	//敵
 		THROW,	//投げ物
@@ -25,7 +25,7 @@ public:
 
 	enum class MATERIALS
 	{
-		DUMMY,
+		DUMMY,	//ﾀﾞﾐｰ
 		AMMO,	//弾薬
 		PARTS,	//部品
 		ENERGY,	//ﾊﾞｯﾃﾘｰ
@@ -62,8 +62,10 @@ public:
 
 	void Finalize() override;
 
+	//装備品IDをアイテムIDに変換
 	std::uint16_t EquipmentItem(int id);
 
+	//アイテムデータ取得
 	ItemData GetData(int id, bool equipment = false);
 
 private:

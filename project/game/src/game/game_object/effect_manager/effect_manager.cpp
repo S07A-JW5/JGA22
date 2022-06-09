@@ -2,16 +2,17 @@
 #include "effect_with_sound_def.h"
 #include "effect/melee/melee.h"
 #include "effect/gunshot/gunshot.h"
+#include "effect/cannon/cannon.h"
 
 cEffectManager::cEffectManager(aqua::IGameObject* parent)
 	: IGameObject(parent,"EffectManager")
-	, m_SoundMgr(nullptr)
+	, m_SoundManager(nullptr)
 {
 }
 
 void cEffectManager::Initialize()
 {
-	m_SoundMgr = aqua::FindGameObject("SoundManager");
+	m_SoundManager = aqua::FindGameObject("SoundManager");
 }
 
 void cEffectManager::Update()
@@ -37,10 +38,9 @@ IEffect* cEffectManager::CreateEffect(EFFECT_ID id, aqua::CVector2 posA, aqua::C
 	{
 	case EFFECT_ID::MELEE:		Effect = aqua::CreateGameObject<cEffectMelee>(this); break;
 	case EFFECT_ID::GUNSHOT:	Effect = aqua::CreateGameObject<cEffectGunshot>(this); break;
-	default: Effect = aqua::CreateGameObject<IEffect>(this, "Effect"); break;
+	case EFFECT_ID::CANNON:	Effect = aqua::CreateGameObject<cEffectCannon>(this); break;
 	}
-
-	Effect->Initialize(posA, posB);
+	if (Effect) Effect->Initialize(posA, posB);
 
 	return Effect;
 }

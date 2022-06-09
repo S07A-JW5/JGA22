@@ -97,6 +97,8 @@ Initialize( HINSTANCE instance_handle, aqua::IGameObject* game )
     SetFullScreenResolutionMode( DX_FSRESOLUTIONMODE_NATIVE );
 #endif
 
+    //SetUseBorderlessWindowFlag(TRUE);
+
     // DirectX11のバージョンを指定する
     if( SetUseDirect3DVersion( DX_DIRECT3D_11 ) == AQUA_DX_ERROR )
         return;

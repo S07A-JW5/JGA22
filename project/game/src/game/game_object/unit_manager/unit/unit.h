@@ -16,15 +16,15 @@ public:
 
 	enum class DIRECTION
 	{
-		NORTH,
-		SOUTH,
-		EAST,
-		WEST,
+		NORTH,	//上
+		SOUTH,	//下
+		EAST,	//右
+		WEST,	//左
 
-		NORTH_EAST,
-		NORTH_WEST,
-		SOUTH_EAST,
-		SOUTH_WEST,
+		NORTH_EAST,//右上
+		NORTH_WEST,//左上
+		SOUTH_EAST,//右下
+		SOUTH_WEST,//左下
 
 		COUNT,
 		DUMMY = 0xff
@@ -32,79 +32,107 @@ public:
 
 	enum class STATUS
 	{
-		LIFE,
-		HEAT,
-		BATT,
-		PARTS,
-		AMMO,
+		LIFE,	//体力
+		HEAT,	//熱
+		BATT,	//ﾊﾞｯﾃﾘｰ
+		PARTS,	//部品
+		AMMO,	//弾薬
 	};
 
 	struct EquippedStat
 	{
-		std::string	Equipment[16];
-		std::uint8_t	Count;
+		std::string	Equipment[16];	//装備品名
+		std::uint8_t	Count;			//装備スロット数
 	};
 
 	struct InventoryStat
 	{
-		std::string	Item[16];
-		std::uint8_t	Count;
+		std::string	Item[16];	//アイテム名
+		std::uint8_t	Count;		//インベントリ容量
 	};
 
+	//コンストラクタ
 	IUnit(aqua::IGameObject* parent, std::string name);
 
+	//デストラクタ
 	~IUnit() = default;
 
+	//初期化
 	void Initialize() override;
 
+	//更新
 	void Update() override;
 
+	//描画
 	void Draw() override;
 
+	//破棄
 	void Finalize() override;
 
+	/*!
+	 *	@brief	キャラ生成
+	 *
+	 *	@param[in]	id		キャラDBから読み込むID
+	 *	@param[in]	unit_no	ユニット番号
+	 */
 	void Create(int id, int unit_no);
 
+	/*!
+	 *	@brief	ステータス計算
+	 *
+	 *	@param[in]	reset_param	現在値をリセットするか
+	 */
 	virtual void CalcStatus(bool reset_param = false);
 
+	//現在位置取得
 	aqua::CVector2 GetPosition();
 
+	//位置設定
 	void SetPosition(aqua::CVector2 pos);
 
-	void GetMap(cMap* map);
+	//マップオブジェクト設定
+	void SetMapObj(cMap* map);
 
+	//ダメージを受ける
 	bool TakeDamage(int damage, IUnit::DAMAGE_TYPE type);
 
+	//行動済みかを確認
 	bool DidAction();
 
+	//行動済みフラグを設定
 	void SetActFlag(bool flag);
 
+	//ステータス値取得
 	int GetStatus(IUnit::STATUS stat);
 
+	//装備品内容取得
 	EquippedStat GetEquipped();
 
+	//インベントリ内容取得
 	InventoryStat GetInventory();
 
+	//耐久力が0になった時の処理
 	virtual void Dead();
 
+	//行動
 	virtual bool Action();
 
 protected:
 	enum class ACTION
 	{
 		DUMMY,
-		WAIT,
-		MOVE,
-		ATTACK,
-		ITEM,
+		WAIT,	//待機
+		MOVE,	//移動
+		ATTACK,	//攻撃
+		ITEM,	//ｱｲﾃﾑ使用
 	};
 
 	enum class ITEM_USE_MODE
 	{
 		DUMMY,
-		USE,
-		DISCARD,
-		SWITCH,
+		USE,		//消費
+		DISCARD,	//破棄（その場に落とす）
+		SWITCH,	//入替（一番後ろに移動）
 	};
 
 	struct status
@@ -134,6 +162,7 @@ protected:
 		std::string	Name;		//装備品の名前
 		DAMAGE_TYPE	DamageType;	//ﾀﾞﾒｰｼﾞ属性
 		Dice::DiceRollData DmgRollData;//ﾀﾞﾒｰｼﾞﾛｰﾙﾃﾞｰﾀ
+		std::uint8_t	EffectID;		//攻撃エフェクトID
 		std::uint8_t	Range;		//射程
 		std::uint8_t	Heat;		//発熱量
 		std::uint8_t	Ammo;		//弾薬消費量
@@ -148,20 +177,28 @@ protected:
 		bool			IsEquipment;	//装備品であるか
 	};
 
+	//待機
 	virtual bool Wait();
 
+	//移動
 	virtual bool Move();
 
+	//攻撃
 	virtual bool Attack(aqua::CVector2 pos);
 
+	//アイテム使用
 	virtual bool Item(std::int8_t slot);
 
-	virtual bool PlayEffect();
+	//エフェクト再生中か調べる
+	virtual bool EffectPlaying();
 
+	//移動可能か調べる
 	bool CanMove();
 
+	//移動後の位置取得
 	aqua::CVector2 GetMovedPos();
 
+	//装備品の能力をステータスに加算
 	void CalcEquipmentStat(int id);
 
 	aqua::IGameObject* m_EffectManager;	//ｴﾌｪｸﾄﾏﾈｰｼﾞｬｰのﾎﾟｲﾝﾀ
@@ -173,7 +210,7 @@ protected:
 	aqua::IGameObject* m_ItemDataBase;	//ｱｲﾃﾑDBのﾎﾟｲﾝﾀ
 	aqua::IGameObject* m_UnitDataBase;	//ﾕﾆｯﾄDBのﾎﾟｲﾝﾀ
 
-	status m_Status;
+	status m_Status;	//ステータス
 
 	aqua::CVector2 m_OnMapPos;	//マップ上での位置
 	aqua::CVector2 m_Position;	//ｽﾌﾟﾗｲﾄの位置
@@ -199,31 +236,29 @@ protected:
 	std::int16_t	m_Protection;	//防御力
 	std::uint8_t	m_SightRange;	//視界半径
 
-	std::uint8_t	m_Coverage;
+	std::list<ItemStat> m_ItemList;	//所持品
 
-	std::list<ItemStat> m_ItemList;
-
-	std::uint8_t	m_WeaponCount;
-	std::uint8_t	m_AttackingWPN;
+	std::uint8_t	m_WeaponCount;		//装備している武器の数
+	std::uint8_t	m_AttackingWPN;		//現在攻撃している武器
 	WeaponStat	m_Weapon[16];			//装備している武器
 	std::uint16_t	m_Equipment[16];		//装備している装備品
-	std::vector<uint16_t>	 m_Head;		//
-	std::vector<uint16_t>	 m_Arm;		//
-	std::vector<uint16_t>	 m_Chest;	//
-	std::vector<uint16_t>	 m_Back;		//
-	std::vector<uint16_t>	 m_Leg;		//
-	std::vector<uint16_t>	 m_Shlder;	//
-	std::vector<uint16_t>	 m_Card;		//
+	std::vector<uint16_t>	 m_Head;		//  頭装備
+	std::vector<uint16_t>	 m_Arm;		//ウデ装備
+	std::vector<uint16_t>	 m_Chest;	//胸部装備
+	std::vector<uint16_t>	 m_Back;		//背中装備
+	std::vector<uint16_t>	 m_Leg;		//  脚装備
+	std::vector<uint16_t>	 m_Shlder;	//  肩装備
+	std::vector<uint16_t>	 m_Card;		//ｶｰﾄﾞ装備
 
-	cMap* m_MapObj;
-	IGameObject* m_Camera;
-	int m_UnitNo;
+	cMap* m_MapObj;		//マップ
+	IGameObject* m_Camera;	//カメラ
+	int m_UnitNo;			//ﾕﾆｯﾄ番号（生成順連番）
 
-	IGameObject* m_PlayingEffect;
+	IGameObject* m_PlayingEffect;	//再生中の攻撃ｴﾌｪｸﾄ
 
-	bool m_DidAction;
-	ACTION m_DesiredAction;
-	DIRECTION m_MoveTo;
-	std::int8_t m_UseItemSlot;
-	ITEM_USE_MODE m_ItemMode;
+	bool m_DidAction;			//行動済みフラグ
+	ACTION m_DesiredAction;	//行う予定の行動
+	DIRECTION m_MoveTo;		//移動方向
+	std::int8_t m_UseItemSlot;	//これから使うｱｲﾃﾑｽﾛｯﾄ番号
+	ITEM_USE_MODE m_ItemMode;	//アイテム使用モード
 };

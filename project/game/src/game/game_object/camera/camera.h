@@ -19,8 +19,10 @@ public:
 
 	void Finalize() override;
 
+	//•`‰æŠî€“_æ“¾
 	aqua::CVector2 GetDrawBasePos();
 
+	//•`‰æ’†S“_İ’è
 	void SetDrawCenterPos(aqua::CVector2 pos);
 
 private:

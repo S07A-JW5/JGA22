@@ -112,15 +112,22 @@ void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 
 void CUnitManager::MapGeneration()
 {
+	if (m_Floor >= UINT8_MAX)
+	{
+		((CTextManager*)m_TextManager)->m_Temp = std::to_string(m_Floor) + "ŠK‚ð“¥”j‚µ‚½I";
+		((CGameMainScene*)m_GameMain)->Change(SCENE_ID::RESULT);
+		return;
+	}
+
 	Clear();
 	m_MapGenerated = false;
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
 	MapGen->GenerateMap(m_Floor, 30 + m_Floor, 30 + m_Floor,
-		5, 8, 2 + m_Floor, 5, 8, 1 + m_Floor);
+		5, 9, 2 + m_Floor, 5, 9, 1 + m_Floor);
 	cMap* Map = MapGen->GetMap();
 	aqua::CVector2 PlayerPos = Map->GetStartPoint();
 	m_MapObj = Map;
-	m_Player->GetMap(Map);
+	m_Player->SetMapObj(Map);
 	m_Player->SetPosition(PlayerPos);
 	SetPlayerPos(PlayerPos);
 	m_Player->CameraUpdate();
@@ -130,7 +137,7 @@ void CUnitManager::MapGeneration()
 	for (int i = 0; i < m_NPCs.size(); i++)
 	{
 		if (m_NPCs[i])
-			m_NPCs[i]->GetMap(Map);
+			m_NPCs[i]->SetMapObj(Map);
 	}
 	((CTextManager*)m_TextManager)->EnterText(std::to_string(++m_Floor) + "ŠK");
 }

@@ -2,7 +2,6 @@
 
 #include "aqua.h"
 #include "component/button/button.h"
-#include "component/damage_heal/dmg_heal.h"
 #include "component/gauge/gauge.h"
 #include "component/select/select.h"
 #include "component/value/value.h"
@@ -56,8 +55,6 @@ public:
 	cGauge* CreateGauge(aqua::CVector2 position, int value, int max, bool mirror, aqua::IGameObject* sync_counter = nullptr);
 	cGauge* CreateGaugeWithBG(aqua::CVector2 position, int value, int max, aqua::IGameObject* sync_counter = nullptr);
 	cGauge* CreateGaugeWithSpecifySize(aqua::CVector2 position, int value, int max, int width, int height, bool mirror, bool has_bg, aqua::IGameObject* sync_counter = nullptr);
-
-	cAmountPopUp* CreateAmountPopUp(const aqua::CVector2& pos, const int& amount, cAmountPopUp::POP_UP_TYPE type, bool miss = false);
 
 	static const aqua::CVector2 m_ui_window_pos;
 	static const int m_ui_window_width;

@@ -165,6 +165,6 @@ bool cBot::Move()
 bool cBot::Attack(aqua::CVector2 pos)
 {
 	if (m_PlayingEffect)
-		if (!PlayEffect()) return false;
+		if (!EffectPlaying()) return false;
 	return IUnit::Attack(pos);
 }

@@ -3,8 +3,8 @@
 #include "game/game_object/camera/camera.h"
 #include "game/game_object/unit_manager/unit_manager.h"
 
-cMap::cMap(aqua::IGameObject* parent, std::string name)
-	: aqua::IGameObject(parent, name, "Map")
+cMap::cMap(aqua::IGameObject* parent)
+	: aqua::IGameObject(parent, "Map")
 	, m_HasData(false)
 	, m_Width(0)
 	, m_Height(0)
@@ -26,10 +26,9 @@ void cMap::Initialize()
 	m_StairSprite.Create("data\\texture\\map\\stair.png");
 	m_Camera = aqua::FindGameObject("Camera");
 	m_UnitManager = aqua::FindGameObject("UnitManager");
-	aqua::GetWindowWidth();
 }
 
-void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVector2 start, aqua::CVector2 stair, std::vector<Room> room, std::vector<Room> corridor, std::vector<Corner> corner)
+void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVector2 start, aqua::CVector2 stair)
 {
 	Initialize();
 
@@ -60,6 +59,7 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVect
 	for (int i = 0; i < m_Width; i++)
 		for (int j = 0; j < m_Height; j++)
 		{
+			m_Tile[i][j].TileID = TILE_ID::EMPTY;
 			switch ((cMapGenerator::TILE_TYPE)mapdata[i][j])
 			{
 			case cMapGenerator::TILE_TYPE::ROOM:
@@ -75,7 +75,7 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVect
 			case cMapGenerator::TILE_TYPE::STAIR:
 				m_Tile[i][j].TileID = TILE_ID::STAIR;
 				break;
-			default:
+			case cMapGenerator::TILE_TYPE::WALL:
 				m_Tile[i][j].TileID = TILE_ID::WALL;
 				break;
 			}
@@ -86,16 +86,10 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVect
 		}
 	m_StartPos = start;
 	m_StairPos = stair;
-
-	m_Room = room;
-	m_Corridor = corridor;
-	m_Corner = corner;
 }
 
 void cMap::Update()
 {
-	if (m_GameObjectState == aqua::GAME_OBJECT_STATE::DEAD) return;
-
 	cCamera* Camera = (cCamera*)m_Camera;
 	aqua::CVector2 DrawBasePos = Camera->GetDrawBasePos();
 	m_DrawArea.left = (int)DrawBasePos.x / m_tile_size - 1;
@@ -118,7 +112,15 @@ void cMap::Draw()
 		{
 			Alpha = 0xff;
 			if (i < 0 || i >= m_Width || j < 0 || j >= m_Height) continue;
+
+#ifdef _DEBUG
+			if (!aqua::mouse::Button(aqua::mouse::BUTTON_ID::RIGHT) &&
+				!m_Tile[i][j].Mapped)
+				continue;
+#else
 			if (!m_Tile[i][j].Mapped) continue;
+#endif // _DEBUG
+
 			if (!m_Tile[i][j].Visible)
 				Alpha = 0x80;
 
@@ -285,19 +287,25 @@ aqua::CVector2 cMap::GetPointedTile(aqua::CPoint mouse_pos)
 cMap::TILE_ID cMap::GetTile(int x_pos, int y_pos)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
-		return TILE_ID::WALL;
+		return TILE_ID::EMPTY;
 	return m_Tile[x_pos][y_pos].TileID;
 }
 
 bool cMap::IsWalkableTile(int x_pos, int y_pos)
 {
-	return GetTile(x_pos, y_pos) != TILE_ID::WALL;
+	TILE_ID Tile = GetTile(x_pos, y_pos);
+
+	if (Tile == TILE_ID::EMPTY) return false;
+	if (Tile == TILE_ID::WALL) return false;
+
+	return true;
 }
 
 bool cMap::CanPutItem(int x_pos, int y_pos)
 {
 	TILE_ID Tile = GetTile(x_pos, y_pos);
 
+	if (Tile == TILE_ID::EMPTY) return false;
 	if (Tile == TILE_ID::WALL) return false;
 	if (Tile == TILE_ID::STAIR) return false;
 
@@ -481,7 +489,7 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 		}
 	Diff = posB - posA;
 
-	if (abs(Diff.x) == abs(Diff.y) && abs(Diff.x) == 0 && abs(Diff.x) == 0)
+	if (abs(Diff.x) == abs(Diff.y) || abs(Diff.x) == 0 || abs(Diff.y) == 0)
 	{
 		Count = (int)max(abs(Diff.x), abs(Diff.y));
 		Diff = Diff / (float)Count;
@@ -555,124 +563,4 @@ void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return;
 	m_Tile[x_pos][y_pos].TileID = tile;
-}
-
-int16_t cMap::GetRoom(aqua::CVector2 pos)
-{
-	TILE_ID Tile = GetTile((int)pos.x, (int)pos.y);
-	if (Tile == TILE_ID::ROOM || Tile == TILE_ID::STAIR)
-	{
-		for (int i = 0; i < m_Room.size(); i++)
-		{
-			if (pos.x < m_Room[i].RoomRect.left && pos.x > m_Room[i].RoomRect.right &&
-				pos.y < m_Room[i].RoomRect.top && pos.y > m_Room[i].RoomRect.bottom)
-				continue;
-			return (int16_t)i;
-		}
-	}
-	if (Tile == TILE_ID::CORRIDOR)
-	{
-		for (int i = 0; i < m_Corridor.size(); i++)
-		{
-			if (pos.x < m_Corridor[i].RoomRect.left && pos.x > m_Corridor[i].RoomRect.right &&
-				pos.y < m_Corridor[i].RoomRect.top && pos.y > m_Corridor[i].RoomRect.bottom)
-				continue;
-			return (int16_t)(i + 256);
-		}
-	}
-	if (Tile == TILE_ID::GATE)
-	{
-		for (int i = 0; i < m_Corner.size(); i++)
-		{
-			if (pos == m_Corner[i].Position) return (int16_t)-i;
-		}
-	}
-	return INT16_MAX;
-}
-
-std::list<aqua::CVector2> cMap::GetPath(aqua::CVector2 posA, aqua::CVector2 posB)
-{
-	std::list<aqua::CVector2> Path;
-	std::list<uint16_t> CornerList;
-	std::list<uint16_t> CornerTemp;
-	std::list<uint16_t> CornerListA;
-	std::list<uint16_t> CornerListB;
-
-	int16_t RoomA = GetRoom(posA);
-	int16_t RoomB = GetRoom(posB);
-
-	if (RoomA == RoomB)
-	{
-		Path.push_back(posB);
-		return Path;
-	}
-
-	CornerListA = GetCornerList(RoomA);
-	CornerListB = GetCornerList(RoomB);
-
-	for (auto it : CornerListA)
-	{
-		CornerTemp = FindCorner(it, CornerListB);
-		if (CornerList.empty())
-			CornerList = CornerTemp;
-		if (CornerList.size() < CornerTemp.size()) break;
-		if (CornerList.size() > CornerTemp.size())
-		{
-			CornerList = CornerTemp;
-			break;
-		}
-	}
-	if (!CornerList.empty())
-	{
-		for (auto it : CornerList)
-		{
-			Path.push_back(m_Corner[it].Position);
-		}
-		Path.push_back(posB);
-	}
-	return Path;
-}
-
-std::list<uint16_t> cMap::GetCornerList(int16_t room)
-{
-	if (room == INT16_MAX) return std::list<uint16_t>();
-
-	std::list<uint16_t> List;
-
-	if (room < 0)
-	{
-		List.push_back(-room);
-		return List;
-	}
-	if (room >= 256)
-	{
-		List = m_Corridor[room - 256].ConnectedCorner;
-		return List;
-	}
-	List = m_Room[room].ConnectedCorner;
-	return List;
-}
-
-std::list<uint16_t> cMap::FindCorner(uint16_t parent, std::list<uint16_t> target)
-{
-	m_PathTemp.clear();
-
-	for (auto it : m_Corner[parent].ConnectedCorner)
-	{
-		for (auto tgt : target)
-		{
-			if (it == tgt)
-			{
-				m_PathTemp.push_front(it);
-				return m_PathTemp;
-			}
-		}
-		m_PathTemp = FindCorner(it, target);
-		if (!m_PathTemp.empty())
-		{
-			m_PathTemp.push_front(it);
-			break;
-		}
-	}
-	return m_PathTemp;
 }

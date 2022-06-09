@@ -39,6 +39,7 @@ public:
 
 	void Finalize() override;
 
+	//キャラデータ取得
 	UnitData GetData(int id);
 
 private:
