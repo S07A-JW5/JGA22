@@ -1,0 +1,38 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+aqua_7_17_project/project/x64
+aqua_7_17_project/project/.vs
+aqua_7_17_project/game/x64
+aqua_7_17_project/aqua/x64
+aqua_7_17_project/game/aqua_debug_log.txt
