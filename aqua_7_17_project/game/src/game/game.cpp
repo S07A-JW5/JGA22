@@ -39,7 +39,7 @@ Initialize(void)
     aqua::CreateGameObject<CSceneManager>(this);
     aqua::CreateGameObject<cEffectManager>(this);
     aqua::CreateGameObject<cUIManager>(this);
-    aqua::CreateGameObject<CTextManager>(this);
+    aqua::CreateGameObject<cTextManager>(this);
     IGameObject::Initialize();
 }
 

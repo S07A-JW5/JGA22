@@ -5,7 +5,7 @@
 #include <filesystem>
 
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-CUnitManager::CUnitManager(aqua::IGameObject* parent)
+cUnitManager::cUnitManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "UnitManager")
 	, m_TextManager(nullptr)
 	, m_Player(nullptr)
@@ -19,10 +19,10 @@ CUnitManager::CUnitManager(aqua::IGameObject* parent)
 {
 }
 
-void CUnitManager::Initialize(void)
+void cUnitManager::Initialize(void)
 {
 	m_GameMain = GetParent();
-	CGameMainScene* Gamemain = (CGameMainScene*)m_GameMain;
+	cGameMainScene* Gamemain = (cGameMainScene*)m_GameMain;
 	m_MapGenerator = Gamemain->GetMapGenerator();
 
 	m_TextManager = aqua::FindGameObject("TextManager");
@@ -34,7 +34,7 @@ void CUnitManager::Initialize(void)
 	MapGeneration();
 }
 
-void CUnitManager::Update(void)
+void cUnitManager::Update(void)
 {
 	cMapGenerator* MapGen = (cMapGenerator*)m_MapGenerator;
 
@@ -65,12 +65,12 @@ void CUnitManager::Update(void)
 		}
 }
 
-void CUnitManager::Draw(void)
+void cUnitManager::Draw(void)
 {
 	IGameObject::Draw();
 }
 
-void CUnitManager::Finalize(void)
+void cUnitManager::Finalize(void)
 {
 	m_NPCs.clear();
 	if (m_UnitPos)
@@ -82,7 +82,7 @@ void CUnitManager::Finalize(void)
 	IGameObject::Finalize();
 }
 
-void CUnitManager::Clear()
+void cUnitManager::Clear()
 {
 	for (int i = 0; i < m_NPCs.size(); i++)
 	{
@@ -98,7 +98,7 @@ void CUnitManager::Clear()
 	}
 }
 
-void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
+void cUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 {
 	cBot* Bot = aqua::CreateGameObject<cBot>(this);
 
@@ -110,12 +110,12 @@ void CUnitManager::Create(std::uint16_t id, int x_pos, int y_pos)
 	Bot->SetPosition(aqua::CVector2((float)x_pos, (float)y_pos));
 }
 
-void CUnitManager::MapGeneration()
+void cUnitManager::MapGeneration()
 {
 	if (m_Floor >= UINT8_MAX)
 	{
-		((CTextManager*)m_TextManager)->m_Temp = std::to_string(m_Floor) + "ŠK‚ð“¥”j‚µ‚½I";
-		((CGameMainScene*)m_GameMain)->Change(SCENE_ID::RESULT);
+		((cTextManager*)m_TextManager)->m_Temp = std::to_string(m_Floor) + "ŠK‚ð“¥”j‚µ‚½I";
+		((cGameMainScene*)m_GameMain)->Change(SCENE_ID::RESULT);
 		return;
 	}
 
@@ -139,10 +139,10 @@ void CUnitManager::MapGeneration()
 		if (m_NPCs[i])
 			m_NPCs[i]->SetMapObj(Map);
 	}
-	((CTextManager*)m_TextManager)->EnterText(std::to_string(++m_Floor) + "ŠK");
+	((cTextManager*)m_TextManager)->EnterText(std::to_string(++m_Floor) + "ŠK");
 }
 
-bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
+bool cUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
 {
 	if (!m_Player)
 		return false;
@@ -151,7 +151,7 @@ bool CUnitManager::IsPlayerNearBy(aqua::CVector2 pos)
 	return Vector2.Length() <= 1;
 }
 
-bool CUnitManager::HasSpace(aqua::CVector2 pos)
+bool cUnitManager::HasSpace(aqua::CVector2 pos)
 {
 	if (m_UnitPos)
 	{
@@ -160,14 +160,14 @@ bool CUnitManager::HasSpace(aqua::CVector2 pos)
 	return true;
 }
 
-bool CUnitManager::CanAttack(aqua::CVector2 target_pos)
+bool cUnitManager::CanAttack(aqua::CVector2 target_pos)
 {
 	if (!m_UnitPos) return false;
 	if (m_UnitPos[(int)target_pos.x][(int)target_pos.y] < 0) return false;
 	return true;
 }
 
-bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type)
+bool cUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_TYPE type)
 {
 	if (!CanAttack(target_pos)) return false;
 
@@ -177,11 +177,11 @@ bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_T
 	{
 		if (m_Player->TakeDamage(damage, type))
 		{
-			((CTextManager*)m_TextManager)->m_Temp = std::to_string(m_Floor) + "ŠK‚Ü‚Å“ž’B‚µ‚½";
+			((cTextManager*)m_TextManager)->m_Temp = std::to_string(m_Floor) + "ŠK‚Ü‚Å“ž’B‚µ‚½";
 			m_Player->Dead();
 			m_Player = nullptr;
 			m_UnitPos[(int)target_pos.x][(int)target_pos.y] = -1;
-			((CGameMainScene*)m_GameMain)->Change(SCENE_ID::RESULT);
+			((cGameMainScene*)m_GameMain)->Change(SCENE_ID::RESULT);
 		}
 		return true;
 	}
@@ -194,7 +194,7 @@ bool CUnitManager::Attack(aqua::CVector2 target_pos, int damage, IUnit::DAMAGE_T
 	return true;
 }
 
-void CUnitManager::SetMovedPos(aqua::CVector2 prev, aqua::CVector2 moved)
+void cUnitManager::SetMovedPos(aqua::CVector2 prev, aqua::CVector2 moved)
 {
 	if (!m_UnitPos) return;
 
@@ -206,26 +206,26 @@ void CUnitManager::SetMovedPos(aqua::CVector2 prev, aqua::CVector2 moved)
 	m_UnitPos[(int)moved.x][(int)moved.y] = UnitNo;
 }
 
-void CUnitManager::SetPlayerPos(aqua::CVector2 pos)
+void cUnitManager::SetPlayerPos(aqua::CVector2 pos)
 {
 	m_UnitPos[(int)m_PlayerPos.x][(int)m_PlayerPos.y] = -1;
 	m_PlayerPos = pos;
 	m_UnitPos[(int)m_PlayerPos.x][(int)m_PlayerPos.y] = 0;
 }
 
-aqua::CVector2 CUnitManager::GetPlayerPos()
+aqua::CVector2 cUnitManager::GetPlayerPos()
 {
 	return m_PlayerPos;
 }
 
-float CUnitManager::BetweenPlayer(aqua::CVector2 pos)
+float cUnitManager::BetweenPlayer(aqua::CVector2 pos)
 {
 	aqua::CVector2 Dst = m_PlayerPos - pos;
 
 	return Dst.Length();
 }
 
-void CUnitManager::SetMapSize(int width, int height)
+void cUnitManager::SetMapSize(int width, int height)
 {
 	if (m_UnitPos)
 	{
@@ -245,7 +245,7 @@ void CUnitManager::SetMapSize(int width, int height)
 			m_UnitPos[i][j] = -1;
 }
 
-uint8_t CUnitManager::GetFloorCount()
+uint8_t cUnitManager::GetFloorCount()
 {
 	return m_Floor;
 }

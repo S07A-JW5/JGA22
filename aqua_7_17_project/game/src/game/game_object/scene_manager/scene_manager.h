@@ -6,8 +6,7 @@
 #include "aqua.h"
 #include "scene\scene_id.h"
 
-class CSceneManager
-	: public aqua::IGameObject
+class CSceneManager : public aqua::IGameObject
 {
 public:
 

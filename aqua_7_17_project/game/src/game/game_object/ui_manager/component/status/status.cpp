@@ -5,14 +5,11 @@
 
 
 cStatusUI::cStatusUI(aqua::IGameObject* parent)
-	: IGameObject(parent,"StatusUI")
+	: IGameObject(parent, "StatusUI")
 	, m_Life(0)
 	, m_MaxLife(0)
 	, m_HeatFlow(0)
 	, m_Heat(0)
-	, m_BaseHeat(0)
-	, m_Weight(0)
-	, m_Support(0)
 	, m_EnergyFlow(0)
 	, m_Batt(0)
 	, m_MaxBatt(0)
@@ -30,7 +27,7 @@ cStatusUI::cStatusUI(aqua::IGameObject* parent)
 {
 }
 
-void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::uint16_t life, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t heat, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t batt, std::uint16_t maxBatt, std::uint16_t parts, std::uint16_t maxParts, std::uint16_t ammo, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
+void cStatusUI::Initialize(IGameObject* chr_obj, std::string name, uint16_t life, uint16_t maxLife, int16_t heatFlow, int16_t heat, int16_t energyFlow, uint16_t batt, uint16_t maxBatt, uint16_t parts, uint16_t maxParts, uint16_t ammo, uint16_t maxAmmo, int16_t resist[3], int16_t protection)
 {
 	m_LifeText.Create(16);
 	m_PartText.Create(16);
@@ -110,7 +107,7 @@ void cStatusUI::Initialize(aqua::IGameObject* chr_obj, std::string name, std::ui
 	m_Batt = batt;
 	m_Parts = parts;
 	m_Ammo = ammo;
-	SetStat(name, maxLife, heatFlow, baseHeat, weight, support, energyFlow, maxBatt, maxParts, maxAmmo, resist, protection);
+	SetStat(name, maxLife, heatFlow, energyFlow, maxBatt, maxParts, maxAmmo, resist, protection);
 }
 
 void cStatusUI::Update()
@@ -190,14 +187,11 @@ void cStatusUI::Finalize()
 		m_InventoryText[i].Delete();
 }
 
-void cStatusUI::SetStat(std::string name, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t maxBatt, std::uint16_t maxParts, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
+void cStatusUI::SetStat(std::string name, uint16_t maxLife, int16_t heatFlow, int16_t energyFlow, uint16_t maxBatt, uint16_t maxParts, uint16_t maxAmmo, int16_t resist[3], int16_t protection)
 {
 	m_Name = name;
 	m_MaxLife = maxLife;
 	m_HeatFlow = heatFlow;
-	m_BaseHeat = baseHeat;
-	m_Weight = weight;
-	m_Support = support;
 	m_EnergyFlow = energyFlow;
 	m_MaxBatt = maxBatt;
 	m_MaxParts = maxParts;

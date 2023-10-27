@@ -15,47 +15,56 @@ public:
 		SWITCH,//放された瞬間のみ
 	};
 
+
+	//コンストラクタ
 	cButton(aqua::IGameObject* parent);
 
+	//デストラクタ
 	~cButton() = default;
 
+	//初期化
 	void Initialize(ButtonFunc button_function, const aqua::CVector2 & pos,
 		BUTTON_TYPE type, const std::string & name, const int& width, const int& height,
 		const int& font_size, const std::string & description, const bool& select);
 
+	//更新
 	void Update() override;
 
+	//描画
 	void Draw() override;
 
+	//解放
 	void Finalize() override;
 
+	//マウスカーソルを合わせているか
 	bool MouseOvered();
 
+	//ボタンが押されているか
 	bool Pressed();
 
 private:
-	static const int m_space;
-	static const int m_size;
+	static const int m_space;	//ボタン画像の角のサイズ
+	static const int m_size;	//ボタン画像のサイズ
 
-	aqua::CVector2 m_Position;
+	aqua::CVector2 m_Position; //ボタン表示位置
 
-	int m_Height;
-	int m_Width;
+	int m_Height;	//ボタン縦サイズ
+	int m_Width;	//ボタン横サイズ
 
-	aqua::CSprite m_Sprite[9];
-	aqua::CLabel m_Name;
+	aqua::CSprite m_Sprite[9];	//ボタンスプライト
+	aqua::CLabel m_Name;	//ボタン名
 
-	std::string m_DescText;
-	aqua::IGameObject* m_DescObj;
+	std::string m_DescText;	//ボタン説明文
+	IGameObject* m_DescObj;	//ボタン説明文テキストボックス
 
-	float m_Timer;
+	float m_Timer;	//説明文テキストボックス表示タイマー
 
-	bool m_Switch;//機能しているか
+	bool m_Switch;	//機能しているか
 	bool m_MouseOver;//マウスカーソルを合わせているか
 
 	bool m_IsDiscreteButton;//個別のボタンであるか
 
-	BUTTON_TYPE m_ButtonType;
+	BUTTON_TYPE m_ButtonType;//ボタンタイプ
 
-	ButtonFunc m_ButtonFunction;
+	ButtonFunc m_ButtonFunction;//ボタンON時の処理
 };

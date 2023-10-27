@@ -38,7 +38,7 @@ IEffect* cEffectManager::CreateEffect(EFFECT_ID id, aqua::CVector2 posA, aqua::C
 	{
 	case EFFECT_ID::MELEE:		Effect = aqua::CreateGameObject<cEffectMelee>(this); break;
 	case EFFECT_ID::GUNSHOT:	Effect = aqua::CreateGameObject<cEffectGunshot>(this); break;
-	case EFFECT_ID::CANNON:	Effect = aqua::CreateGameObject<cEffectCannon>(this); break;
+	case EFFECT_ID::CANNON:		Effect = aqua::CreateGameObject<cEffectCannon>(this); break;
 	}
 	if (Effect) Effect->Initialize(posA, posB);
 

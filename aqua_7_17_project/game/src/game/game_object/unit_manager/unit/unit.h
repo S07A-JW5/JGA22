@@ -8,7 +8,7 @@ class IUnit : public aqua::IGameObject
 public:
 	enum class DAMAGE_TYPE
 	{
-		DUMMY,	//ﾀﾞﾐｰ
+		DUMMY,		//ダミー
 		KINETIC,	//物理
 		THERMAL,	//熱
 		ELECTRO,	//電気
@@ -34,7 +34,7 @@ public:
 	{
 		LIFE,	//体力
 		HEAT,	//熱
-		BATT,	//ﾊﾞｯﾃﾘｰ
+		BATT,	//電力（バッテリー）
 		PARTS,	//部品
 		AMMO,	//弾薬
 	};
@@ -42,13 +42,13 @@ public:
 	struct EquippedStat
 	{
 		std::string	Equipment[16];	//装備品名
-		std::uint8_t	Count;			//装備スロット数
+		uint8_t		Count;			//装備スロット数
 	};
 
 	struct InventoryStat
 	{
 		std::string	Item[16];	//アイテム名
-		std::uint8_t	Count;		//インベントリ容量
+		uint8_t		Count;		//インベントリ容量
 	};
 
 	//コンストラクタ
@@ -66,7 +66,7 @@ public:
 	//描画
 	void Draw() override;
 
-	//破棄
+	//解放
 	void Finalize() override;
 
 	/*!
@@ -132,49 +132,49 @@ protected:
 		DUMMY,
 		USE,		//消費
 		DISCARD,	//破棄（その場に落とす）
-		SWITCH,	//入替（一番後ろに移動）
+		SWITCH,		//入替（一番後ろに移動）
 	};
 
 	struct status
 	{
-		std::uint16_t	ID;			//ﾕﾆｯﾄID
-		std::uint16_t	Life;		//基礎耐久力
-		std::uint16_t	Cooling;		//基礎冷却能力
-		std::uint16_t	Battery;		//基礎ﾊﾞｯﾃﾘｰ容量
-		std::uint16_t	Parts;		//基礎部品所持上限
-		std::uint16_t	Ammo;		//基礎弾薬所持上限
-		std::int16_t	Resist[3];	//基礎耐性値(%)
-		std::uint8_t	Inventory;	//基礎ｲﾝﾍﾞﾝﾄﾘ容量
+		uint16_t ID;		//ユニットID
+		uint16_t Life;		//基礎耐久力
+		uint16_t Cooling;	//基礎冷却能力
+		uint16_t Battery;	//基礎電力容量
+		uint16_t Parts;		//基礎部品所持上限
+		uint16_t Ammo;		//基礎弾薬所持上限
+		int16_t  Resist[3];	//基礎耐性値(%)
+		uint8_t  Inventory;	//基礎インベントリ容量
 
-		std::uint8_t HeadCount;	//「頭」ｽﾛｯﾄ数
-		std::uint8_t ArmCount;		//「腕」ｽﾛｯﾄ数
-		std::uint8_t ChestCount;	//「胸部」ｽﾛｯﾄ数
-		std::uint8_t BackCount;	//「背中」ｽﾛｯﾄ数
-		std::uint8_t LegCount;		//「脚」ｽﾛｯﾄ数
-		std::uint8_t ShlderCount;	//「肩」ｽﾛｯﾄ数
-		std::uint8_t CardCount;	//「拡張ｶｰﾄﾞ」ｽﾛｯﾄ数
-		std::uint8_t EquipCount;	//総装備スロット数
+		uint8_t HeadCount;	//「頭」スロット数
+		uint8_t ArmCount;	//「腕」スロット数
+		uint8_t ChestCount;	//「胸部」スロット数
+		uint8_t BackCount;	//「背中」スロット数
+		uint8_t LegCount;	//「脚」スロット数
+		uint8_t ShlderCount;//「肩」スロット数
+		uint8_t CardCount;	//「拡張」スロット数
+		uint8_t EquipCount;	//総装備スロット数
 	};
 
 	struct WeaponStat
 	{
-		std::uint16_t	ID;			//装備品ID(0は空欄)
+		uint16_t	ID;			//装備品ID(0は空欄)
 		std::string	Name;		//装備品の名前
-		DAMAGE_TYPE	DamageType;	//ﾀﾞﾒｰｼﾞ属性
-		Dice::DiceRollData DmgRollData;//ﾀﾞﾒｰｼﾞﾛｰﾙﾃﾞｰﾀ
-		std::uint8_t	EffectID;		//攻撃エフェクトID
-		std::uint8_t	Range;		//射程
-		std::uint8_t	Heat;		//発熱量
-		std::uint8_t	Ammo;		//弾薬消費量
-		std::uint8_t	Energy;		//消費ﾊﾞｯﾃﾘｰ
+		DAMAGE_TYPE	DamageType;	//ダメージ属性
+		Dice::DiceRollData DmgRollData;//ダメージロールデータ
+		uint8_t		EffectID;	//攻撃エフェクトID
+		uint8_t		Range;		//射程
+		uint8_t		Heat;		//発熱量
+		uint8_t		Ammo;		//弾薬消費量
+		uint8_t		Energy;		//消費電力
 	};
 
 	struct ItemStat
 	{
-		std::uint16_t	ID;			//アイテムID(0は空欄)
-		std::string	Name;		//アイテム名
-		std::uint8_t	Amount;		//アイテムの数
-		bool			IsEquipment;	//装備品であるか
+		uint16_t	ID;		//アイテムID(0は空欄)
+		std::string	Name;	//アイテム名
+		uint8_t		Amount;	//アイテムの数
+		bool		IsEquipment;	//装備品であるか
 	};
 
 	//待機
@@ -201,64 +201,64 @@ protected:
 	//装備品の能力をステータスに加算
 	void CalcEquipmentStat(int id);
 
-	aqua::IGameObject* m_EffectManager;	//ｴﾌｪｸﾄﾏﾈｰｼﾞｬｰのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_SoundManager;	//ｻｳﾝﾄﾞﾏﾈｰｼﾞｬｰのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_UnitManager;	//ﾕﾆｯﾄﾏﾈｰｼﾞｬｰのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_TextManager;	//ﾃｷｽﾄﾏﾈｰｼﾞｬｰのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_UIManager;		//UIﾏﾈｰｼﾞｬｰのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_EquipmentDB;	//装備品DBのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_ItemDataBase;	//ｱｲﾃﾑDBのﾎﾟｲﾝﾀ
-	aqua::IGameObject* m_UnitDataBase;	//ﾕﾆｯﾄDBのﾎﾟｲﾝﾀ
+	IGameObject* m_EffectManager;	//エフェクトマネージャのポインタ
+	IGameObject* m_SoundManager;	//サウンドマネージャのポインタ
+	IGameObject* m_UnitManager;		//ユニットマネージャのポインタ
+	IGameObject* m_TextManager;		//テキストマネージャのポインタ
+	IGameObject* m_UIManager;		//UIマネージャのポインタ
+	IGameObject* m_EquipmentDB;		//装備品DBのポインタ
+	IGameObject* m_ItemDataBase;	//アイテムDBのポインタ
+	IGameObject* m_UnitDataBase;	//ユニットDBのポインタ
 
 	status m_Status;	//ステータス
 
 	aqua::CVector2 m_OnMapPos;	//マップ上での位置
-	aqua::CVector2 m_Position;	//ｽﾌﾟﾗｲﾄの位置
-	aqua::CSprite m_Sprite;	//キャラスプライト
+	aqua::CVector2 m_Position;	//スプライト位置
+	aqua::CSprite m_Sprite;		//キャラスプライト
 
-	std::string	m_Name;		//名前
-	std::uint16_t	m_Life;		//現在耐久力
-	std::uint16_t	m_MaxLife;	//最大耐久力
-	std::int16_t	m_HeatFlow;	//発熱－冷却の総和
-	std::int16_t	m_Heat;		//熱
-	std::int16_t	m_BaseHeat;	//熱下限値
-	std::uint8_t	m_Inventory;	//ｲﾝﾍﾞﾝﾄﾘ容量
-	std::uint16_t	m_Weight;		//装備重量
-	std::uint16_t	m_Support;	//装備重量上限(そうでもないけど)
-	std::int16_t	m_EnergyFlow;	//電力の流出入量
-	std::uint16_t	m_Batt;		//ﾊﾞｯﾃﾘｰ残量
-	std::uint16_t	m_MaxBatt;	//ﾊﾞｯﾃﾘｰ容量
-	std::uint16_t	m_Parts;		//所持部品
-	std::uint16_t	m_MaxParts;	//部品所持上限
-	std::uint16_t	m_Ammo;		//所持弾薬
-	std::uint16_t	m_MaxAmmo;	//弾薬所持上限
-	std::int16_t	m_Resist[3];	//耐性値(%)
-	std::int16_t	m_Protection;	//防御力
-	std::uint8_t	m_SightRange;	//視界半径
+	std::string	m_Name;			//名前
+	uint16_t	m_Life;			//現在耐久力
+	uint16_t	m_MaxLife;		//最大耐久力
+	int16_t		m_HeatFlow;		//発熱－冷却の総和
+	int16_t		m_Heat;			//熱
+	int16_t		m_BaseHeat;		//熱下限値
+	uint8_t		m_Inventory;	//インベントリ容量
+	uint16_t	m_Weight;		//装備重量
+	uint16_t	m_Support;		//装備重量上限
+	int16_t		m_EnergyFlow;	//電力の流出入量
+	uint16_t	m_Batt;			//電力残量
+	uint16_t	m_MaxBatt;		//電力容量
+	uint16_t	m_Parts;		//所持部品
+	uint16_t	m_MaxParts;		//部品所持上限
+	uint16_t	m_Ammo;			//所持弾薬
+	uint16_t	m_MaxAmmo;		//弾薬所持上限
+	int16_t		m_Resist[3];	//耐性値(%)
+	int16_t		m_Protection;	//防御力
+	uint8_t		m_SightRange;	//視界半径
 
 	std::list<ItemStat> m_ItemList;	//所持品
 
-	std::uint8_t	m_WeaponCount;		//装備している武器の数
-	std::uint8_t	m_AttackingWPN;		//現在攻撃している武器
-	WeaponStat	m_Weapon[16];			//装備している武器
-	std::uint16_t	m_Equipment[16];		//装備している装備品
-	std::vector<uint16_t>	 m_Head;		//  頭装備
+	uint8_t			m_WeaponCount;		//装備している武器の数
+	uint8_t			m_AttackingWPN;		//現在攻撃している武器
+	WeaponStat		m_Weapon[16];		//装備している武器
+	uint16_t		m_Equipment[16];	//装備している装備品
+	std::vector<uint16_t>	 m_Head;	//頭装備
 	std::vector<uint16_t>	 m_Arm;		//ウデ装備
 	std::vector<uint16_t>	 m_Chest;	//胸部装備
-	std::vector<uint16_t>	 m_Back;		//背中装備
-	std::vector<uint16_t>	 m_Leg;		//  脚装備
-	std::vector<uint16_t>	 m_Shlder;	//  肩装備
-	std::vector<uint16_t>	 m_Card;		//ｶｰﾄﾞ装備
+	std::vector<uint16_t>	 m_Back;	//背中装備
+	std::vector<uint16_t>	 m_Leg;		//脚装備
+	std::vector<uint16_t>	 m_Shlder;	//肩装備
+	std::vector<uint16_t>	 m_Card;	//拡張装備
 
-	cMap* m_MapObj;		//マップ
-	IGameObject* m_Camera;	//カメラ
-	int m_UnitNo;			//ﾕﾆｯﾄ番号（生成順連番）
+	cMap*			m_MapObj;	//マップ
+	IGameObject*	m_Camera;	//カメラ
+	int				m_UnitNo;	//ユニット番号（生成順連番）
 
-	IGameObject* m_PlayingEffect;	//再生中の攻撃ｴﾌｪｸﾄ
+	IGameObject* m_PlayingEffect;	//再生中の攻撃エフェクト
 
 	bool m_DidAction;			//行動済みフラグ
 	ACTION m_DesiredAction;	//行う予定の行動
 	DIRECTION m_MoveTo;		//移動方向
-	std::int8_t m_UseItemSlot;	//これから使うｱｲﾃﾑｽﾛｯﾄ番号
+	std::int8_t m_UseItemSlot;	//これから使うアイテムスロット番号
 	ITEM_USE_MODE m_ItemMode;	//アイテム使用モード
 };

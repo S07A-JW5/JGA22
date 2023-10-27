@@ -1,19 +1,17 @@
 #include "tools.h"
 
-int Dice::DiceRoll(unsigned short faces)
+int Dice::DiceRoll(uint16_t faces)
 {
 	return DiceRoll(1, faces, 0);
 }
 
-int Dice::DiceRoll(unsigned short dice_count, unsigned short faces)
+int Dice::DiceRoll(uint16_t dice_count, uint16_t faces)
 {
 	return DiceRoll(dice_count, faces, 0);
 }
 
-int Dice::DiceRoll(unsigned short dice_count, unsigned short faces, short num)
+int Dice::DiceRoll(uint16_t dice_count, uint16_t faces, int16_t num)
 {
-	return DiceRoll(DiceRollData{ dice_count,faces,num });
-	/*
 	if (dice_count <= 0) return 0;
 	if (faces <= 0) return 0;
 
@@ -21,13 +19,13 @@ int Dice::DiceRoll(unsigned short dice_count, unsigned short faces, short num)
 	for (int i = 0; i < dice_count; i++)
 		Result += rand() % faces + 1;
 	Result += num;
-	return Result;*/
+	return Result;
 }
 
 int Dice::DiceRoll(DiceRollData data)
 {
-	if (data.DiceCount <= 0) return 0;
-	if (data.DiceFaces <= 0) return 0;
+	if (data.DiceCount <= 0) return data.ModValue;
+	if (data.DiceFaces <= 0) return data.ModValue;
 
 	int Result = 0;
 	for (int i = 0; i < data.DiceCount; i++)
@@ -48,7 +46,7 @@ Dice::DiceRollData Dice::GetDiceRollData(std::string text)
 	Data.DiceFaces = 0;
 	Data.ModValue = 0;
 	bool Negative = false;
-	unsigned char Phase = 0;
+	uint8_t Phase = 0;
 
 	for (int i = 0; i < text.size(); i++)
 	{
@@ -56,7 +54,9 @@ Dice::DiceRollData Dice::GetDiceRollData(std::string text)
 		{
 			break;
 		}
-		if (Phase == 0)
+		switch (Phase)
+		{
+		case 0:
 		{
 			if (text[i] == 'd')
 			{
@@ -73,9 +73,9 @@ Dice::DiceRollData Dice::GetDiceRollData(std::string text)
 				Data.DiceCount *= 10;
 				Data.DiceCount += text[i] - '0';
 			}
-			continue;
 		}
-		if (Phase == 1)
+		break;
+		case 1:
 		{
 			if (text[i] == '+' || text[i] == '-')
 			{
@@ -88,21 +88,51 @@ Dice::DiceRollData Dice::GetDiceRollData(std::string text)
 				Data.DiceFaces *= 10;
 				Data.DiceFaces += text[i] - '0';
 			}
-			continue;
 		}
-		if (Phase == 2)
+		break;
+		case 2:
 		{
 			if (text[i] >= '0' && text[i] <= '9')
 			{
 				Data.ModValue *= 10;
 				Data.ModValue += text[i] - '0';
 			}
-			continue;
+		}
+		break;
 		}
 	}
 	if (Negative)
 		Data.ModValue = -Data.ModValue;
+
+	Data.MinValue = Data.DiceCount + Data.ModValue;
+	Data.MaxValue = Data.DiceCount * Data.DiceFaces + Data.ModValue;
+
 	return Data;
+}
+
+std::string Dice::GetDiceRollText(DiceRollData data, bool range)
+{
+	if (range)
+	{
+		return std::to_string(data.ModValue + data.DiceCount) + "-" +
+			std::to_string(data.ModValue + data.DiceCount * data.DiceFaces);
+	}
+	std::string text =
+		std::to_string(data.DiceCount) + "d" + std::to_string(data.DiceFaces);
+
+	if (abs(data.ModValue) == 0)
+		return text;
+
+	if (data.ModValue > 0)
+		text += "+";
+	text += std::to_string(data.ModValue);
+	return text;
+}
+
+void Dice::SetMinMaxValue(DiceRollData* data)
+{
+	data->MinValue = data->DiceCount + data->ModValue;
+	data->MaxValue = data->DiceCount * data->DiceFaces + data->ModValue;
 }
 
 int Dice::PercentRoll()
@@ -110,7 +140,7 @@ int Dice::PercentRoll()
 	return DiceRoll(1, 100, 0);
 }
 
-bool Dice::PercentRoll(unsigned char num)
+bool Dice::PercentRoll(int num)
 {
 	return PercentRoll() <= num;
 }

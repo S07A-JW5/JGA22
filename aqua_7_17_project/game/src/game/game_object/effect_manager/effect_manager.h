@@ -6,16 +6,23 @@
 class cEffectManager :public aqua::IGameObject
 {
 public:
+
+	//コンストラクタ
 	cEffectManager(aqua::IGameObject* parent);
 
+	//デストラクタ
 	~cEffectManager() = default;
 
+	//初期化
 	void Initialize() override;
 
+	//更新
 	void Update() override;
 
+	//描画
 	void Draw() override;
 
+	//解放
 	void Finalize() override;
 
 	//エフェクト再生

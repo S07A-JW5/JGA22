@@ -29,9 +29,6 @@ void CSplashScene::Initialize(void)
 //更新
 void CSplashScene::Update(void)
 {
-	Change(SCENE_ID::TITLE);
-	return;
-
 	//タイマー更新
 	m_WaitTimer.Update();
 

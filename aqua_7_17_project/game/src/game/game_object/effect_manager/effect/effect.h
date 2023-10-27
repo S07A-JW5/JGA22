@@ -5,18 +5,26 @@
 class IEffect :public aqua::IGameObject
 {
 public:
+
+	//コンストラクタ
 	IEffect(aqua::IGameObject* parent, std::string name);
 
+	//デストラクタ
 	~IEffect() = default;
 
+	//初期化
 	virtual void Initialize(aqua::CVector2 posA, aqua::CVector2 posB);
 
+	//更新
 	virtual void Update() override;
 
+	//描画
 	virtual void Draw() override;
 
+	//解放
 	virtual void Finalize() override;
 
+	//エフェクト再生中かどうか
 	bool EffectPlaying();
 
 protected:

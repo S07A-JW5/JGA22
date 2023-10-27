@@ -4,30 +4,30 @@
 #include "aqua.h"
 #include "../scene.h"
 
-class CResultScene : public IScene
+class cResultScene : public IScene
 {
 public:
 	//コンストラクタ
-	CResultScene(aqua::IGameObject* parent);
+	cResultScene(aqua::IGameObject* parent);
 
 	//デストラクタ
-	~CResultScene(void) = default;
+	~cResultScene() = default;
 
 	//初期化
-	void Initialize(void) override;
+	void Initialize() override;
 
 	//更新
-	void Update(void) override;
+	void Update() override;
 
 	//描画
-	void Draw(void) override;
+	void Draw() override;
 
 	//解放
-	void Finalize(void) override;
+	void Finalize() override;
 
 private:
-	aqua::IGameObject*	 m_ResultText;		//
-	aqua::IGameObject*	 m_ReturnTitleButton;	//
-	aqua::CSprite		 m_ResultSprite;		//リザルトスプライト
-	bool				 m_UIVisible;
+	IGameObject*	m_ResultText;		//リザルトテキスト
+	IGameObject*	m_ReturnTitleButton;//「タイトルに戻る」ボタン
+	aqua::CSprite	m_ResultSprite;		//リザルトスプライト
+	bool			m_UIVisible;		//UI可視フラグ
 };

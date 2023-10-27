@@ -46,10 +46,10 @@ void cUIManager::SetUIBGVisible(bool visible)
 	m_UIWindow->SetVisible(visible);
 }
 
-cStatusUI* cUIManager::CreateStatusUI(aqua::IGameObject* chr_obj, std::string name, std::uint16_t life, std::uint16_t maxLife, std::int16_t heatFlow, std::int16_t heat, std::int16_t baseHeat, std::uint16_t weight, std::uint16_t support, std::int16_t energyFlow, std::uint16_t batt, std::uint16_t maxBatt, std::uint16_t parts, std::uint16_t maxParts, std::uint16_t ammo, std::uint16_t maxAmmo, std::int16_t resist[3], std::int16_t protection)
+cStatusUI* cUIManager::CreateStatusUI(IGameObject* chr_obj, std::string name, uint16_t life, uint16_t maxLife, int16_t heatFlow, int16_t heat, int16_t energyFlow, uint16_t batt, uint16_t maxBatt, uint16_t parts, uint16_t maxParts, uint16_t ammo, uint16_t maxAmmo, int16_t resist[3], int16_t protection)
 {
 	cStatusUI* StatUI = aqua::CreateGameObject<cStatusUI>(this);
-	StatUI->Initialize(chr_obj, name, life, maxLife, heatFlow, heat, baseHeat, weight, support, energyFlow, batt, maxBatt, parts, maxParts, ammo, maxAmmo, resist, protection);
+	StatUI->Initialize(chr_obj, name, life, maxLife, heatFlow, heat, energyFlow, batt, maxBatt, parts, maxParts, ammo, maxAmmo, resist, protection);
 	return StatUI;
 }
 
@@ -91,32 +91,32 @@ cValue* cUIManager::CreateValueText(aqua::CVector2 position, int value, int max,
 	return Value;
 }
 
-cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int max, aqua::IGameObject* sync_counter)
+cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int max, IGameObject* sync_counter)
 {
 	return CreateGauge(position, max, max, false, sync_counter);
 }
 
-cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int value, int max, aqua::IGameObject* sync_counter)
+cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int value, int max, IGameObject* sync_counter)
 {
 	return CreateGauge(position, value, max, false, sync_counter);
 }
 
-cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int max, bool mirror, aqua::IGameObject* sync_counter)
+cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int max, bool mirror, IGameObject* sync_counter)
 {
 	return CreateGauge(position, max, max, mirror, sync_counter);
 }
 
-cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int value, int max, bool mirror, aqua::IGameObject* sync_counter)
+cGauge* cUIManager::CreateGauge(aqua::CVector2 position, int value, int max, bool mirror, IGameObject* sync_counter)
 {
 	return CreateGaugeWithSpecifySize(position, value, max, 480, 40, mirror, false, sync_counter);
 }
 
-cGauge* cUIManager::CreateGaugeWithBG(aqua::CVector2 position, int value, int max, aqua::IGameObject* sync_counter)
+cGauge* cUIManager::CreateGaugeWithBG(aqua::CVector2 position, int value, int max, IGameObject* sync_counter)
 {
 	return CreateGaugeWithSpecifySize(position, value, max, 480, 40, false, true, sync_counter);
 }
 
-cGauge* cUIManager::CreateGaugeWithSpecifySize(aqua::CVector2 position, int value, int max, int width, int height, bool mirror, bool has_bg, aqua::IGameObject* sync_counter)
+cGauge* cUIManager::CreateGaugeWithSpecifySize(aqua::CVector2 position, int value, int max, int width, int height, bool mirror, bool has_bg, IGameObject* sync_counter)
 {
 	cGauge* gauge = aqua::CreateGameObject<cGauge>(this);
 	gauge->Initialize(position, value, max, width, height, mirror, has_bg, sync_counter);

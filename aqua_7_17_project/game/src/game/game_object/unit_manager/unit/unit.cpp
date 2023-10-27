@@ -288,15 +288,15 @@ bool IUnit::TakeDamage(int damage, IUnit::DAMAGE_TYPE type)
 	Damage = max(Damage, 0);
 
 	if (Damage == 0)
-		((CTextManager*)m_TextManager)->EnterText("  ミス - " + Text);
+		((cTextManager*)m_TextManager)->EnterText("  ミス - " + Text);
 	else
-		((CTextManager*)m_TextManager)->EnterText("  " + std::to_string(Damage) + "ダメージ - " + Text);
+		((cTextManager*)m_TextManager)->EnterText("  " + std::to_string(Damage) + "ダメージ - " + Text);
 
 	m_Life = (uint16_t)max(m_Life - Damage, 0);
 
 	if (m_Life <= 0)
 	{
-		((CTextManager*)m_TextManager)->EnterText("  " + Text + "は破壊された");
+		((cTextManager*)m_TextManager)->EnterText("  " + Text + "は破壊された");
 		Defeated = true;
 	}
 	return Defeated;
@@ -490,7 +490,7 @@ bool IUnit::Wait()
 
 bool IUnit::Move()
 {
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 	aqua::CVector2 Pos = m_OnMapPos;
 	bool Moved = false;
 
@@ -526,7 +526,7 @@ bool IUnit::Move()
 
 bool IUnit::Attack(aqua::CVector2 pos)
 {
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 
 	if (m_MapObj->HitWall(m_OnMapPos, pos)) return false;
 	if (UnitMgr->HasSpace(pos)) return false;
@@ -550,11 +550,11 @@ bool IUnit::Attack(aqua::CVector2 pos)
 			if (m_Batt - m_Weapon[i].Energy < 0) continue;
 			if (m_Ammo - m_Weapon[i].Ammo < 0) continue;
 
-			((CTextManager*)m_TextManager)->EnterText(Text + ":" + m_Weapon[i].Name);
+			((cTextManager*)m_TextManager)->EnterText(Text + ":" + m_Weapon[i].Name);
 
 			if (!UnitMgr->CanAttack(pos))
 			{
-				((CTextManager*)m_TextManager)->EnterText("  対象が見つからない");
+				((cTextManager*)m_TextManager)->EnterText("  対象が見つからない");
 				return m_AttackingWPN > 0;
 			}
 			m_PlayingEffect = ((cEffectManager*)m_EffectManager)->CreateEffect((EFFECT_ID)m_Weapon[i].EffectID, m_OnMapPos, pos);
@@ -593,7 +593,7 @@ bool IUnit::CanMove()
 
 	aqua::CVector2 Pos = GetMovedPos();
 
-	if (m_MapObj->IsWalkableTile((int)Pos.x, (int)Pos.y) && ((CUnitManager*)m_UnitManager)->HasSpace(Pos))
+	if (m_MapObj->IsWalkableTile((int)Pos.x, (int)Pos.y) && ((cUnitManager*)m_UnitManager)->HasSpace(Pos))
 		return true;
 	return false;
 }

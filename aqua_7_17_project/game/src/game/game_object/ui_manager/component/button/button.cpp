@@ -36,7 +36,7 @@ void cButton::Initialize(ButtonFunc button_function, const aqua::CVector2& pos, 
 	m_DescText = description;
 	if (m_DescText != "")
 	{
-		CTextManager* TextMgr = (CTextManager*)aqua::FindGameObject("TextManager");
+		cTextManager* TextMgr = (cTextManager*)aqua::FindGameObject("TextManager");
 		if (!TextMgr) return;
 		m_DescObj = TextMgr->CreateText(aqua::CVector2::ZERO, m_DescText, 16);
 

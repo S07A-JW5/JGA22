@@ -3,35 +3,34 @@
 #include "aqua.h"
 #include "..\scene.h"
 
-class CTitleScene : public IScene
+class cTitleScene : public IScene
 {
 public:
 	//コンストラクタ
-	CTitleScene(aqua::IGameObject* parent);
+	cTitleScene(aqua::IGameObject* parent);
 
 	//デストラクタ
-	~CTitleScene(void) = default;
+	~cTitleScene() = default;
 
 	//初期化
-	void Initialize(void) override;
+	void Initialize() override;
 
 	//更新
-	void Update(void) override;
+	void Update() override;
 
 	//描画
-	void Draw(void) override;
+	void Draw() override;
 
 	//解放
-	void Finalize(void) override;
+	void Finalize() override;
 
 private:
-	aqua::CLabel m_Label;
-	aqua::CSprite m_Manual;
+	aqua::CSprite m_Manual;	//操作説明
 
-	aqua::IGameObject* m_SoundManager;
-	aqua::IGameObject* m_UIManager;
+	aqua::IGameObject* m_SoundManager;	//サウンドマネージャのポインタ
+	aqua::IGameObject* m_UIManager;		//UIマネージャのポインタ
 
-	aqua::IGameObject* m_GameStartButton;
-	aqua::IGameObject* m_ManualOpenButton;
-	aqua::IGameObject* m_ManualCloseButton;
+	aqua::IGameObject* m_GameStartButton;	//「ゲームスタート」ボタン
+	aqua::IGameObject* m_ManualOpenButton;	//「ゲーム説明」ボタン
+	aqua::IGameObject* m_ManualCloseButton;	//「閉じる」ボタン
 };

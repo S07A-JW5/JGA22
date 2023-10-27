@@ -2,7 +2,7 @@
 #include "../../../sound_manager/sound_manager.h"
 #include "../../../ui_manager/ui_manager.h"
 
-CTitleScene::CTitleScene(aqua::IGameObject* parent)
+cTitleScene::cTitleScene(aqua::IGameObject* parent)
 	: IScene(parent,"TitleScene")
 	, m_SoundManager(nullptr)
 	, m_UIManager(nullptr)
@@ -12,16 +12,10 @@ CTitleScene::CTitleScene(aqua::IGameObject* parent)
 {
 }
 
-void CTitleScene::Initialize(void)
+void cTitleScene::Initialize()
 {
 	m_SoundManager = aqua::FindGameObject("SoundManager");
 	m_UIManager = aqua::FindGameObject("UIManager");
-
-	m_Label.Create(48, 2);
-	m_Label.color = aqua::CColor::WHITE;
-	m_Label.text = "";
-	m_Label.position.x = (aqua::GetWindowWidth() - m_Label.GetTextWidth()) / 2.0f;
-	m_Label.position.y = (aqua::GetWindowHeight() - m_Label.GetFontHeight()) / 2.0f;
 
 	aqua::CVector2 ButtonPos = aqua::CVector2::ZERO;
 	ButtonPos.x = aqua::GetWindowWidth() / 2.0f;
@@ -36,6 +30,7 @@ void CTitleScene::Initialize(void)
 	//SoundMgr->PlayBGM(BGM_LIST::0);
 
 	cUIManager* UIMgr = (cUIManager*)m_UIManager;
+
 	m_GameStartButton = UIMgr->CreateButton(
 		[&] {
 			cSoundManager* SoundMgr = (cSoundManager*)m_SoundManager;
@@ -48,7 +43,9 @@ void CTitleScene::Initialize(void)
 			m_ManualCloseButton->DeleteObject();
 		},
 		ButtonPos, cButton::BUTTON_TYPE::SWITCH, "ゲームスタート", 240, 48, 24);
+
 	ButtonPos.y += 64;
+
 	m_ManualOpenButton = UIMgr->CreateButton(
 		[&] {
 			m_GameStartButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::WAIT);
@@ -57,7 +54,9 @@ void CTitleScene::Initialize(void)
 			m_Manual.visible = true;
 		},
 		ButtonPos, cButton::BUTTON_TYPE::SWITCH, "ゲーム説明", 240, 48, 24);
+
 	ButtonPos.y += 64;
+
 	m_ManualCloseButton = UIMgr->CreateButton(
 		[&] {
 			m_GameStartButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::ACTIVE);
@@ -67,22 +66,19 @@ void CTitleScene::Initialize(void)
 		},
 		ButtonPos, cButton::BUTTON_TYPE::SWITCH, "閉じる", 120, 48, 24);
 
-	m_ManualOpenButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::WAIT);
 	m_ManualCloseButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::WAIT);
 }
 
-void CTitleScene::Update(void)
+void cTitleScene::Update()
 {
 }
 
-void CTitleScene::Draw(void)
+void cTitleScene::Draw()
 {
-	m_Label.Draw();
 	m_Manual.Draw();
 }
 
-void CTitleScene::Finalize(void)
+void cTitleScene::Finalize()
 {
-	m_Label.Delete();
 	m_Manual.Delete();
 }

@@ -12,7 +12,6 @@ cPlayer::cPlayer(aqua::IGameObject* parent)
 	, m_TargetTile(aqua::CVector2::ZERO)
 	, m_StairPos(aqua::CVector2::ZERO)
 	, m_StatObj(nullptr)
-	, m_InputTimer(0.0f)
 {
 }
 
@@ -180,11 +179,11 @@ void cPlayer::CalcStatus(bool reset_param)
 	if (reset_param)
 	{
 		cUIManager* UIMgr = (cUIManager*)m_UIManager;
-		m_StatObj = UIMgr->CreateStatusUI(this, m_Name, m_Life, m_MaxLife, m_HeatFlow, m_Heat, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_Batt, m_MaxBatt, m_Parts, m_MaxParts, m_Ammo, m_MaxAmmo, m_Resist, m_Protection);
+		m_StatObj = UIMgr->CreateStatusUI(this, m_Name, m_Life, m_MaxLife, m_HeatFlow, m_Heat, m_EnergyFlow, m_Batt, m_MaxBatt, m_Parts, m_MaxParts, m_Ammo, m_MaxAmmo, m_Resist, m_Protection);
 	}
 	else if (m_StatObj)
 	{
-		((cStatusUI*)m_StatObj)->SetStat(m_Name, m_MaxLife, m_HeatFlow, m_BaseHeat, m_Weight, m_Support, m_EnergyFlow, m_MaxBatt, m_MaxParts, m_MaxAmmo, m_Resist, m_Protection);
+		((cStatusUI*)m_StatObj)->SetStat(m_Name, m_MaxLife, m_HeatFlow, m_EnergyFlow, m_MaxBatt, m_MaxParts, m_MaxAmmo, m_Resist, m_Protection);
 	}
 }
 
@@ -266,7 +265,7 @@ bool cPlayer::Wait()
 			{
 				m_ItemList.pop_back();
 				m_MapObj->PutItem((int)m_OnMapPos.x, (int)m_OnMapPos.y, Item.ItemID, Item.Num);
-				((CTextManager*)m_TextManager)->EnterText("²ÝÍÞÝÄØ‚ª–ž”t‚Å " + temp.Name + " ‚ðE‚¦‚È‚¢I");
+				((cTextManager*)m_TextManager)->EnterText("²ÝÍÞÝÄØ‚ª–ž”t‚Å " + temp.Name + " ‚ðE‚¦‚È‚¢I");
 				return false;
 			}
 		}
@@ -274,7 +273,7 @@ bool cPlayer::Wait()
 
 	if (m_OnMapPos == m_StairPos)
 	{
-		CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+		cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 		UnitMgr->MapGeneration();
 	}
 	return true;
@@ -282,7 +281,7 @@ bool cPlayer::Wait()
 
 bool cPlayer::Move()
 {
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 	aqua::CVector2 Pos = m_OnMapPos;
 	bool Moved = false;
 

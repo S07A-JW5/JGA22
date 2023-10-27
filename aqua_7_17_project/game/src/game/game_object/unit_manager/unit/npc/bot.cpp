@@ -26,7 +26,7 @@ void cBot::Update()
 
 bool cBot::Action()
 {
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 	aqua::CVector2 PlayerPos = UnitMgr->GetPlayerPos();
 	bool Attacked = false;
 
@@ -68,7 +68,7 @@ void cBot::CameraUpdate()
 
 bool cBot::Move()
 {
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 	aqua::CVector2 Pos = aqua::CVector2::ZERO;
 	aqua::CVector2 Diff = aqua::CVector2::ZERO;
 	IUnit::DIRECTION Dir = IUnit::DIRECTION::DUMMY;

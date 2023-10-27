@@ -250,13 +250,13 @@ std::vector<std::string> cText::SeparateText()
 {
 	std::vector<std::string> Text;
 	Text.clear();
-	int TextIndex = 0;
+
 	m_Rows = 1;
 	std::string Temp = "";
+	bool NewLine = false;
 
-	while (TextIndex < m_String.size())
+	for (int TextIndex = 0; TextIndex < m_String.size(); TextIndex++)
 	{
-		bool NewLine = false;
 		std::string Char = m_String.substr(TextIndex, 1);
 		if ((Char[0] >= 0x80i8 && Char[0] <= 0x9Fi8) ||
 			(Char[0] >= 0xE0i8 && Char[0] <= 0xFFi8))
@@ -277,16 +277,16 @@ std::vector<std::string> cText::SeparateText()
 				NewLine = true;
 			}
 		}
-		TextIndex++;
 
 		if (NewLine)
 		{
 			m_Rows++;
 			Text.push_back(Temp);
 			Temp = "";
-			continue;
+			NewLine = false;
 		}
-		Temp += Char;
+		else
+			Temp += Char;
 	}
 	Text.push_back(Temp);
 

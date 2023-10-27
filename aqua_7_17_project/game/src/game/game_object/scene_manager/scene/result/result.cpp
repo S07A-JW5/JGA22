@@ -2,7 +2,7 @@
 #include "../../../text_manager/text_manager.h"
 #include "../../../ui_manager/ui_manager.h"
 
-CResultScene::CResultScene(aqua::IGameObject* parent)
+cResultScene::cResultScene(aqua::IGameObject* parent)
 	: IScene(parent, "Result")
 	, m_ResultText(nullptr)
 	, m_ReturnTitleButton(nullptr)
@@ -10,9 +10,9 @@ CResultScene::CResultScene(aqua::IGameObject* parent)
 {
 }
 
-void CResultScene::Initialize(void)
+void cResultScene::Initialize()
 {
-	CTextManager* TextMgr = (CTextManager*)aqua::FindGameObject("TextManager");
+	cTextManager* TextMgr = (cTextManager*)aqua::FindGameObject("TextManager");
 	cUIManager* UIMgr = (cUIManager*)aqua::FindGameObject("UIManager");
 
 	aqua::CVector2 ButtonPos = aqua::CVector2::ZERO;
@@ -33,7 +33,7 @@ void CResultScene::Initialize(void)
 	m_ReturnTitleButton->SetGameObjectState(aqua::GAME_OBJECT_STATE::WAIT);
 }
 
-void CResultScene::Update(void)
+void cResultScene::Update()
 {
 	if (!m_UIVisible)
 	{
@@ -43,12 +43,12 @@ void CResultScene::Update(void)
 	}
 }
 
-void CResultScene::Draw(void)
+void cResultScene::Draw()
 {
 	m_ResultSprite.Draw();
 }
 
-void CResultScene::Finalize(void)
+void cResultScene::Finalize()
 {
 	m_ResultSprite.Delete();
 }

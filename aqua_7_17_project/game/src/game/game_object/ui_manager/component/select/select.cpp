@@ -34,7 +34,7 @@ void cSelection::Initialize(std::vector<int> number, std::vector<std::string> na
 	m_UIManager = GetParent();
 	cUIManager* UIMgr = (cUIManager*)m_UIManager;
 
-	CTextManager* TextMgr = (CTextManager*)aqua::FindGameObject("TextManager");
+	cTextManager* TextMgr = (cTextManager*)aqua::FindGameObject("TextManager");
 
 	m_Number = number;
 

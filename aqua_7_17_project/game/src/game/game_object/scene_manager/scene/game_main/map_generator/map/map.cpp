@@ -45,7 +45,7 @@ void cMap::Initialize(int width, int height, std::uint8_t** mapdata, aqua::CVect
 	m_Width = (uint8_t)width;
 	m_Height = (uint8_t)height;
 
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 	UnitMgr->SetMapSize(m_Width, m_Height);
 
 	m_Tile = AQUA_NEW TILE * [m_Width];
@@ -243,7 +243,7 @@ void cMap::PutItem(int x_pos, int y_pos, unsigned int item_id, unsigned int num)
 
 void cMap::PutUnit(int x_pos, int y_pos, uint16_t unit_id)
 {
-	CUnitManager* UnitMgr = (CUnitManager*)m_UnitManager;
+	cUnitManager* UnitMgr = (cUnitManager*)m_UnitManager;
 	UnitMgr->Create(unit_id, x_pos, y_pos);
 }
 
@@ -553,14 +553,14 @@ bool cMap::HitWall(aqua::CVector2 posA, aqua::CVector2 posB)
 	return false;
 }
 
-bool cMap::HasData()
-{
-	return m_HasData;
-}
-
 void cMap::SetTile(int x_pos, int y_pos, TILE_ID tile)
 {
 	if (x_pos < 0 || x_pos >= m_Width || y_pos < 0 || y_pos >= m_Height)
 		return;
 	m_Tile[x_pos][y_pos].TileID = tile;
+}
+
+bool cMap::HasData()
+{
+	return m_HasData;
 }

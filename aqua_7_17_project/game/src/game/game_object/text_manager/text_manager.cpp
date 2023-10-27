@@ -2,13 +2,13 @@
 #include "../ui_manager/ui_manager.h"
 #include "../ui_manager/component/window/window.h"
 
-const int CTextManager::m_rows = 10;
-const int CTextManager::m_font_size = 16;
-const int CTextManager::m_text_window_width = 1280 - 720;
-const int CTextManager::m_text_window_height = 720 - 546;
-const aqua::CVector2 CTextManager::m_text_window_pos = aqua::CVector2(720, 546);
+const int cTextManager::m_rows = 10;
+const int cTextManager::m_font_size = 16;
+const int cTextManager::m_text_window_width = 1280 - 720;
+const int cTextManager::m_text_window_height = 720 - 546;
+const aqua::CVector2 cTextManager::m_text_window_pos = aqua::CVector2(720, 546);
 
-CTextManager::CTextManager(aqua::IGameObject* parent)
+cTextManager::cTextManager(aqua::IGameObject* parent)
 	: aqua::IGameObject(parent, "TextManager")
 	, m_DisplayText()
 	, m_Text(nullptr)
@@ -21,7 +21,7 @@ CTextManager::CTextManager(aqua::IGameObject* parent)
 {
 }
 
-void CTextManager::Initialize()
+void cTextManager::Initialize()
 {
 	m_Text = AQUA_NEW aqua::CLabel[m_rows];
 
@@ -43,7 +43,7 @@ void CTextManager::Initialize()
 	SetVisible(false);
 }
 
-void CTextManager::Update()
+void cTextManager::Update()
 {
 	IGameObject::Update();
 
@@ -90,7 +90,7 @@ void CTextManager::Update()
 	}
 }
 
-void CTextManager::Draw()
+void cTextManager::Draw()
 {
 	IGameObject::Draw();
 
@@ -98,7 +98,7 @@ void CTextManager::Draw()
 		m_Text[i].Draw();
 }
 
-void CTextManager::Finalize()
+void cTextManager::Finalize()
 {
 	for (int i = 0; i < m_rows; i++)
 		m_Text[i].Delete();
@@ -108,7 +108,7 @@ void CTextManager::Finalize()
 	IGameObject::Finalize();
 }
 
-void CTextManager::SetVisible(bool visible)
+void cTextManager::SetVisible(bool visible)
 {
 	WindowCheck();
 	((cWindow*)m_Window)->SetVisible(visible);
@@ -116,7 +116,7 @@ void CTextManager::SetVisible(bool visible)
 		m_Text[i].visible = visible;
 }
 
-void CTextManager::EnterText(std::string text)
+void cTextManager::EnterText(std::string text)
 {
 	m_TextDisplay = true;
 
@@ -156,7 +156,7 @@ void CTextManager::EnterText(std::string text)
 	m_TextList.push_back(Text);
 }
 
-void CTextManager::ClearText()
+void cTextManager::ClearText()
 {
 	for (int i = 0; i < m_rows; i++)
 		m_Text[i].text = "";
@@ -168,7 +168,7 @@ void CTextManager::ClearText()
 	m_TextList.clear();
 }
 
-void CTextManager::WindowCheck()
+void cTextManager::WindowCheck()
 {
 	if (!m_Window)
 	{
@@ -177,12 +177,12 @@ void CTextManager::WindowCheck()
 	}
 }
 
-cText* CTextManager::CreateText(const aqua::CVector2& pos, const std::string& text, const int& font_size, bool with_window)
+cText* cTextManager::CreateText(const aqua::CVector2& pos, const std::string& text, const int& font_size, bool with_window)
 {
 	return CreateText(pos, text, cText::ANCHOR_POS::LEFT_TOP, font_size, with_window);
 }
 
-cText* CTextManager::CreateText(const aqua::CVector2& pos, const std::string& text, const cText::ANCHOR_POS& anchor, const int& font_size, bool with_window)
+cText* cTextManager::CreateText(const aqua::CVector2& pos, const std::string& text, const cText::ANCHOR_POS& anchor, const int& font_size, bool with_window)
 {
 	cText* Text = aqua::CreateGameObject<cText>(this);
 	Text->Initialize(pos, text, anchor, font_size, with_window);

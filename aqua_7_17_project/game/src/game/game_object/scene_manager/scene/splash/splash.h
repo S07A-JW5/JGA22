@@ -25,8 +25,8 @@ public:
 	void Finalize(void) override;
 
 private:
-	static const float		m_wait_time;			//待機時間
-	aqua::CTimer			m_WaitTimer;			//タイマー
-	aqua::CLabel			m_Label;				//ラベル
-	aqua::CSprite			m_Background;			//背景
+	static const float		m_wait_time;	//待機時間
+	aqua::CTimer			m_WaitTimer;	//タイマー
+	aqua::CLabel			m_Label;		//ラベル
+	aqua::CSprite			m_Background;	//背景
 };
