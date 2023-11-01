@@ -1,4 +1,5 @@
 #include "file_name.h"
+#include <algorithm>
 
 std::string filename::num(int count, bool load)
 {

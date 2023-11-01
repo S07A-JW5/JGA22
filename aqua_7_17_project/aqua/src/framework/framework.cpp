@@ -86,16 +86,16 @@ Initialize( HINSTANCE instance_handle, aqua::IGameObject* game )
     // ウィンドウサイズ指定
     SetWindowSize( m_width, m_height );
 
-#ifdef AQUA_DEBUG
+//#ifdef AQUA_DEBUG
     // ウィンドウモードで起動
     ChangeWindowMode( TRUE );
-#else
-    // フルスクリーンモードで起動
-    ChangeWindowMode( FALSE );
-
-    // ゲーム画面の解像度に合わせてフルスクリーンにする
-    SetFullScreenResolutionMode( DX_FSRESOLUTIONMODE_NATIVE );
-#endif
+//#else
+//    // フルスクリーンモードで起動
+//    ChangeWindowMode( FALSE );
+//
+//    // ゲーム画面の解像度に合わせてフルスクリーンにする
+//    SetFullScreenResolutionMode( DX_FSRESOLUTIONMODE_NATIVE );
+//#endif
 
     //SetUseBorderlessWindowFlag(TRUE);
 
